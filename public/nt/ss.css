@@ -1,0 +1,45 @@
+.sssection {
+  display: grid;
+  gap: .4rem;
+  margin: 1rem 0rem;
+  margin-top:.5rem;
+}
+.sssection .ssheader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.sssection .ssheader .sslabel {
+  color: #FFF;
+font-family: Inter;
+font-size: 12.614px;
+font-style: normal;
+font-weight: 500;
+line-height: normal;
+}
+.sssection .ssheader .ssperc {
+  color: #FFF;
+text-align: right;
+font-family: Inter;
+font-size: 12.614px;
+font-style: normal;
+font-weight: 500;
+line-height: normal;
+}
+
+#percss {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 2px;
+  border-radius: 112.121px 0px 0px 112.121px;
+}
+#percss #ss10 {
+  border-radius: 112.121px 0px 0px 112.121px;
+}
+#percss #ss100 {
+  border-radius: 0px 112.121px 112.121px 0px;
+}
+#percss .bar {
+  height: 10px;/*8.97px;*/
+  width: 100%;
+}

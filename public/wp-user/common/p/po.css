@@ -1,0 +1,105 @@
+/*@import '~jquery-ui/themes/base/all.css';*/
+.po {
+  /*
+  	padding:0rem 2rem;*/
+  top: 0;
+  left: 0;
+  position: fixed;
+  display: none;
+  z-index: 100000;
+  margin: auto;
+  width: 100%;
+  justify-content: center;
+}
+.po .content2 {
+  margin: 1.5rem 0.5rem;
+  max-width: 430px;
+  /*min-width: 430px;
+  width:100%;*/
+  display: inline-flex;
+  height: auto;
+  padding: 19.556px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6.519px;
+  border-radius: 10.26px;
+  background: var(--Gray-10, #FFF);
+  box-shadow: 0px 4.889px 9.778px 0px rgba(0, 0, 0, 0.1);
+}
+.po .content2.onhide {
+  padding: 0px 19.556px !important;
+  margin: 1rem !important;
+}
+.po .content2 .stage {
+  display: flex;
+  gap: 1rem;
+  align-items: start;
+}
+.po .content2 .stage .stac {
+  display: grid;
+  align-items: center;
+}
+.po .content2 .stage .stac .h {
+  color: #000;
+  font-family: lato;
+  font-size: 16.296px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 40.815px; /* 140% */
+  flex: 1 0 0;
+}
+.po .content2 .stage .stac .b {
+  align-self: stretch;
+  color: #363636;
+  font-family: Inter;
+  font-size: 13.037px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 19.556px; /* 150% */
+}
+.po .content2 .e {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  align-items: flex-end;
+  gap: 9.778px;
+  flex: 1 0 0;
+}
+.po .content2 .e.hidenbut {
+  display: none !important;
+}
+.po .content2 .e .but {
+  display: none;
+}
+.po .content2 .e .but.green {
+  display: flex;
+  padding: 6.519px 13.037px;
+  justify-content: center;
+  align-items: center;
+  gap: 3.259px;
+  border-radius: 3.259px;
+  background: #3f3eed;
+  cursor: pointer;
+  color: var(--primary-Secondary, #F8F5FF);
+  font-family: Inter;
+  font-size: 11.407px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16.296px; /* 142.857% */
+}
+.po .content2 .e .but.grey {
+  display: flex;
+  padding: 6.519px 13.037px;
+  justify-content: center;
+  align-items: center;
+  gap: 3.259px;
+  border-radius: 3.259px;
+  cursor: pointer;
+  background: rgba(63, 62, 237, 0.14);
+  color: #3f3eed;
+  font-family: Inter;
+  font-size: 11.407px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16.296px; /* 142.857% */
+}

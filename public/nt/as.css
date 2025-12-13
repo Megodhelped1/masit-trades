@@ -1,0 +1,166 @@
+
+.as{
+	border-radius: 15.767px;
+background: #111; 
+padding: 1rem 22px;
+margin: .5rem 0rem;
+}
+
+
+.asc{
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+
+
+.fl {
+  display: flex;
+}
+.fl .gti {
+  color: #20BCA4;
+  font-family: Inter;
+  font-size: 11.579px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+.fl .lti {
+  color: #DB0A0A;
+  font-family: Inter;
+  font-size: 11.579px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+
+
+/*.bo2x {
+  border-radius: 15.767px;
+  background: #111;
+  padding-right:1rem;
+} */
+
+.bo2x .tpro {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.bo2x .tpro .label {
+  color: #CBCBCB;
+font-family: Inter;
+font-size: 8.288px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+}
+.bo2x .tpro .labelv {
+  color: #CBCBCB;
+text-align: right;
+font-family: Inter;
+font-size: 8.288px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+}
+.bo2x .pcontainer {
+  background-color: #26384E;
+  width: 100%;
+  border-radius: 15px;
+  height: 8.91px;
+}
+.bo2x .pcontainer .pin {
+  color: #307FE2;/*
+  padding: 0.5%;
+  text-align: right;
+  font-size: 20px;
+  height: 100%;
+  border-radius: 5px;*/
+  background: #1199FA;
+  border-radius: 15px;
+  height: 100%;
+  
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+
+
+.p3con {/*
+  border-radius: 15.767px;
+  background: #111;
+  padding: 1rem 2rem;*/
+  margin-top: 1rem;
+}
+.p3con .head7 {
+  color: #FFF;
+font-family: Inter;
+font-size: 10.61px;
+font-style: normal;
+font-weight: 500;
+line-height: normal;
+}
+
+.part3 {
+  display: grid;
+  grid-template-rows: auto auto auto auto;
+  gap: 0.5rem; /*
+height:94px;*/
+}
+.part3 .item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+.part3 .item .left2 {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.3rem;
+}
+.part3 .item .left2 .ty {
+  color: #D6D6D6;
+font-family: Inter;
+font-size: 8.637px;
+font-style: normal;
+font-weight: 500;
+line-height: normal;
+}
+.part3 .item .val {
+  color: #D6D6D6;
+  text-align: right;
+  font-family: Inter;/*
+  font-size: 12.614px;*/
+font-size: 8.637px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+.part3 .item .val.v {
+  color: green;
+  text-align: right;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+.part3 .item .val.pv {
+  color: yellow;
+  text-align: right;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+.part3 .item .val.nv {
+  color: #DB0A0A;
+  text-align: right;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}

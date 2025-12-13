@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en-uk" dir="ltr">
+<head>
+    <!-- Standard Meta -->
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="keywords" content="investment, Forex, Trading, Bitcoin, Cryptocurrency, Global investment, Live Trade, Trading class, indics">
+    <meta name="author" content="Paul Hubweb & Tech">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#313131">
+    <!-- Site Properties -->
+    <title>Sign In - Masi-trades</title>
+    <link rel="shortcut icon" href="/img/cfc-markets-logo.png" type="image/x-icon">
+    <link rel="apple-touch-icon-precomposed" href="img/cfc-markets-logo.png">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="css/vendors/uikit.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/magnific-popup.css">
+
+    <!-- SweetAlert2 -->
+    <script src="plugins/sweetalerts/promise-polyfill.js"></script>
+    <link href="plugins/sweetalerts/sweetalert.css" rel="stylesheet" type="text/css">
+</head>
+
+<body style="background-color:#0e121b; color:#fff;">
+    <!-- preloader begin -->
+    <div class="in-loader">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <!-- preloader end -->
+
+    <main>
+        <!-- section content begin -->
+        <div class="uk-section uk-padding-remove-vertical">
+            <div class="uk-container uk-container-expand">
+                <div class="uk-grid" data-uk-height-viewport="expand: true">
+                    <div class="uk-width-3-5@m uk-background-cover uk-background-center-right uk-visible@m uk-box-shadow-xlarge" 
+                         style="background-image: url(img/h.jpg);">
+                    </div>
+                    <div class="uk-width-expand@m uk-flex uk-flex-middle">
+                        <div class="uk-grid uk-flex-center">
+                            <div class="uk-width-3-5@m">
+                                <div class="in-padding-horizontal@s">
+                                    <!-- module logo begin -->
+                                    <a class="uk-logo" href="/">
+                                        <img class="uk-margin-small-right in-offset-top-10" 
+                                             src="img/in-lazy.gif" 
+                                             data-src="images/logo.svg" 
+                                             alt="logo" 
+                                             width="354" 
+                                             height="29" 
+                                             data-uk-img 
+                                             style="padding-top: 40px;">
+                                    </a>
+                                    <!-- module logo end -->
+
+                                    <p class="uk-text-lead uk-margin-top uk-margin-remove-bottom">Log into your account</p>
+                                    <p class="uk-text-small uk-margin-remove-top uk-margin-medium-bottom">
+                                        Don't have an account? <a href="/register"><b style="color:#3F3EED;">Register here</b></a>
+                                    </p>
+
+                                    <!-- login form begin -->
+                                    <form class="uk-grid uk-form" id="loginForm" action="/login" method="POST">
+                                        <div class="uk-margin-small uk-width-1-1 uk-inline">
+                                            <span class="uk-form-icon uk-form-icon-flip fas fa-user fa-sm"></span>
+                                            <input style="background-color:#0e121b;" 
+                                                   class="uk-input uk-border-rounded" 
+                                                   id="email" 
+                                                   name="email" 
+                                                   type="email" 
+                                                   placeholder="Email" 
+                                                   required>
+                                            <span style="color: red; font-size: 0.9em;" class="error email"></span>
+                                        </div>
+
+                                        <div class="uk-margin-small uk-width-1-1 uk-inline">
+                                            <span class="uk-form-icon uk-form-icon-flip fas fa-lock fa-sm"></span>
+                                            <input style="background-color:#0e121b;" 
+                                                   class="uk-input uk-border-rounded" 
+                                                   id="password" 
+                                                   name="password" 
+                                                   type="password" 
+                                                   placeholder="Password" 
+                                                   required>
+                                            <span style="color: red; font-size: 0.9em;" class="error password"></span>
+                                        </div>
+
+                                        <div class="uk-margin-small uk-width-auto uk-text-small">
+                                            <label>
+                                                <input class="uk-checkbox uk-border-rounded" type="checkbox"> Remember me
+                                            </label>
+                                        </div>
+
+                                        <div class="uk-margin-small uk-width-1-1">
+                                            <button class="uk-button uk-width-1-1 uk-button-primary uk-border-rounded" 
+                                                    type="submit" 
+                                                    id="btnSignin" 
+                                                    style="background-color:#3F3EED;">
+                                                Sign In
+                                            </button>
+                                        </div>
+                                    </form>
+                                    <!-- login form end -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- section content end -->
+    </main>
+
+    <!-- Javascript -->
+    <script src="plugins/jquery-3.1.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="plugins/sweetalerts/sweetalert2.min.js"></script>
+    <script src="js/vendors/uikit.min.js"></script>
+    <script src="js/vendors/indonez.min.js"></script>
+
+    <script>
+        const form = document.querySelector('#loginForm');
+        const emailError = document.querySelector('.error.email');
+        const passwordError = document.querySelector('.error.password');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Reset errors
+            emailError.textContent = '';
+            passwordError.textContent = '';
+
+            const email = form.email.value.trim();
+            const password = form.password.value;
+
+            try {
+                const res = await fetch('/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password }),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await res.json();
+
+                if (data.errors) {
+                    // Display field-specific errors
+                    if (data.errors.email) emailError.textContent = data.errors.email;
+                    if (data.errors.password) passwordError.textContent = data.errors.password;
+
+                    // Show general error via SweetAlert if no specific field errors
+                    if (!data.errors.email && !data.errors.password) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Login Failed',
+                            text: 'Invalid email or password. Please try again.',
+                            confirmButtonColor: '#3F3EED'
+                        });
+                    }
+                }
+
+                // Check for flash-like errors from server (via req.flash in controller)
+                if (res.status === 400 && !data.user) {
+                    // If backend used req.flash, it might not be in JSON, but we can handle known cases
+                    let errorMsg = 'An error occurred. Please try again.';
+                    if (data.errors && typeof data.errors === 'string') {
+                        errorMsg = data.errors;
+                    }
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Login Failed',
+                        text: errorMsg,
+                        confirmButtonColor: '#3F3EED'
+                    });
+                }
+
+                if (data.user) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Login successful. Redirecting...',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        location.assign('/dashboard');
+                    });
+                }
+
+            } catch (err) {
+                console.error(err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Network Error',
+                    text: 'Unable to connect. Please check your internet connection.',
+                    confirmButtonColor: '#3F3EED'
+                });
+            }
+        });
+    </script>
+</body>
+</html>

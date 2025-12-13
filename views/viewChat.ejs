@@ -1,0 +1,366 @@
+<%- include('partials/dynaHeader')%>
+
+ <style>
+  .chat-container {
+    max-width: 800px;
+    margin: 20px auto;
+    background: #1c2526;
+    border-radius: 10px;
+    padding: 20px;
+    color: #fff;
+  }
+  .chat-box {
+    height: 400px;
+    overflow-y: auto;
+    border: 1px solid #444;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 20px;
+    background: #171717;
+  }
+  .message {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+  }
+  .message.user {
+    background: #2a9d8f;
+    margin-left: 20%;
+    text-align: right;
+  }
+  .message.admin {
+    background: #264653;
+    margin-right: 20%;
+  }
+  .message img {
+    max-width: 200px;
+    border-radius: 5px;
+  }
+  .chat-form {
+    display: flex;
+    gap: 10px;
+  }
+  .chat-form input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #444;
+    background: #171717;
+    color: #fff;
+  }
+  .chat-form input[type="file"] {
+    padding: 10px;
+  }
+  .chat-form button {
+    padding: 10px 20px;
+    background: #1b55e2;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .chat-form button:hover {
+    background: #143db4;
+  }
+
+  /* Responsive adjustments for medium screens (tablets, up to 768px) */
+  @media (max-width: 768px) {
+    .chat-container {
+      max-width: 90%;
+      padding: 15px;
+      margin: 15px auto;
+    }
+    .chat-box {
+      height: 300px;
+      padding: 8px;
+    }
+    .message {
+      padding: 8px;
+      font-size: 14px;
+    }
+    .message.user {
+      margin-left: 10%;
+    }
+    .message.admin {
+      margin-right: 10%;
+    }
+    .message img {
+      max-width: 150px;
+    }
+    .chat-form {
+      flex-direction: column;
+      gap: 8px;
+    }
+    .chat-form input[type="text"],
+    .chat-form input[type="file"] {
+      width: 100%;
+      padding: 8px;
+    }
+    .chat-form button {
+      width: 100%;
+      padding: 10px;
+    }
+  }
+
+  /* Responsive adjustments for small screens (phones, up to 480px) */
+  @media (max-width: 480px) {
+    .chat-container {
+      max-width: 95%;
+      padding: 10px;
+      margin: 10px auto;
+    }
+    .chat-box {
+      height: 250px;
+      padding: 5px;
+    }
+    .message {
+      padding: 5px;
+      font-size: 12px;
+    }
+    .message.user {
+      margin-left: 5%;
+    }
+    .message.admin {
+      margin-right: 5%;
+    }
+    .message img {
+      max-width: 100px;
+    }
+    .chat-form {
+      flex-direction: column;
+      gap: 5px;
+    }
+    .chat-form input[type="text"],
+    .chat-form input[type="file"] {
+      width: 100%;
+      padding: 6px;
+      font-size: 14px;
+    }
+    .chat-form button {
+      width: 100%;
+      padding: 8px;
+      font-size: 14px;
+    }
+  }
+</style>
+
+<body style="background-color:black;" class="">
+   
+
+<section class="content">
+
+    <div class="iq-sidebar" style="background-color:#171717;">
+    <div class="iq-sidebar-logo d-flex justify-content-between">
+        <a href="#" class="header-logo">
+            <img src="/images/logo.svg" class="img-fluid rounded-normal" alt="">
+        </a>
+        <div class="iq-menu-bt-sidebar">
+            <div class="iq-menu-bt align-self-center">
+                <div class="wrapper-menu">
+                    <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
+                    <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="sidebar-scrollbar" data-scrollbar="true" tabindex="-1" style="overflow: hidden; outline: none;"><div class="scroll-content">
+        <nav class="iq-sidebar-menu">
+            
+            <ul id="iq-sidebar-toggle" class="iq-menu">
+                <li>
+                    <a href="/adminRoute" class="iq-waves-effect" style="color:#fff;"><i class="ai-home-alt1"></i><span>Dashboard</span></a>
+                </li>
+                                <li>
+                    <a href="/allVerify" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-person-check"></i><span>all verification</span></a>
+                </li>
+                                <li>
+                    <a href="/allFunding" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-database-add"></i><span>all Deposit</span></a>
+                </li>
+
+                 <li>
+                    <a href="/all-copytrades" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>all createdExperts</span></a>
+                </li>
+                 <li>
+                    <a href="/user-copytrades" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>all usersCopytrade</span></a>
+                </li>
+                <li>
+                    <a href="/allWidthdrawals" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-coin"></i><span>all Withdrawrals</span></a>
+                </li>
+                <li>
+                    <a href="/all-affiliates" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-robot"></i><span>Affiliate Packages</span></a>
+                </li>
+                <li>
+                    <a href="/all-accountUpgrade" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-arrow-90deg-up"></i><span>Upgrade</span></a>
+                </li>
+
+                 <li>
+                <a href="/all-chats" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-chat-dots"></i><span>All Chats</span></a>
+            </li>
+              
+                
+                <li>
+                    <a href="/all-signal" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-broadcast-pin"></i><span>all signals</span></a>
+                </li>
+                <li>
+                    <a href="/all-livetrade" class="iq-waves-effect" style="color:#fff;"><i class="ai-align-bottom"></i><span>all  Trading</span></a>
+                </li>
+                <li>
+                    <a href="/all-tradestock" class="iq-waves-effect" style="color:#fff;"><i class="ai-data"></i><span>all StocksTrades</span></a>
+                </li>
+                
+                <li>
+                    <a href="mailto:support@digital-topfigmarkets.com" class="iq-waves-effect" style="color:#fff;"><i class="ai-envelope"></i><span>Email us</span></a>
+                </li>
+                 <li>
+                    <a href="/all-wallets" class="iq-waves-effect" style="color:#fff;"><i class="ai-arrow-right-left"></i><span>wallet Addresses</span></a>
+                </li>
+                 <li>
+                    <a href="/logout" class="iq-waves-effect" style="color:#fff;"><i class="ai-sign-out"></i><span>logout out</span></a>
+                </li>
+                
+                </ul>
+        </nav>
+    </div><div class="scrollbar-track scrollbar-track-x" style="display: none;"><div class="scrollbar-thumb scrollbar-thumb-x" style="width: 300px; transform: translate3d(0px, 0px, 0px);"></div></div><div class="scrollbar-track scrollbar-track-y" style="display: block;"><div class="scrollbar-thumb scrollbar-thumb-y" style="height: 463.426px; transform: translate3d(0px, 0px, 0px);"></div></div></div>
+</div>
+<!-- TOP Nav Bar -->
+<div class="iq-top-navbar" style="background-color:#171717;">
+    <div class="iq-navbar-custom">
+        <nav class="navbar navbar-expand-lg navbar-light p-0">
+            <div class="iq-menu-bt d-flex align-items-center">
+                <div class="wrapper-menu">
+                    <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
+                    <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
+                </div>
+                <div class="iq-navbar-logo d-flex justify-content-between">
+                    <a href="#" class="header-logo">
+                        <img src="/images/favicon.svg" class="img-fluid rounded-normal" alt="">
+                    </a>
+                </div>
+            </div>
+           
+            
+            <div class="d-flex flex-column" style="margin-top:-20px;"> 
+   
+    <div class="hn-1"></div>
+   <div class="hn-2" style="margin-left:-18px;"><%=user.fullname%></div>
+  </div>
+  <div>
+            <ul class="navbar-list">
+                <li class="line-height">
+                    <a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
+                        </a><div class="profile-img" alt="user"><a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
+                        <img src="/wp-user/assets5i/img/pers.svg"> 
+                    </a>
+                    <div class="iq-sub-dropdown iq-user-dropdown">
+                        <div class="iq-card shadow-none m-0">
+                            <div class="iq-card-body p-0 " style="background-color:#171717;">
+                                <div class="bg-primary p-3">
+                                    <h5 class="mb-0 text-white line-height"><%=user.fullname%></h5>
+                                </div>
+                                <a href="/profile" class="iq-sub-card iq-bg-primary-hover">
+                                    <div class="media align-items-center">
+                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                            <i class="ri-file-user-line"></i>
+                                        </div>
+                                        <div class="media-body ml-3">
+                                            <h6 class="mb-0 " style="color:#fff;">My Profile</h6>
+                                            <p class="mb-0 font-size-12">View personal profile details.</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                
+                             
+                                <div class="d-inline-block w-100 text-center p-3">
+                                    <a class="bg-primary iq-sign-btn" href="logout" role="button">Sign Out<i class="ri-login-box-line ml-2"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div></li>
+            </ul>
+        </div></nav>
+    </div>
+</div> 
+ <div class="d-flex flex-column" style="margin-top:55px;"> 
+   
+  </div>
+  </div>
+
+  <!-- othe main content -->
+
+    <!-- Chat Content -->
+    <div class="chat-container">
+      <h2>Chat with <%= chat.user.fullname %></h2>
+      <% if (messages.success) { %>
+        <div class="alert alert-success"><%= messages.success %></div>
+      <% } %>
+      <% if (messages.error) { %>
+        <div class="alert alert-danger"><%= messages.error %></div>
+      <% } %>
+      <div class="chat-box" id="chatBox">
+        <% chat.messages.forEach(message => { %>
+          <div class="message <%= message.sender %>">
+            <p><%= message.content %></p>
+            <% if (message.image) { %>
+              <img src="<%= message.image %>" alt="Chat Image">
+            <% } %>
+            <small><%= message.timestamp.toLocaleString() %></small>
+          </div>
+        <% }) %>
+      </div>
+      <form class="chat-form" id="chatForm" enctype="multipart/form-data">
+        <input type="text" name="content" placeholder="Type your response..." required>
+        <input type="file" name="chatImage" accept="image/jpeg,image/jpg,image/png">
+        <button type="submit">Send</button>
+      </form>
+    </div>
+
+</section>
+
+<script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+  <script>
+    const socket = io();
+    const chatBox = document.getElementById('chatBox');
+    const chatForm = document.getElementById('chatForm');
+    const userId = '<%= chat.user._id %>';
+
+    socket.emit('adminJoin');
+
+    socket.on('newMessage', ({ userId: messageUserId, message }) => {
+      if (messageUserId === userId) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${message.sender}`;
+        messageDiv.innerHTML = `
+          <p>${message.content}</p>
+          ${message.image ? `<img src="${message.image}" alt="Chat Image">` : ''}
+          <small>${new Date(message.timestamp).toLocaleString()}</small>
+        `;
+        chatBox.appendChild(messageDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    });
+
+    chatForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(chatForm);
+      const content = formData.get('content');
+      const chatImage = formData.get('chatImage');
+
+      if (!content && !chatImage) return;
+
+      if (chatImage && chatImage.size > 0) {
+        const response = await fetch('/chat/<%= chat._id %>', {
+          method: 'POST',
+          body: formData,
+        });
+        if (response.ok) {
+          chatForm.reset();
+        }
+      } else {
+        socket.emit('adminSendMessage', { userId, content });
+        chatForm.reset();
+      }
+    });
+  </script>
+
+<%- include('partials/dynaFooter')%>

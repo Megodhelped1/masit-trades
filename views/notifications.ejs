@@ -1,0 +1,25 @@
+<!-- views/notifications.ejs -->
+<div id="notifications-container">
+  <% if (notifications && notifications.length > 0) { %>
+    <% notifications.forEach(notification => { %>
+      <div class="notification-item p-3 border-bottom" style="background-color: #212529; color: #fff;">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h6 class="mb-1"><%= notification.title %></h6>
+            <p class="mb-1"><%= notification.message %></p>
+            <small class="text-muted"><%= new Date(notification.createdAt).toLocaleString() %></small>
+          </div>
+          <% if (!notification.isRead) { %>
+            <button class="btn btn-sm btn-primary mark-read" data-id="<%= notification._id %>">Mark as Read</button>
+          <% } else { %>
+            <span class="badge bg-secondary">Read</span>
+          <% } %>
+        </div>
+      </div>
+    <% }) %>
+  <% } else { %>
+    <div class="text-center p-4">
+      <p class="text-muted">No notifications yet.</p>
+    </div>
+  <% } %>
+</div>

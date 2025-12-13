@@ -1,0 +1,3101 @@
+with every other codes and functionalities intact and my app.js like this
+
+const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
+require('dotenv').config();
+const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
+const methodOverride = require('method-override');
+const session = require('express-session');
+const flash = require('connect-flash');
+const cors = require('cors');
+const path = require('path');
+const { requireAuth, checkUser } = require('./server/authMiddleware/authMiddleware');
+// const cloudinary = require('cloudinary').v2;
+
+const app = express();
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+  },
+});
+
+const PORT = process.env.PORT || 6500;
+
+// Cloudinary configuration
+// cloudinary.config({
+//   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+//   api_key: process.env.CLOUDINARY_API_KEY,
+//   api_secret: process.env.CLOUDINARY_API_SECRET,
+// });
+
+// Middlewares
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(cors());
+app.use(methodOverride('_method'));
+app.use(
+  session({
+    secret: 'piuscandothis',
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+app.use(flash());
+
+// Set view engine
+app.set('view engine', 'ejs');
+
+// DB config
+const db = 'mongodb+srv://marcelpolocha1:081358pius@cluster0.f9a85hv.mongodb.net/digitalssfox';
+mongoose
+  .connect(db)
+  .then(() => console.log('MongoDB Connected'))
+  .catch((err) => console.log(err));
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  req.flash('error', err.message || 'Something went wrong!');
+  res.redirect('back');
+});
+
+// Middleware to pass flash messages to views
+app.use((req, res, next) => {
+  res.locals.messages = req.flash();
+  next();
+});
+
+// Socket.IO logic
+const Chat = require('./server/Model/Chat');
+const User = require('./server/Model/User');
+
+io.on('connection', (socket) => {
+  console.log('New client connected:', socket.id);
+
+  socket.on('joinChat', async ({ userId }) => {
+    socket.join(userId);
+    console.log(`User ${userId} joined chat`);
+
+    // Load previous messages
+    const chat = await Chat.findOne({ user: userId }).populate('user');
+    if (chat) {
+      socket.emit('loadMessages', chat.messages);
+    }
+  });
+
+  socket.on('sendMessage', async ({ userId, content, image }) => {
+    try {
+      let chat = await Chat.findOne({ user: userId });
+      if (!chat) {
+        chat = new Chat({ user: userId, messages: [] });
+      }
+
+      const message = {
+        sender: 'user',
+        content,
+        image,
+        timestamp: new Date(),
+      };
+
+      chat.messages.push(message);
+      await chat.save();
+
+      // Emit to user
+      io.to(userId).emit('newMessage', message);
+
+      // Emit to admin (assuming admin is in a room called 'admin')
+      io.to('admin').emit('newMessage', { userId, message });
+    } catch (err) {
+      console.error(err);
+    }
+  });
+
+  socket.on('adminJoin', () => {
+    socket.join('admin');
+    console.log('Admin joined chat');
+  });
+
+  socket.on('adminSendMessage', async ({ userId, content, image }) => {
+    try {
+      let chat = await Chat.findOne({ user: userId });
+      if (!chat) {
+        chat = new Chat({ user: userId, messages: [] });
+      }
+
+      const message = {
+        sender: 'admin',
+        content,
+        image,
+        timestamp: new Date(),
+      };
+
+      chat.messages.push(message);
+      await chat.save();
+
+      // Emit to user
+      io.to(userId).emit('newMessage', message);
+
+      // Emit to admin
+      io.to('admin').emit('newMessage', { userId, message });
+    } catch (err) {
+      console.error(err);
+    }
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Client disconnected:', socket.id);
+  });
+});
+
+app.use(checkUser);
+app.use('/', require('./server/Route/indexRoute'));
+app.use('/', requireAuth, require('./server/Route/userRoute'));
+app.use('/', requireAuth, require('./server/Route/adminRoute'));
+
+server.listen(PORT, () => console.log(`Server running on ${PORT}`));
+
+and my userRoute.js file like this
+
+const express = require('express');
+const router = express.Router();
+const userController = require('../Controllers/userController');
+const multer = require('multer');
+const path = require('path');
+const cloudinary = require('cloudinary').v2;
+
+// Multer configuration for chat image upload
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    const filetypes = /jpeg|jpg|png/;
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = filetypes.test(file.mimetype);
+    if (extname && mimetype) {
+      return cb(null, true);
+    }
+    cb(new Error('Error: Images only (jpeg, jpg, png)!'));
+  },
+});
+
+router.get('/dashboard', userController.dashboardPage);
+router.get('/verify/:id', userController.verifyPage);
+router.post('/verify/:id', upload.fields([
+  { name: 'idcardFront', maxCount: 1 },
+  { name: 'idcardBack', maxCount: 1 },
+router.post('/payment/:id', upload.single('depositProof'), userController.paymentPage_post);
+router.get('/withdraw', userController.withdrawPage);
+router.post('/withdraw/:id', userController.withdrawPage_post);
+router.get('/upgrade', userController.upgradePage);
+router.post('/upgrade/:id', upload.single('requestProof'), userController.upgradePage_post);
+router.get('/signal-package', userController.signaltPage);
+router.post('/signal-package/:id', upload.single('requestProof'), userController.signaltPage_post);
+router.get('/chat', userController.chatPage);
+router.post('/chat/:id', upload.single('chatImage'), userController.chatPage_post);
+
+module.exports = router;
+
+and my user controller.js file like this
+
+module.exports.dashboardPage = (req, res) => {
+  res.render('dashboard');
+};
+
+
+module.exports.verifyPage = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+        res.render("verify", { user, kycVerified: user.kycVerified });
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+};
+
+
+
+module.exports.verifyPage_post = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(400).json({ error: 'User not found' });
+        }
+
+        if (user.kycVerified) {
+            return res.status(400).json({ error: 'User already verified' });
+        }
+
+        const {
+            email, username, fullname, city, gender, dob,
+            marital_status, age, address
+        } = req.body;
+
+        // Log the received form data for debugging
+        console.log('Received form data:', {
+            email, username, fullname, city, gender, dob,
+            marital_status, age, address
+        });
+
+        // Validate required fields (allow non-empty strings)
+        if (!email?.trim() || !username?.trim() || !fullname?.trim() || !city?.trim() || !gender?.trim() || !dob?.trim() || !marital_status?.trim() || !age?.trim() || !address?.trim()) {
+            return res.status(400).json({ error: 'All fields are required and must not be empty' });
+        }
+
+        // Handle file uploads
+        if (!req.files['idcardFront'] || !req.files['idcardBack']) {
+            return res.status(400).json({ error: 'Both ID card images are required' });
+        }
+
+        // Get file paths from Multer disk storage
+        const frontFilePath = req.files['idcardFront'][0].path;
+        const backFilePath = req.files['idcardBack'][0].path;
+
+        let idcardFront = null;
+        let idcardBack = null;
+
+        // Upload front ID to Cloudinary
+        try {
+            const frontResult = await cloudinary.uploader.upload(frontFilePath, {
+                folder: 'verifications/front',
+                resource_type: 'image'
+            });
+            idcardFront = frontResult.secure_url;
+            fs.unlinkSync(frontFilePath); // Delete local file
+        } catch (error) {
+            console.error('Error uploading front ID to Cloudinary:', error);
+            fs.unlinkSync(frontFilePath); // Delete local file on error
+            return res.status(500).json({ error: 'Failed to upload front ID image' });
+        }
+
+        // Upload back ID to Cloudinary
+        try {
+            const backResult = await cloudinary.uploader.upload(backFilePath, {
+                folder: 'verifications/back',
+                resource_type: 'image'
+            });
+            idcardBack = backResult.secure_url;
+            fs.unlinkSync(backFilePath); // Delete local file
+        } catch (error) {
+            console.error('Error uploading back ID to Cloudinary:', error);
+            fs.unlinkSync(backFilePath); // Delete local file on error
+            return res.status(500).json({ error: 'Failed to upload back ID image' });
+        }
+
+        // Log the Cloudinary URLs for debugging
+        console.log('Cloudinary URLs:', { idcardFront, idcardBack });
+
+        // Create new verification document
+        const verification = new Verify({
+            email,
+            username,
+            fullname,
+            city,
+            gender,
+            dateofBirth: dob,
+            marital: marital_status,
+            age,
+            address,
+            image: idcardFront,
+            backImage: idcardBack,
+            owner: user._id
+        });
+
+        await verification.save();
+
+        // Update user's verified array and kycVerified status
+        user.verified.push(verification._id);
+        user.kycVerified = true;
+        await user.save();
+
+        res.status(200).json({ message: 'Verification submitted successfully' });
+    } catch (error) {
+        console.error('Error in verifyPage_post:', error);
+        // Attempt to clean up any files in case of error
+        if (req.files['idcardFront']) {
+            fs.unlinkSync(req.files['idcardFront'][0].path);
+        }
+        if (req.files['idcardBack']) {
+            fs.unlinkSync(req.files['idcardBack'][0].path);
+        }
+        res.status(500).json({ error: 'Server error: ' + error.message });
+    }
+};
+
+
+module.exports.paymentPage = async (req, res) => {
+    try {
+        const { type, amount } = req.session.deposit || {};
+        if (!type || !amount) {
+            req.flash('error', 'No deposit data found.');
+            return res.redirect('/deposit');
+        }
+        const wallet = await Wallet.findOne(); // Fetch wallet details
+        res.render('payment', { wallet, depositType: type, depositAmount: amount });
+    } catch (error) {
+        console.error(error);
+        req.flash('error', 'Error loading payment page');
+        res.redirect('/deposit');
+    }
+};
+
+module.exports.paymentPage_post = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { narration } = req.body;
+        const { type, amount } = req.session.deposit || {};
+
+        // Validate session data
+        if (!type || !amount) {
+            return res.status(400).json({ error: 'No deposit data found.' });
+        }
+
+        // Find user
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found.' });
+        }
+
+        // Validate file upload
+        if (!req.file) {
+            return res.status(400).json({ error: 'Please upload a proof of payment.' });
+        }
+
+        // Upload image to Cloudinary
+        const result = await cloudinary.uploader.upload(req.file.path);
+        fs.unlinkSync(req.file.path); // Delete local file
+
+        // Create deposit
+        const deposit = new Deposit({
+            type,
+            amount,
+            image: result.secure_url,
+            narration: narration || 'Payment',
+            owner: user._id
+        });
+
+        // Save deposit
+        await deposit.save();
+
+        // Update user's deposits
+        user.deposits.push(deposit._id);
+        await user.save();
+
+        // Clear session data
+        req.session.deposit = null;
+
+        // Success response
+        res.status(200).json({ success: true, message: 'Deposit submitted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error submitting deposit' });
+    }
+};
+
+module.exports.withdrawPage = (req, res) => {
+  res.render("withdraw");
+};
+
+
+
+module.exports.withdrawPage_post = async (req, res) => {
+    try {
+        // Extract id from req.params
+        const id = req.params.id;
+
+        // Validate id
+        if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+            req.flash('error', 'Invalid user ID');
+            return res.redirect('/withdraw');
+        }
+
+        // Find user by ID
+        const user = await User.findById(id);
+        if (!user) {
+            req.flash('error', 'User not found');
+            return res.redirect('/withdraw');
+        }
+
+        // Extract form data
+        const { 
+            withdrawalmethod, 
+            amount, 
+            narration, 
+            bitcoin_address, 
+            ethereum_address, 
+            usdt_address, 
+            cashapp_tag, 
+            paypal_email, 
+            bank_name, 
+            account_number, 
+            country, 
+            swift_code 
+        } = req.body;
+
+        // Validate balance
+        const availableBalance = parseFloat(user.available);
+        const withdrawalAmount = parseFloat(amount);
+
+        if (isNaN(withdrawalAmount) || withdrawalAmount <= 0) {
+            req.flash('error', 'Invalid withdrawal amount');
+            return res.redirect('/withdraw');
+        }
+
+        if (withdrawalAmount > availableBalance) {
+            req.flash('error', 'Insufficient balance for withdrawal');
+            return res.redirect('/withdraw');
+        }
+
+        // Check verification status for withdrawal limits
+        const maxUnverifiedLimit = 300;
+        if (user.verifiedStatus === 'not Verified!' && withdrawalAmount > maxUnverifiedLimit) {
+            req.flash('error', `Unverified accounts can only withdraw up to $${maxUnverifiedLimit}. Please complete your verification to withdraw larger amounts.`);
+            return res.redirect('/withdraw');
+        }
+
+        // Prepare withdrawal data
+        const withdrawData = {
+            amount: withdrawalAmount,
+            type: withdrawalmethod,
+            narration,
+            owner: user._id,
+        };
+
+        // Add method-specific fields
+        if (withdrawalmethod === 'Bitcoin') {
+            withdrawData.walletAddress = bitcoin_address;
+        } else if (withdrawalmethod === 'Ethereum') {
+            withdrawData.walletAddress = ethereum_address;
+        } else if (withdrawalmethod === 'USDT') {
+            withdrawData.walletAddress = usdt_address;
+        } else if (withdrawalmethod === 'CashApp') {
+            withdrawData.cashAppTag = cashapp_tag;
+        } else if (withdrawalmethod === 'PayPal') {
+            withdrawData.paypalEmail = paypal_email;
+        } else if (withdrawalmethod === 'Bank Transfer') {
+            withdrawData.bankDetails = {
+                bankName: bank_name,
+                accountNumber: account_number,
+                country,
+                swiftCode: swift_code,
+            };
+        }
+
+        // Create and save withdrawal
+        const withdrawal = new Withdraw(withdrawData);
+        await withdrawal.save();
+
+        // Update user balance and withdrawals array
+        user.available = (availableBalance - withdrawalAmount).toFixed(2);
+        user.withdraws.push(withdrawal._id);
+        await user.save();
+
+        // Success response
+        req.flash('success', 'Withdrawal request submitted successfully');
+        res.redirect(`/transactions/${id}`); // Fixed redirect URL
+    } catch (error) {
+        console.error(error);
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map(err => err.message).join(', ');
+            req.flash('error', `Validation error: ${messages}`);
+        } else {
+            req.flash('error', 'Error submitting withdrawal request');
+        }
+        res.redirect('/withdraw');
+    }
+};
+
+module.exports.upgradePage = async (req, res) => {
+    try {
+      // const id = req.params.id
+      //   const user = await User.findById(id);
+        const wallet = await Wallet.findOne(); // Adjust query based on your Wallet model
+        res.render('upgrade', {
+            wallet
+        });
+    } catch (error) {
+        console.error('Error in upgradePage:', error);
+        res.status(500).send('Server error');
+    }3
+};
+
+
+module.exports.upgradePage_post = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { upgraderequest, paymentmethod, amount, narration } = req.body;
+        const user = await User.findById(id);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Validate amount against user.available
+        const availableBalance = parseFloat(user.available);
+        const requestedAmount = parseFloat(amount);
+        if (isNaN(requestedAmount) || requestedAmount <= 0) {
+            return res.status(400).json({ error: 'Invalid amount' });
+        }
+        if (requestedAmount > availableBalance) {
+            return res.status(400).json({ error: `Insufficient balance. Available: €${availableBalance}` });
+        }
+
+        // Validate inputs
+        if (!upgraderequest || !paymentmethod || !narration) {
+            return res.status(400).json({ error: 'All fields are required' });
+        }
+
+        // Upload proof of payment to Cloudinary
+        let imageUrl = '';
+        if (req.file) {
+            const result = await cloudinary.uploader.upload(req.file.path, {
+                folder: 'upgrade_proofs'
+            });
+            imageUrl = result.secure_url;
+        } else {
+            return res.status(400).json({ error: 'Proof of payment is required' });
+        }
+
+        // Create new upgrade request
+        const upgrade = new Upgrade({
+            upgraderequest,
+            amount: requestedAmount.toString(),
+            method: paymentmethod,
+            status: 'pending',
+            image: imageUrl,
+            owner: user._id // Link to user
+        });
+        await upgrade.save();
+
+        // Deduct the amount from user's available balance
+        const newBalance = (availableBalance - requestedAmount).toFixed(2); // Ensure 2 decimal places
+        user.available = newBalance.toString(); // Convert back to string as per schema
+
+        // Link upgrade to user
+        user.upgrades.push(upgrade._id);
+        await user.save();
+
+        res.status(200).json({ message: 'Upgrade request submitted successfully' });
+    } catch (error) {
+        console.error('Error in upgradePage_post:', error);
+        res.status(500).json({ error: 'Failed to submit upgrade request' });
+    }
+};
+
+module.exports.signaltPage = async (req, res) => {
+    try {
+        const wallet = await Wallet.findOne();
+        res.render("signal", { wallet });
+    } catch (error) {
+        console.error('Error in signaltPage:', error);
+        res.status(500).render('error', { message: 'Server error' });
+    }
+};
+
+module.exports.signaltPage_post = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { packagename, paymentmethod, amount, narration } = req.body;
+        const user = await User.findById(id);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Validate amount against user.available
+        const availableBalance = parseFloat(user.available);
+        const requestedAmount = parseFloat(amount);
+        if (isNaN(requestedAmount) || requestedAmount <= 0) {
+            return res.status(400).json({ error: 'Invalid amount' });
+        }
+        if (requestedAmount > availableBalance) {
+            return res.status(400).json({ error: `Insufficient balance. Available: ${user.currency}${availableBalance}` });
+        }
+
+        // Validate inputs
+        if (!packagename || !paymentmethod || !narration) {
+            return res.status(400).json({ error: 'All fields are required' });
+        }
+
+        // Upload proof of payment to Cloudinary
+        let imageUrl = '';
+        if (req.file) {
+            const result = await cloudinary.uploader.upload(req.file.path, {
+                folder: 'signal_proofs'
+            });
+            imageUrl = result.secure_url;
+
+            // Delete the local file after successful upload
+            try {
+                await fsPromises.unlink(req.file.path);
+            } catch (unlinkError) {
+                console.error('Error deleting local file:', unlinkError);
+                // Continue execution even if file deletion fails
+            }
+        } else {
+            return res.status(400).json({ error: 'Proof of payment is required' });
+        }
+
+        // Create new signal request
+        const signal = new Signal({
+            packagename,
+            amount: requestedAmount.toString(),
+            method: paymentmethod,
+            status: 'pending',
+            image: imageUrl,
+            narration,
+            owner: user._id
+        });
+        await signal.save();
+
+        // Deduct the amount from user's available balance
+        const newBalance = (availableBalance - requestedAmount).toFixed(2);
+        user.available = newBalance.toString();
+
+        // Link signal to user
+        user.signals.push(signal._id);
+        await user.save();
+
+        // Respond with success message for SweetAlert
+        res.status(200).json({ message: 'Signal request submitted successfully', type: 'success' });
+    } catch (error) {
+        console.error('Error in signaltPage_post:', error);
+        // Delete the local file if upload fails
+        if (req.file && req.file.path) {
+            try {
+                await fsPromises.unlink(req.file.path);
+            } catch (unlinkError) {
+                console.error('Error deleting local file in catch block:', unlinkError);
+            }
+        }
+        res.status(500).json({ error: 'Failed to submit signal request', type: 'error' });
+    }
+};
+
+and my admin route like this
+
+const express = require('express');
+const router = express.Router();
+const adminController = require('../Controllers/adminController');
+const multer = require('multer');
+const path = require('path');
+
+// Configure Multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + '-' + file.originalname);
+  },
+});
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    const filetypes = /jpeg|jpg|png/;
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = filetypes.test(file.mimetype);
+    if (extname && mimetype) {
+      return cb(null, true);
+    } else {
+      cb(new Error('Images only (jpeg, jpg, png)!'));
+    }
+  },
+});
+
+router.get('/editUser/:id', adminController.editUser);
+router.put('/editUser/:id', adminController.editUser_post);
+router.get('/edit-deposit/:id', adminController.editDepositPage);
+router.post('/edit-deposit/:id', adminController.updateDeposit);
+router.get('/withdrawals-edit/:id', adminController.editWithdrawalPage);
+router.post('/withdrawals-edit/:id', adminController.editWithdrawal);
+router.get('/allVerify', adminController.getAllVerifications);
+router.get('/all-accountUpgrade', adminController.allUpgrades);
+router.get('/all-signal', adminController.getAllSignals);
+router.get('/all-chats', adminController.getAllChats);
+router.get('/chat/:id', adminController.viewChat);
+router.post('/chat/:id', upload.single('chatImage'), adminController.respondChat);
+
+module.exports = router;
+
+and my relevent adminController.js code like this
+
+
+module.exports.editUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).lean();
+    
+    if (!user) {
+      req.flash('error', 'User not found');
+      return res.redirect('/adminRoute');
+    }
+
+    res.render('editUser', {
+      user,
+      success: req.flash('success'),
+      error: req.flash('error')
+    });
+  } catch (error) {
+    console.error('Error in editUser:', error);
+    req.flash('error', 'Failed to load user edit form');
+    res.redirect('/adminRoute');
+  }
+};
+
+module.exports.editUser_post = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      fullname, username, email, tel, currency, country, city,
+      balance, available, activeDeposit, profit, totalEarning,
+      totalWidthdraw, zip_code, address, isVerified, kycVerified, verifiedStatus,
+      isSuspended, session, progPlus,progMinus,signalProg,prog,
+    } = req.body;
+
+    // Validate required fields
+    if (!fullname?.trim() || !username?.trim() || !email?.trim() || !tel?.trim() || !currency?.trim() || !country?.trim() || !city?.trim()) {
+      return res.status(400).json({ error: 'All required fields must be provided' });
+    }
+
+    // Check for duplicate username or email
+    const existingUser = await User.findOne({
+      $or: [{ username }, { email }],
+      _id: { $ne: id }
+    });
+    if (existingUser) {
+      return res.status(400).json({
+        error: existingUser.username === username ? 'Username already exists' : 'Email already exists'
+      });
+    }
+
+    // Validate email format
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
+
+    const updateData = {
+      fullname,
+      username,
+      email,
+      tel,
+      currency,
+      country,
+      city,
+      prog,
+      balance: parseFloat(balance) || 0,
+      available: parseFloat(available) || '0.00',
+      activeDeposit: parseFloat(activeDeposit) || '0.00',
+      profit: parseFloat(profit) || '0.00',
+      totalEarning: parseFloat(totalEarning) || '0.00',
+      totalWidthdraw: parseFloat(totalWidthdraw) || '0.00',
+      signalProg,
+      progPlus,
+      progMinus,
+      zip_code: zip_code || 'None',
+      address: address || 'None',
+      isVerified: isVerified === 'true',
+      kycVerified: kycVerified === 'true',
+      verifiedStatus: verifiedStatus || 'not Verified!',
+      isSuspended: isSuspended === 'true',
+      session: session || '0/0',
+    };
+
+    const user = await User.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    return res.status(200).json({ message: 'User updated successfully', redirect: `/viewUser/${id}` });
+  } catch (error) {
+    console.error('Error in editUser_post:', error);
+    return res.status(500).json({ error: 'Failed to update user' });
+  }
+};
+
+exports.editDepositPage = async (req, res) => {
+    try {
+        const deposit = await Deposit.findById(req.params.id);
+        if (!deposit) {
+            req.flash('error', 'Deposit not found');
+            return res.redirect('/allFunding');
+        }
+        res.render('edit-deposit', { deposit });
+    } catch (error) {
+        console.error(error);
+        req.flash('error', 'Error fetching deposit');
+        res.redirect('/allFunding');
+    }
+};
+
+module.exports.updateDeposit = async (req, res) => {
+    try {
+        const { type, amount, narration, status } = req.body;
+        await Deposit.findByIdAndUpdate(req.params.id, { type, amount, narration, status });
+        req.flash('success', 'Deposit updated successfully');
+        res.redirect('/allFunding');
+    } catch (error) {
+        console.error(error);
+        req.flash('error', 'Error updating deposit');
+        res.redirect(`/edit-deposit/${req.params.id}`);
+    }
+};
+
+// Edit withdrawal page
+module.exports.editWithdrawalPage = async (req, res) => {
+    try {
+        const withdrawal = await Withdraw.findById(req.params.id).populate('owner', 'fullname email').lean();
+        if (!withdrawal) {
+            req.flash('error', 'Withdrawal not found');
+            return res.redirect('/allWithdrawals');
+        }
+        res.render('withdrawal-edit', { withdrawal, messages: req.flash() });
+    } catch (error) {
+        console.error('Error in editWithdrawalPage:', error);
+        req.flash('error', 'Error loading edit page');
+        res.redirect('/allWithdrawals');
+    }
+};
+
+// Update withdrawal
+module.exports.editWithdrawal = async (req, res) => {
+    try {
+        console.log('Received form data:', req.body); // Debug log
+        const { amount, status, narration, walletAddress, cashAppTag, paypalEmail, bankName, accountNumber, country, swiftCode } = req.body;
+        const withdrawal = await Withdraw.findById(req.params.id);
+        if (!withdrawal) {
+            console.log('Withdrawal not found for ID:', req.params.id); // Debug log
+            req.flash('error', 'Withdrawal not found');
+            return res.redirect('/allWithdrawals');
+        }
+
+        // Validate amount
+        if (!amount || isNaN(amount) || amount <= 0) {
+            console.log('Invalid amount:', amount); // Debug log
+            req.flash('error', 'Invalid amount');
+            return res.redirect(`/withdrawals-edit/${req.params.id}`);
+        }
+
+        // Validate status
+        if (!['pending', 'approved', 'rejected'].includes(status)) {
+            console.log('Invalid status:', status); // Debug log
+            req.flash('error', 'Invalid status');
+            return res.redirect(`/withdrawals-edit/${req.params.id}`);
+        }
+
+        // Validate conditional fields based on type
+        if (['Bitcoin', 'Ethereum', 'USDT'].includes(withdrawal.type) && !walletAddress) {
+            console.log('Missing walletAddress for type:', withdrawal.type); // Debug log
+            req.flash('error', 'Wallet address is required for this withdrawal type');
+            return res.redirect(`/withdrawals-edit/${req.params.id}`);
+        }
+        if (withdrawal.type === 'CashApp' && !cashAppTag) {
+            console.log('Missing cashAppTag'); // Debug log
+            req.flash('error', 'CashApp tag is required');
+            return res.redirect(`/withdrawals-edit/${req.params.id}`);
+        }
+        if (withdrawal.type === 'PayPal' && !paypalEmail) {
+            console.log('Missing paypalEmail'); // Debug log
+            req.flash('error', 'PayPal email is required');
+            return res.redirect(`/withdrawals-edit/${req.params.id}`);
+        }
+        if (withdrawal.type === 'Bank Transfer') {
+            if (!bankName || !accountNumber || !country || !swiftCode) {
+                console.log('Missing bank details:', { bankName, accountNumber, country, swiftCode }); // Debug log
+                req.flash('error', 'All bank details are required');
+                return res.redirect(`/withdrawals-edit/${req.params.id}`);
+            }
+        }
+
+        // Track original amount and status for refund logic
+        const originalAmount = withdrawal.amount;
+        const originalStatus = withdrawal.status;
+        console.log('Original withdrawal:', { originalAmount, originalStatus }); // Debug log
+
+        // Update fields
+        withdrawal.amount = parseFloat(amount).toFixed(2);
+        withdrawal.status = status;
+        withdrawal.narration = narration || withdrawal.narration;
+        if (['Bitcoin', 'Ethereum', 'USDT'].includes(withdrawal.type)) {
+            withdrawal.walletAddress = walletAddress;
+        }
+        if (withdrawal.type === 'CashApp') {
+            withdrawal.cashAppTag = cashAppTag;
+        }
+        if (withdrawal.type === 'PayPal') {
+            withdrawal.paypalEmail = paypalEmail;
+        }
+        if (withdrawal.type === 'Bank Transfer') {
+            withdrawal.bankDetails = { bankName, accountNumber, country, swiftCode };
+        }
+
+        await withdrawal.save();
+        console.log('Withdrawal saved:', withdrawal); // Debug log
+
+        // Handle refund logic for rejected status or amount change
+        if (status === 'rejected' && originalStatus !== 'rejected') {
+            const user = await User.findById(withdrawal.owner);
+            if (!user) {
+                console.log('User not found for ID:', withdrawal.owner); // Debug log
+                req.flash('error', 'User not found');
+                return res.redirect(`/withdrawals-edit/${req.params.id}`);
+            }
+            user.available = (parseFloat(user.available) + parseFloat(withdrawal.amount)).toFixed(2);
+            await user.save();
+            console.log('User balance updated (rejected):', user.available); // Debug log
+        } else if (status !== 'rejected' && originalStatus === 'rejected') {
+            const user = await User.findById(withdrawal.owner);
+            if (!user) {
+                console.log('User not found for ID:', withdrawal.owner); // Debug log
+                req.flash('error', 'User not found');
+                return res.redirect(`/withdrawals-edit/${req.params.id}`);
+            }
+            if (parseFloat(user.available) < parseFloat(withdrawal.amount)) {
+                console.log('Insufficient balance:', { available: user.available, amount: withdrawal.amount }); // Debug log
+                req.flash('error', 'User has insufficient balance to revert rejection');
+                return res.redirect(`/withdrawals-edit/${req.params.id}`);
+            }
+            user.available = (parseFloat(user.available) - parseFloat(withdrawal.amount)).toFixed(2);
+            await user.save();
+            console.log('User balance updated (revert rejection):', user.available); // Debug log
+        } else if (status === 'rejected' && originalAmount !== withdrawal.amount) {
+            const user = await User.findById(withdrawal.owner);
+            if (!user) {
+                console.log('User not found for ID:', withdrawal.owner); // Debug log
+                req.flash('error', 'User not found');
+                return res.redirect(`/withdrawals-edit/${req.params.id}`);
+            }
+            user.available = (parseFloat(user.available) - parseFloat(originalAmount) + parseFloat(withdrawal.amount)).toFixed(2);
+            await user.save();
+            console.log('User balance updated (amount change):', user.available); // Debug log
+        }
+
+        req.flash('success', 'Withdrawal updated successfully');
+        console.log('Redirecting to /allWithdrawals'); // Debug log
+        res.redirect('/allWithdrawals');
+    } catch (error) {
+        console.error('Error in editWithdrawal:', error); // Debug log
+        req.flash('error', 'Error updating withdrawal');
+        res.redirect(`/withdrawals-edit/${req.params.id}`);
+    }
+};
+
+module.exports.getAllVerifications = async (req, res) => {
+    try {
+        const verifications = await Verify.find().populate('owner', 'email username');
+        res.render('verifications', { verifications }); // Create this view
+    } catch (error) {
+        res.status(500).json({ error: 'Server error: ' + error.message });
+    }
+};
+
+module.exports.allUpgrades = async (req, res) => {
+    try {
+        const upgrades = await Upgrade.find().populate('owner', 'fullname email username');
+        res.render('all-accountUpgrade', {
+            upgrades
+        });
+    } catch (error) {
+        console.error('Error in allUpgrades:', error);
+        res.status(500).send('Server error');
+    }
+};
+
+module.exports.getAllChats = async (req, res) => {
+  try {
+    const chats = await Chat.find().populate('user');
+    res.render('allChats', { chats });
+  } catch (err) {
+    console.error(err);
+    req.flash('error', 'Something went wrong!');
+    res.redirect('/adminRoute');
+  }
+};
+
+module.exports.viewChat = async (req, res) => {
+  try {
+    const chat = await Chat.findById(req.params.id).populate('user');
+    if (!chat) {
+      req.flash('error', 'Chat not found');
+      return res.redirect('/all-chats');
+    }
+    res.render('viewChat', { chat });
+  } catch (err) {
+    console.error(err);
+    req.flash('error', 'Something went wrong!');
+    res.redirect('/all-chats');
+  }
+};
+
+module.exports.respondChat = async (req, res) => {
+  try {
+    const { content } = req.body;
+    let imageUrl = null;
+
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path);
+      imageUrl = result.secure_url;
+    }
+
+    const chat = await Chat.findById(req.params.id);
+    if (!chat) {
+      req.flash('error', 'Chat not found');
+      return res.redirect('/all-chats');
+    }
+
+    const message = {
+      sender: 'admin',
+      content,
+      image: imageUrl,
+      timestamp: new Date(),
+    };
+
+    chat.messages.push(message);
+    await chat.save();
+
+    // Emit message via Socket.IO
+    req.app.get('io').to(chat.user.toString()).emit('newMessage', message);
+    req.app.get('io').to('admin').emit('newMessage', { userId: chat.user, message });
+
+    req.flash('success', 'Response sent');
+    res.redirect(`/chat/${req.params.id}`);
+  } catch (err) {
+    console.error(err);
+    req.flash('error', 'Something went wrong!');
+    res.redirect(`/chat/${req.params.id}`);
+  }
+};
+
+with my user schema like this
+
+const mongoose = require('mongoose');
+const validator = require('validator');
+// const bcrypt = require('bcrypt');
+
+const userSchema = new mongoose.Schema({
+  isSuspended: {
+    type: Boolean,
+    default: false,
+  },
+  fullname: {
+    type: String,
+    unique: true,
+    lowercase: true,
+    required: true,
+  },
+  username: {
+    type: String,
+    unique: true,
+    lowercase: true,
+    required: true,
+  },
+  email: {
+    type: String,
+    unique: true,
+    lowercase: true,
+    required: [true, 'Please enter an email'],
+    validate: [validator.isEmail, 'Please enter a valid email'],
+  },
+  tel: {
+    type: String,
+    required: [true, 'Please enter your phone number'],
+    trim: true,
+  },
+  currency: {
+    type: String,
+    required: [true, 'Please select a currency'],
+  },
+  country: {
+    type: String,
+    required: [true, 'Please select a country'],
+  },
+  city: {
+    type: String,
+    required: [true, 'Please enter your city'],
+  },
+  password: {
+    type: String,
+    required: [true, 'Please enter a password'],
+    minlength: [6, 'Password must be at least 6 characters'],
+  },
+  session: {
+    type: String,
+    default: '0/0',
+  },
+  image: {
+    type: String,
+  },
+  balance: {
+    type: Number,
+    default: 0,
+  },
+  available: {
+    type: String,
+    default: '0.00',
+  },
+  zip_code: {
+    type: String,
+    default: 'None',
+  },
+  address: {
+    type: String,
+    default: 'None',
+  },
+  signalProg: {
+    type: String,
+    default: '0',
+  },
+  activeDeposit: {
+    type: String,
+    default: '0.00',
+  },
+  profit: {
+    type: String,
+    default: '0.00',
+  },
+  totalEarning: {
+    type: String,
+    default: '0.00',
+  },
+  totalWidthdraw: {
+    type: String,
+    default: '0.00',
+  },
+  progPlus: {
+    type: String,
+    default: '+0.00%',
+  },
+  progMinus: {
+    type: String,
+    default: '-0.00%',
+  },
+  prog: {
+    type: Number,
+    default: 0,
+  },
+  security_question: {
+    type: String,
+    required: false,
+  },
+  security_answer: {
+    type: String,
+    required: false,
+    trim: true,
+  },
+  otp: {
+    type: Number,
+    default: 0,
+  },
+  otpExpires: {
+    type: Date,
+    default: null,
+  },
+  verificationCode: {
+    type: String,
+    default: null,
+  },
+  kycVerified: {
+    type: Boolean,
+    default: false,
+  },
+  verifiedStatus: {
+    type: String,
+    default: 'not Verified!',
+  },
+  verificationToken: {
+    type: String,
+    default: null,
+  },
+  verificationTokenExpires: {
+    type: Date,
+    default: null,
+  },
+  copyTrades: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'copyTrade',
+  }],
+  livetrades: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'livetrade',
+  }],
+  upgrades: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'upgrade',
+  }],
+  verified: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'verify',
+  }],
+  deposits: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'deposit',
+  }],
+  withdraws: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'withdraw',
+  }],
+  wallets: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'wallet',
+  }],
+  affliates: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'affliate',
+  }],
+  signals: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'signal',
+  }],
+  stocktrades: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'stocktrade',
+  }],
+  emailnotification: {
+    type: Boolean,
+    default: false,
+  },
+  smsnotification: {
+    type: Boolean,
+    default: false,
+  },
+  email_notifications: {
+    type: [String],
+    default: [],
+  },
+  escalate_emails: {
+    type: [String],
+    default: [],
+  },
+  url: {
+    type: String,
+    default: '',
+  },
+  gender: {
+    type: String,
+    enum: ['Male', 'Female'],
+  },
+  dob: {
+    type: Date,
+  },
+  marital_status: {
+    type: String,
+    enum: ['Single', 'Married', 'Widowed', 'Divorced', 'Separated'],
+  },
+  age: {
+    type: String,
+    enum: ['12 - 18', '19 - 32', '33 - 45', '46 - 62', '63 &gt;'],
+  },
+  state: {
+    type: String,
+  },
+}, { timestamps: true });
+
+// // Hash password before saving
+// userSchema.pre('save', async function (next) {
+//   if (this.isModified('password')) {
+//     this.password = await bcrypt.hash(this.password, 10);
+//   }
+//   next();
+// });
+
+// Static login method
+// Static login method with plain text password comparison
+userSchema.statics.login = async function (email, password) {
+  const user = await this.findOne({ email });
+  if (!user) {
+    throw Error('incorrect email');
+  }
+ 
+  if (user.isSuspended) {
+    throw Error('Your account is suspended. If you believe this is a mistake, please contact support at support@digital-topfigmarkets.com.');
+  }
+  // Direct string comparison for passwords
+  if (password !== user.password) {
+    throw Error('incorrect password');
+  }
+  return user;
+};
+const User = mongoose.model('user', userSchema);
+module.exports = User;
+
+and my chat schema like this
+
+const mongoose = require('mongoose');
+
+const messageSchema = new mongoose.Schema({
+  sender: {
+    type: String,
+    enum: ['user', 'admin'],
+    required: true,
+  },
+  content: {
+    type: String,
+  },
+  image: {
+    type: String,
+    default: null,
+  },
+  timestamp: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+const chatSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'user',
+    required: true,
+  },
+  messages: [messageSchema],
+}, { timestamps: true });
+
+const Chat = mongoose.model('Chat', chatSchema);
+module.exports = Chat;
+
+with my user dashboard frontend like this
+
+<!DOCTYPE html>
+<html>
+<head>
+		<title>Dashboard</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+ 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,400;1,700;1,900&amp;display=swap" rel="stylesheet">
+<meta name="theme-color" content="#171717">
+<link rel="stylesheet" href="assets5i/dashboard.css">  
+<link rel="stylesheet" href="assets5i/d.css">  
+<link rel="stylesheet" href="assets0/notify.css">
+<link rel="stylesheet" href="assets0/custom/custom.css">
+ 
+<link rel="stylesheet" href="assets5i/custom/custom.css">  
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+
+<!-- new styles -->
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link rel="stylesheet" href="wp-user/assets5i/dashboard.css">  
+<link rel="stylesheet" href="wp-user/assets5i/d.css">  
+<link rel="stylesheet" href="wp-user/assets0/notify.css">
+<link rel="stylesheet" href="wp-user/assets0/custom/custom.css">
+ 
+<link rel="stylesheet" href="wp-user/assets5i/custom/custom.css">  
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href=" https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css">
+
+<script src="https://unpkg.com/akar-icons-fonts"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+<!-- end of styles -->
+
+<!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- Typography CSS -->
+    <link rel="stylesheet" href="css/typography.css">
+    <!-- Style CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Responsive CSS -->
+    <link rel="stylesheet" href="css/responsive.css">
+    
+    <link rel="stylesheet" type="text/css" href="nt/ss.css"> 
+	<link rel="stylesheet" type="text/css" href="nt/as.css">  
+	<script type="text/javascript" charset="utf-8" async="" src="https://www.smartsuppchat.com/loader.js?"></script><script type="text/javascript" src="nt/ba.js"></script>
+	
+	<link rel="stylesheet" type="text/css" href="otassets/otfi.css">
+	<script type="text/javascript" src="otassets/otfi.js"></script>
+
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/akar-icons-fonts/src/css/akar-icons.css"><style>@-webkit-keyframes swal2-show{0%{-webkit-transform:scale(.7);transform:scale(.7)}45%{-webkit-transform:scale(1.05);transform:scale(1.05)}80%{-webkit-transform:scale(.95);transform:scale(.95)}100%{-webkit-transform:scale(1);transform:scale(1)}}@keyframes swal2-show{0%{-webkit-transform:scale(.7);transform:scale(.7)}45%{-webkit-transform:scale(1.05);transform:scale(1.05)}80%{-webkit-transform:scale(.95);transform:scale(.95)}100%{-webkit-transform:scale(1);transform:scale(1)}}@-webkit-keyframes swal2-hide{0%{-webkit-transform:scale(1);transform:scale(1);opacity:1}100%{-webkit-transform:scale(.5);transform:scale(.5);opacity:0}}@keyframes swal2-hide{0%{-webkit-transform:scale(1);transform:scale(1);opacity:1}100%{-webkit-transform:scale(.5);transform:scale(.5);opacity:0}}@-webkit-keyframes swal2-animate-success-line-tip{0%{top:1.1875em;left:.0625em;width:0}54%{top:1.0625em;left:.125em;width:0}70%{top:2.1875em;left:-.375em;width:3.125em}84%{top:3em;left:1.3125em;width:1.0625em}100%{top:2.8125em;left:.875em;width:1.5625em}}@keyframes swal2-animate-success-line-tip{0%{top:1.1875em;left:.0625em;width:0}54%{top:1.0625em;left:.125em;width:0}70%{top:2.1875em;left:-.375em;width:3.125em}84%{top:3em;left:1.3125em;width:1.0625em}100%{top:2.8125em;left:.875em;width:1.5625em}}@-webkit-keyframes swal2-animate-success-line-long{0%{top:3.375em;right:2.875em;width:0}65%{top:3.375em;right:2.875em;width:0}84%{top:2.1875em;right:0;width:3.4375em}100%{top:2.375em;right:.5em;width:2.9375em}}@keyframes swal2-animate-success-line-long{0%{top:3.375em;right:2.875em;width:0}65%{top:3.375em;right:2.875em;width:0}84%{top:2.1875em;right:0;width:3.4375em}100%{top:2.375em;right:.5em;width:2.9375em}}@-webkit-keyframes swal2-rotate-success-circular-line{0%{-webkit-transform:rotate(-45deg);transform:rotate(-45deg)}5%{-webkit-transform:rotate(-45deg);transform:rotate(-45deg)}12%{-webkit-transform:rotate(-405deg);transform:rotate(-405deg)}100%{-webkit-transform:rotate(-405deg);transform:rotate(-405deg)}}@keyframes swal2-rotate-success-circular-line{0%{-webkit-transform:rotate(-45deg);transform:rotate(-45deg)}5%{-webkit-transform:rotate(-45deg);transform:rotate(-45deg)}12%{-webkit-transform:rotate(-405deg);transform:rotate(-405deg)}100%{-webkit-transform:rotate(-405deg);transform:rotate(-405deg)}}@-webkit-keyframes swal2-animate-error-x-mark{0%{margin-top:1.625em;-webkit-transform:scale(.4);transform:scale(.4);opacity:0}50%{margin-top:1.625em;-webkit-transform:scale(.4);transform:scale(.4);opacity:0}80%{margin-top:-.375em;-webkit-transform:scale(1.15);transform:scale(1.15)}100%{margin-top:0;-webkit-transform:scale(1);transform:scale(1);opacity:1}}@keyframes swal2-animate-error-x-mark{0%{margin-top:1.625em;-webkit-transform:scale(.4);transform:scale(.4);opacity:0}50%{margin-top:1.625em;-webkit-transform:scale(.4);transform:scale(.4);opacity:0}80%{margin-top:-.375em;-webkit-transform:scale(1.15);transform:scale(1.15)}100%{margin-top:0;-webkit-transform:scale(1);transform:scale(1);opacity:1}}@-webkit-keyframes swal2-animate-error-icon{0%{-webkit-transform:rotateX(100deg);transform:rotateX(100deg);opacity:0}100%{-webkit-transform:rotateX(0);transform:rotateX(0);opacity:1}}@keyframes swal2-animate-error-icon{0%{-webkit-transform:rotateX(100deg);transform:rotateX(100deg);opacity:0}100%{-webkit-transform:rotateX(0);transform:rotateX(0);opacity:1}}body.swal2-toast-shown.swal2-has-input>.swal2-container>.swal2-toast{flex-direction:column;align-items:stretch}body.swal2-toast-shown.swal2-has-input>.swal2-container>.swal2-toast .swal2-actions{flex:1;align-self:stretch;justify-content:flex-end;height:2.2em}body.swal2-toast-shown.swal2-has-input>.swal2-container>.swal2-toast .swal2-loading{justify-content:center}body.swal2-toast-shown.swal2-has-input>.swal2-container>.swal2-toast .swal2-input{height:2em;margin:.3125em auto;font-size:1em}body.swal2-toast-shown.swal2-has-input>.swal2-container>.swal2-toast .swal2-validationerror{font-size:1em}body.swal2-toast-shown>.swal2-container{position:fixed;background-color:transparent}body.swal2-toast-shown>.swal2-container.swal2-shown{background-color:transparent}body.swal2-toast-shown>.swal2-container.swal2-top{top:0;right:auto;bottom:auto;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%)}body.swal2-toast-shown>.swal2-container.swal2-top-end,body.swal2-toast-shown>.swal2-container.swal2-top-right{top:0;right:0;bottom:auto;left:auto}body.swal2-toast-shown>.swal2-container.swal2-top-left,body.swal2-toast-shown>.swal2-container.swal2-top-start{top:0;right:auto;bottom:auto;left:0}body.swal2-toast-shown>.swal2-container.swal2-center-left,body.swal2-toast-shown>.swal2-container.swal2-center-start{top:50%;right:auto;bottom:auto;left:0;-webkit-transform:translateY(-50%);transform:translateY(-50%)}body.swal2-toast-shown>.swal2-container.swal2-center{top:50%;right:auto;bottom:auto;left:50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%)}body.swal2-toast-shown>.swal2-container.swal2-center-end,body.swal2-toast-shown>.swal2-container.swal2-center-right{top:50%;right:0;bottom:auto;left:auto;-webkit-transform:translateY(-50%);transform:translateY(-50%)}body.swal2-toast-shown>.swal2-container.swal2-bottom-left,body.swal2-toast-shown>.swal2-container.swal2-bottom-start{top:auto;right:auto;bottom:0;left:0}body.swal2-toast-shown>.swal2-container.swal2-bottom{top:auto;right:auto;bottom:0;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%)}body.swal2-toast-shown>.swal2-container.swal2-bottom-end,body.swal2-toast-shown>.swal2-container.swal2-bottom-right{top:auto;right:0;bottom:0;left:auto}.swal2-popup.swal2-toast{flex-direction:row;align-items:center;width:auto;padding:.625em;box-shadow:0 0 .625em #d9d9d9;overflow-y:hidden}.swal2-popup.swal2-toast .swal2-header{flex-direction:row}.swal2-popup.swal2-toast .swal2-title{justify-content:flex-start;margin:0 .6em;font-size:1em}.swal2-popup.swal2-toast .swal2-close{position:initial}.swal2-popup.swal2-toast .swal2-content{justify-content:flex-start;font-size:1em}.swal2-popup.swal2-toast .swal2-icon{width:2em;min-width:2em;height:2em;margin:0}.swal2-popup.swal2-toast .swal2-icon-text{font-size:2em;font-weight:700;line-height:1em}.swal2-popup.swal2-toast .swal2-icon.swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line]{top:.875em;width:1.375em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=left]{left:.3125em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=right]{right:.3125em}.swal2-popup.swal2-toast .swal2-actions{height:auto;margin:0 .3125em}.swal2-popup.swal2-toast .swal2-styled{margin:0 .3125em;padding:.3125em .625em;font-size:1em}.swal2-popup.swal2-toast .swal2-styled:focus{box-shadow:0 0 0 .0625em #fff,0 0 0 .125em rgba(50,100,150,.4)}.swal2-popup.swal2-toast .swal2-success{border-color:#a5dc86}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line]{position:absolute;width:2em;height:2.8125em;-webkit-transform:rotate(45deg);transform:rotate(45deg);border-radius:50%}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=left]{top:-.25em;left:-.9375em;-webkit-transform:rotate(-45deg);transform:rotate(-45deg);-webkit-transform-origin:2em 2em;transform-origin:2em 2em;border-radius:4em 0 0 4em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=right]{top:-.25em;left:.9375em;-webkit-transform-origin:0 2em;transform-origin:0 2em;border-radius:0 4em 4em 0}.swal2-popup.swal2-toast .swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-popup.swal2-toast .swal2-success .swal2-success-fix{top:0;left:.4375em;width:.4375em;height:2.6875em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line]{height:.3125em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line][class$=tip]{top:1.125em;left:.1875em;width:.75em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line][class$=long]{top:.9375em;right:.1875em;width:1.375em}.swal2-popup.swal2-toast.swal2-show{-webkit-animation:showSweetToast .5s;animation:showSweetToast .5s}.swal2-popup.swal2-toast.swal2-hide{-webkit-animation:hideSweetToast .2s forwards;animation:hideSweetToast .2s forwards}.swal2-popup.swal2-toast .swal2-animate-success-icon .swal2-success-line-tip{-webkit-animation:animate-toast-success-tip .75s;animation:animate-toast-success-tip .75s}.swal2-popup.swal2-toast .swal2-animate-success-icon .swal2-success-line-long{-webkit-animation:animate-toast-success-long .75s;animation:animate-toast-success-long .75s}@-webkit-keyframes showSweetToast{0%{-webkit-transform:translateY(-.625em) rotateZ(2deg);transform:translateY(-.625em) rotateZ(2deg);opacity:0}33%{-webkit-transform:translateY(0) rotateZ(-2deg);transform:translateY(0) rotateZ(-2deg);opacity:.5}66%{-webkit-transform:translateY(.3125em) rotateZ(2deg);transform:translateY(.3125em) rotateZ(2deg);opacity:.7}100%{-webkit-transform:translateY(0) rotateZ(0);transform:translateY(0) rotateZ(0);opacity:1}}@keyframes showSweetToast{0%{-webkit-transform:translateY(-.625em) rotateZ(2deg);transform:translateY(-.625em) rotateZ(2deg);opacity:0}33%{-webkit-transform:translateY(0) rotateZ(-2deg);transform:translateY(0) rotateZ(-2deg);opacity:.5}66%{-webkit-transform:translateY(.3125em) rotateZ(2deg);transform:translateY(.3125em) rotateZ(2deg);opacity:.7}100%{-webkit-transform:translateY(0) rotateZ(0);transform:translateY(0) rotateZ(0);opacity:1}}@-webkit-keyframes hideSweetToast{0%{opacity:1}33%{opacity:.5}100%{-webkit-transform:rotateZ(1deg);transform:rotateZ(1deg);opacity:0}}@keyframes hideSweetToast{0%{opacity:1}33%{opacity:.5}100%{-webkit-transform:rotateZ(1deg);transform:rotateZ(1deg);opacity:0}}@-webkit-keyframes animate-toast-success-tip{0%{top:.5625em;left:.0625em;width:0}54%{top:.125em;left:.125em;width:0}70%{top:.625em;left:-.25em;width:1.625em}84%{top:1.0625em;left:.75em;width:.5em}100%{top:1.125em;left:.1875em;width:.75em}}@keyframes animate-toast-success-tip{0%{top:.5625em;left:.0625em;width:0}54%{top:.125em;left:.125em;width:0}70%{top:.625em;left:-.25em;width:1.625em}84%{top:1.0625em;left:.75em;width:.5em}100%{top:1.125em;left:.1875em;width:.75em}}@-webkit-keyframes animate-toast-success-long{0%{top:1.625em;right:1.375em;width:0}65%{top:1.25em;right:.9375em;width:0}84%{top:.9375em;right:0;width:1.125em}100%{top:.9375em;right:.1875em;width:1.375em}}@keyframes animate-toast-success-long{0%{top:1.625em;right:1.375em;width:0}65%{top:1.25em;right:.9375em;width:0}84%{top:.9375em;right:0;width:1.125em}100%{top:.9375em;right:.1875em;width:1.375em}}body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown){overflow-y:hidden}body.swal2-height-auto{height:auto!important}body.swal2-no-backdrop .swal2-shown{top:auto;right:auto;bottom:auto;left:auto;background-color:transparent}body.swal2-no-backdrop .swal2-shown>.swal2-modal{box-shadow:0 0 10px rgba(0,0,0,.4)}body.swal2-no-backdrop .swal2-shown.swal2-top{top:0;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%)}body.swal2-no-backdrop .swal2-shown.swal2-top-left,body.swal2-no-backdrop .swal2-shown.swal2-top-start{top:0;left:0}body.swal2-no-backdrop .swal2-shown.swal2-top-end,body.swal2-no-backdrop .swal2-shown.swal2-top-right{top:0;right:0}body.swal2-no-backdrop .swal2-shown.swal2-center{top:50%;left:50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%)}body.swal2-no-backdrop .swal2-shown.swal2-center-left,body.swal2-no-backdrop .swal2-shown.swal2-center-start{top:50%;left:0;-webkit-transform:translateY(-50%);transform:translateY(-50%)}body.swal2-no-backdrop .swal2-shown.swal2-center-end,body.swal2-no-backdrop .swal2-shown.swal2-center-right{top:50%;right:0;-webkit-transform:translateY(-50%);transform:translateY(-50%)}body.swal2-no-backdrop .swal2-shown.swal2-bottom{bottom:0;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%)}body.swal2-no-backdrop .swal2-shown.swal2-bottom-left,body.swal2-no-backdrop .swal2-shown.swal2-bottom-start{bottom:0;left:0}body.swal2-no-backdrop .swal2-shown.swal2-bottom-end,body.swal2-no-backdrop .swal2-shown.swal2-bottom-right{right:0;bottom:0}.swal2-container{display:flex;position:fixed;top:0;right:0;bottom:0;left:0;flex-direction:row;align-items:center;justify-content:center;padding:10px;background-color:transparent;z-index:1060;overflow-x:hidden;-webkit-overflow-scrolling:touch}.swal2-container.swal2-top{align-items:flex-start}.swal2-container.swal2-top-left,.swal2-container.swal2-top-start{align-items:flex-start;justify-content:flex-start}.swal2-container.swal2-top-end,.swal2-container.swal2-top-right{align-items:flex-start;justify-content:flex-end}.swal2-container.swal2-center{align-items:center}.swal2-container.swal2-center-left,.swal2-container.swal2-center-start{align-items:center;justify-content:flex-start}.swal2-container.swal2-center-end,.swal2-container.swal2-center-right{align-items:center;justify-content:flex-end}.swal2-container.swal2-bottom{align-items:flex-end}.swal2-container.swal2-bottom-left,.swal2-container.swal2-bottom-start{align-items:flex-end;justify-content:flex-start}.swal2-container.swal2-bottom-end,.swal2-container.swal2-bottom-right{align-items:flex-end;justify-content:flex-end}.swal2-container.swal2-grow-fullscreen>.swal2-modal{display:flex!important;flex:1;align-self:stretch;justify-content:center}.swal2-container.swal2-grow-row>.swal2-modal{display:flex!important;flex:1;align-content:center;justify-content:center}.swal2-container.swal2-grow-column{flex:1;flex-direction:column}.swal2-container.swal2-grow-column.swal2-bottom,.swal2-container.swal2-grow-column.swal2-center,.swal2-container.swal2-grow-column.swal2-top{align-items:center}.swal2-container.swal2-grow-column.swal2-bottom-left,.swal2-container.swal2-grow-column.swal2-bottom-start,.swal2-container.swal2-grow-column.swal2-center-left,.swal2-container.swal2-grow-column.swal2-center-start,.swal2-container.swal2-grow-column.swal2-top-left,.swal2-container.swal2-grow-column.swal2-top-start{align-items:flex-start}.swal2-container.swal2-grow-column.swal2-bottom-end,.swal2-container.swal2-grow-column.swal2-bottom-right,.swal2-container.swal2-grow-column.swal2-center-end,.swal2-container.swal2-grow-column.swal2-center-right,.swal2-container.swal2-grow-column.swal2-top-end,.swal2-container.swal2-grow-column.swal2-top-right{align-items:flex-end}.swal2-container.swal2-grow-column>.swal2-modal{display:flex!important;flex:1;align-content:center;justify-content:center}.swal2-container:not(.swal2-top):not(.swal2-top-start):not(.swal2-top-end):not(.swal2-top-left):not(.swal2-top-right):not(.swal2-center-start):not(.swal2-center-end):not(.swal2-center-left):not(.swal2-center-right):not(.swal2-bottom):not(.swal2-bottom-start):not(.swal2-bottom-end):not(.swal2-bottom-left):not(.swal2-bottom-right)>.swal2-modal{margin:auto}@media all and (-ms-high-contrast:none),(-ms-high-contrast:active){.swal2-container .swal2-modal{margin:0!important}}.swal2-container.swal2-fade{transition:background-color .1s}.swal2-container.swal2-shown{background-color:rgba(0,0,0,.4)}.swal2-popup{display:none;position:relative;flex-direction:column;justify-content:center;width:32em;max-width:100%;padding:1.25em;border-radius:.3125em;background:#fff;font-family:inherit;font-size:1rem;box-sizing:border-box}.swal2-popup:focus{outline:0}.swal2-popup.swal2-loading{overflow-y:hidden}.swal2-popup .swal2-header{display:flex;flex-direction:column;align-items:center}.swal2-popup .swal2-title{display:block;position:relative;max-width:100%;margin:0 0 .4em;padding:0;color:#595959;font-size:1.875em;font-weight:600;text-align:center;text-transform:none;word-wrap:break-word}.swal2-popup .swal2-actions{align-items:center;justify-content:center;margin:1.25em auto 0}.swal2-popup .swal2-actions:not(.swal2-loading) .swal2-styled[disabled]{opacity:.4}.swal2-popup .swal2-actions:not(.swal2-loading) .swal2-styled:hover{-webkit-transform: translateY(-3px);transform: translateY(-3px);}.swal2-popup .swal2-actions:not(.swal2-loading) .swal2-styled:active{background-image:linear-gradient(rgba(0,0,0,.2),rgba(0,0,0,.2))}.swal2-popup .swal2-actions.swal2-loading .swal2-styled.swal2-confirm{width:2.5em;height:2.5em;margin:.46875em;padding:0;border:.25em solid transparent;border-radius:100%;border-color:transparent;background-color:transparent!important;color:transparent;cursor:default;box-sizing:border-box;-webkit-animation:swal2-rotate-loading 1.5s linear 0s infinite normal;animation:swal2-rotate-loading 1.5s linear 0s infinite normal;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.swal2-popup .swal2-actions.swal2-loading .swal2-styled.swal2-cancel{margin-right:30px;margin-left:30px}.swal2-popup .swal2-actions.swal2-loading :not(.swal2-styled).swal2-confirm::after{display:inline-block;width:15px;height:15px;margin-left:5px;border:3px solid #888ea8;border-radius:50%;border-right-color:transparent;box-shadow:1px 1px 1px #fff;content:'';-webkit-animation:swal2-rotate-loading 1.5s linear 0s infinite normal;animation:swal2-rotate-loading 1.5s linear 0s infinite normal}.swal2-popup .swal2-styled{margin:0 .3125em;padding:.625em 2em;font-weight:500;box-shadow:none}.swal2-popup .swal2-styled:not([disabled]){cursor:pointer}.swal2-popup .swal2-styled.swal2-confirm{border:0;border-radius:.25em;background:initial;background-color:#1b55e2;color:#fff;font-size:14px}.swal2-popup .swal2-styled.swal2-cancel{background-color: #fff; color: #1b55e2; font-weight: 700;border: 1px solid #e8e8e8;}.swal2-popup .swal2-styled:focus{outline:0;box-shadow:0 0 0 2px #fff,0 0 0 4px rgba(50,100,150,.4)}.swal2-popup .swal2-styled::-moz-focus-inner{border:0}.swal2-popup .swal2-footer{justify-content:center;margin:1.25em 0 0;padding-top:1em;border-top:1px solid #eee;color:#545454;font-size:1em}.swal2-popup .swal2-image{max-width:100%;margin:1.25em auto}.swal2-popup .swal2-close{position:absolute;top:0;right:0;justify-content:center;width:1.2em;height:1.2em;padding:0;transition:color .1s ease-out;border:none;border-radius:0;background:0 0;color:#ccc;font-family:serif;font-size:2.5em;line-height:1.2;cursor:pointer;overflow:hidden}.swal2-popup .swal2-close:hover{-webkit-transform:none;transform:none;color:#f27474}.swal2-popup>.swal2-checkbox,.swal2-popup>.swal2-file,.swal2-popup>.swal2-input,.swal2-popup>.swal2-radio,.swal2-popup>.swal2-select,.swal2-popup>.swal2-textarea{display:none}.swal2-popup .swal2-content{justify-content:center;margin:0;padding:0;color:#545454;font-size:1.125em;font-weight:300;line-height:normal;word-wrap:break-word}.swal2-popup #swal2-content{text-align:center}.swal2-popup .swal2-checkbox,.swal2-popup .swal2-file,.swal2-popup .swal2-input,.swal2-popup .swal2-radio,.swal2-popup .swal2-select,.swal2-popup .swal2-textarea{margin:1em auto}.swal2-popup .swal2-file,.swal2-popup .swal2-input,.swal2-popup .swal2-textarea{width:100%;transition:border-color .3s,box-shadow .3s;border:1px solid #d9d9d9;border-radius:.1875em;font-size:1.125em;box-shadow:inset 0 1px 1px rgba(0,0,0,.06);box-sizing:border-box}.swal2-popup .swal2-file.swal2-inputerror,.swal2-popup .swal2-input.swal2-inputerror,.swal2-popup .swal2-textarea.swal2-inputerror{border-color:#f27474!important;box-shadow:0 0 2px #f27474!important}.swal2-popup .swal2-file:focus,.swal2-popup .swal2-input:focus,.swal2-popup .swal2-textarea:focus{border:1px solid #b4dbed;outline:0;box-shadow:0 0 3px #c4e6f5}.swal2-popup .swal2-file::-webkit-input-placeholder,.swal2-popup .swal2-input::-webkit-input-placeholder,.swal2-popup .swal2-textarea::-webkit-input-placeholder{color:#ccc}.swal2-popup .swal2-file:-ms-input-placeholder,.swal2-popup .swal2-input:-ms-input-placeholder,.swal2-popup .swal2-textarea:-ms-input-placeholder{color:#ccc}.swal2-popup .swal2-file::-ms-input-placeholder,.swal2-popup .swal2-input::-ms-input-placeholder,.swal2-popup .swal2-textarea::-ms-input-placeholder{color:#ccc}.swal2-popup .swal2-file::placeholder,.swal2-popup .swal2-input::placeholder,.swal2-popup .swal2-textarea::placeholder{color:#ccc}.swal2-popup .swal2-range input{width:80%}.swal2-popup .swal2-range output{width:20%;font-weight:600;text-align:center}.swal2-popup .swal2-range input,.swal2-popup .swal2-range output{height:2.625em;margin:1em auto;padding:0;font-size:1.125em;line-height:2.625em}.swal2-popup .swal2-input{height:2.625em;padding:.75em}.swal2-popup .swal2-input[type=number]{max-width:10em}.swal2-popup .swal2-file{font-size:1.125em}.swal2-popup .swal2-textarea{height:6.75em;padding:.75em}.swal2-popup .swal2-select{min-width:50%;max-width:100%;padding:.375em .625em;color:#545454;font-size:1.125em}.swal2-popup .swal2-checkbox,.swal2-popup .swal2-radio{align-items:center;justify-content:center}.swal2-popup .swal2-checkbox label,.swal2-popup .swal2-radio label{margin:0 .6em;font-size:1.125em}.swal2-popup .swal2-checkbox input,.swal2-popup .swal2-radio input{margin:0 .4em}.swal2-popup .swal2-validationerror{display:none;align-items:center;justify-content:center;padding:.625em;background:#f0f0f0;color:#666;font-size:1em;font-weight:300;overflow:hidden}.swal2-popup .swal2-validationerror::before{display:inline-block;width:1.5em;min-width:1.5em;height:1.5em;margin:0 .625em;border-radius:50%;background-color:#f27474;color:#fff;font-weight:600;line-height:1.5em;text-align:center;content:'!';zoom:normal}@supports (-ms-accelerator:true){.swal2-range input{width:100%!important}.swal2-range output{display:none}}@media all and (-ms-high-contrast:none),(-ms-high-contrast:active){.swal2-range input{width:100%!important}.swal2-range output{display:none}}@-moz-document url-prefix(){.swal2-close:focus{outline:2px solid rgba(50,100,150,.4)}}.swal2-icon{position:relative;justify-content:center;width:5em;height:5em;margin:1.25em auto 1.875em;border:.25em solid transparent;border-radius:50%;line-height:5em;cursor:default;box-sizing:content-box;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;zoom:normal}.swal2-icon-text{font-size:3.75em}.swal2-icon.swal2-error{border-color:#f27474}.swal2-icon.swal2-error .swal2-x-mark{position:relative;flex-grow:1}.swal2-icon.swal2-error [class^=swal2-x-mark-line]{display:block;position:absolute;top:2.3125em;width:2.9375em;height:.3125em;border-radius:.125em;background-color:#f27474}.swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=left]{left:1.0625em;-webkit-transform:rotate(45deg);transform:rotate(45deg)}.swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=right]{right:1em;-webkit-transform:rotate(-45deg);transform:rotate(-45deg)}.swal2-icon.swal2-warning{border-color:#facea8;color:#f8bb86}.swal2-icon.swal2-info{border-color:#9de0f6;color:#3fc3ee}.swal2-icon.swal2-question{border-color:#c9dae1;color:#87adbd}.swal2-icon.swal2-success{border-color:#a5dc86}.swal2-icon.swal2-success [class^=swal2-success-circular-line]{position:absolute;width:3.75em;height:7.5em;-webkit-transform:rotate(45deg);transform:rotate(45deg);border-radius:50%}.swal2-icon.swal2-success [class^=swal2-success-circular-line][class$=left]{top:-.4375em;left:-2.0635em;-webkit-transform:rotate(-45deg);transform:rotate(-45deg);-webkit-transform-origin:3.75em 3.75em;transform-origin:3.75em 3.75em;border-radius:7.5em 0 0 7.5em}.swal2-icon.swal2-success [class^=swal2-success-circular-line][class$=right]{top:-.6875em;left:1.875em;-webkit-transform:rotate(-45deg);transform:rotate(-45deg);-webkit-transform-origin:0 3.75em;transform-origin:0 3.75em;border-radius:0 7.5em 7.5em 0}.swal2-icon.swal2-success .swal2-success-ring{position:absolute;top:-.25em;left:-.25em;width:100%;height:100%;border:.25em solid rgba(165,220,134,.3);border-radius:50%;z-index:2;box-sizing:content-box}.swal2-icon.swal2-success .swal2-success-fix{position:absolute;top:.5em;left:1.625em;width:.4375em;height:5.625em;-webkit-transform:rotate(-45deg);transform:rotate(-45deg);z-index:1}.swal2-icon.swal2-success [class^=swal2-success-line]{display:block;position:absolute;height:.3125em;border-radius:.125em;background-color:#a5dc86;z-index:2}.swal2-icon.swal2-success [class^=swal2-success-line][class$=tip]{top:2.875em;left:.875em;width:1.5625em;-webkit-transform:rotate(45deg);transform:rotate(45deg)}.swal2-icon.swal2-success [class^=swal2-success-line][class$=long]{top:2.375em;right:.5em;width:2.9375em;-webkit-transform:rotate(-45deg);transform:rotate(-45deg)}.swal2-progresssteps{align-items:center;margin:0 0 1.25em;padding:0;font-weight:600}.swal2-progresssteps li{display:inline-block;position:relative}.swal2-progresssteps .swal2-progresscircle{width:2em;height:2em;border-radius:2em;background:#3085d6;color:#fff;line-height:2em;text-align:center;z-index:20}.swal2-progresssteps .swal2-progresscircle:first-child{margin-left:0}.swal2-progresssteps .swal2-progresscircle:last-child{margin-right:0}.swal2-progresssteps .swal2-progresscircle.swal2-activeprogressstep{background:#3085d6}.swal2-progresssteps .swal2-progresscircle.swal2-activeprogressstep~.swal2-progresscircle{background:#add8e6}.swal2-progresssteps .swal2-progresscircle.swal2-activeprogressstep~.swal2-progressline{background:#add8e6}.swal2-progresssteps .swal2-progressline{width:2.5em;height:.4em;margin:0 -1px;background:#3085d6;z-index:10}[class^=swal2]{-webkit-tap-highlight-color:transparent}.swal2-show{-webkit-animation:swal2-show .3s;animation:swal2-show .3s}.swal2-show.swal2-noanimation{-webkit-animation:none;animation:none}.swal2-hide{-webkit-animation:swal2-hide .15s forwards;animation:swal2-hide .15s forwards}.swal2-hide.swal2-noanimation{-webkit-animation:none;animation:none}[dir=rtl] .swal2-close{right:auto;left:0}.swal2-animate-success-icon .swal2-success-line-tip{-webkit-animation:swal2-animate-success-line-tip .75s;animation:swal2-animate-success-line-tip .75s}.swal2-animate-success-icon .swal2-success-line-long{-webkit-animation:swal2-animate-success-line-long .75s;animation:swal2-animate-success-line-long .75s}.swal2-animate-success-icon .swal2-success-circular-line-right{-webkit-animation:swal2-rotate-success-circular-line 4.25s ease-in;animation:swal2-rotate-success-circular-line 4.25s ease-in}.swal2-animate-error-icon{-webkit-animation:swal2-animate-error-icon .5s;animation:swal2-animate-error-icon .5s}.swal2-animate-error-icon .swal2-x-mark{-webkit-animation:swal2-animate-error-x-mark .5s;animation:swal2-animate-error-x-mark .5s}@-webkit-keyframes swal2-rotate-loading{0%{-webkit-transform:rotate(0);transform:rotate(0)}100%{-webkit-transform:rotate(360deg);transform:rotate(360deg)}}@keyframes swal2-rotate-loading{0%{-webkit-transform:rotate(0);transform:rotate(0)}100%{-webkit-transform:rotate(360deg);transform:rotate(360deg)}}</style><style type="text/css">.apexcharts-canvas {
+  position: relative;
+  user-select: none;
+  /* cannot give overflow: hidden as it will crop tooltips which overflow outside chart area */
+}
+
+/* scrollbar is not visible by default for legend, hence forcing the visibility */
+.apexcharts-canvas ::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 6px;
+}
+.apexcharts-canvas ::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0,0,0,.5);
+  box-shadow: 0 0 1px rgba(255,255,255,.5);
+  -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+}
+.apexcharts-canvas.dark {
+  background: #343F57;
+}
+
+.apexcharts-inner {
+  position: relative;
+}
+
+.legend-mouseover-inactive {
+  transition: 0.15s ease all;
+  opacity: 0.20;
+}
+
+.apexcharts-series-collapsed {
+  opacity: 0;
+}
+
+.apexcharts-gridline, .apexcharts-text {
+  pointer-events: none;
+}
+
+.apexcharts-tooltip {
+  border-radius: 5px;
+  box-shadow: 2px 2px 6px -4px #999;
+  cursor: default;
+  font-size: 14px;
+  left: 62px;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 20px;
+  overflow: hidden;
+  white-space: nowrap;
+  z-index: 12;
+  transition: 0.15s ease all;
+}
+.apexcharts-tooltip.light {
+  border: 1px solid #e3e3e3;
+  background: rgba(255, 255, 255, 0.96);
+}
+.apexcharts-tooltip.dark {
+  color: #fff;
+  background: rgba(30,30,30, 0.8);
+}
+.apexcharts-tooltip * {
+  font-family: inherit;
+}
+
+.apexcharts-tooltip .apexcharts-marker,
+.apexcharts-area-series .apexcharts-area,
+.apexcharts-line {
+  pointer-events: none;
+}
+
+.apexcharts-tooltip.active {
+  opacity: 1;
+  transition: 0.15s ease all;
+}
+
+.apexcharts-tooltip-title {
+  padding: 6px;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+.apexcharts-tooltip.light .apexcharts-tooltip-title {
+  background: #ECEFF1;
+  border-bottom: 1px solid #ddd;
+}
+.apexcharts-tooltip.dark .apexcharts-tooltip-title {
+  background: rgba(0, 0, 0, 0.7);
+  border-bottom: 1px solid #333;
+}
+
+.apexcharts-tooltip-text-value,
+.apexcharts-tooltip-text-z-value {
+  display: inline-block;
+  font-weight: 600;
+  margin-left: 5px;
+}
+
+.apexcharts-tooltip-text-z-label:empty,
+.apexcharts-tooltip-text-z-value:empty {
+  display: none;
+}
+
+.apexcharts-tooltip-text-value,
+.apexcharts-tooltip-text-z-value {
+  font-weight: 600;
+}
+
+.apexcharts-tooltip-marker {
+  width: 12px;
+  height: 12px;
+  position: relative;
+  top: 0px;
+  margin-right: 10px;
+  border-radius: 50%;
+}
+
+.apexcharts-tooltip-series-group {
+  padding: 0 10px;
+  display: none;
+  text-align: left;
+  justify-content: left;
+  align-items: center;
+}
+
+.apexcharts-tooltip-series-group.active .apexcharts-tooltip-marker {
+  opacity: 1;
+}
+.apexcharts-tooltip-series-group.active, .apexcharts-tooltip-series-group:last-child {
+  padding-bottom: 4px;
+}
+.apexcharts-tooltip-series-group-hidden {
+  opacity: 0;
+  height: 0;
+  line-height: 0;
+  padding: 0 !important;
+}
+.apexcharts-tooltip-y-group {
+  padding: 6px 0 5px;
+}
+.apexcharts-tooltip-candlestick {
+  padding: 4px 8px;
+}
+.apexcharts-tooltip-candlestick > div {
+  margin: 4px 0;
+}
+.apexcharts-tooltip-candlestick span.value {
+  font-weight: bold;
+}
+
+.apexcharts-tooltip-rangebar {
+  padding: 5px 8px;
+}
+
+.apexcharts-tooltip-rangebar .category {
+  font-weight: 600;
+  color: #777;
+}
+
+.apexcharts-tooltip-rangebar .series-name {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.apexcharts-xaxistooltip {
+  opacity: 0;
+  padding: 9px 10px;
+  pointer-events: none;
+  color: #373d3f;
+  font-size: 13px;
+  text-align: center;
+  border-radius: 2px;
+  position: absolute;
+  z-index: 10;
+  background: #ECEFF1;
+  border: 1px solid #90A4AE;
+  transition: 0.15s ease all;
+}
+
+.apexcharts-xaxistooltip.dark {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  color: #fff;
+}
+
+.apexcharts-xaxistooltip:after, .apexcharts-xaxistooltip:before {
+  left: 50%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+.apexcharts-xaxistooltip:after {
+  border-color: rgba(236, 239, 241, 0);
+  border-width: 6px;
+  margin-left: -6px;
+}
+.apexcharts-xaxistooltip:before {
+  border-color: rgba(144, 164, 174, 0);
+  border-width: 7px;
+  margin-left: -7px;
+}
+
+.apexcharts-xaxistooltip-bottom:after, .apexcharts-xaxistooltip-bottom:before {
+  bottom: 100%;
+}
+
+.apexcharts-xaxistooltip-top:after, .apexcharts-xaxistooltip-top:before {
+  top: 100%;
+}
+
+.apexcharts-xaxistooltip-bottom:after {
+  border-bottom-color: #ECEFF1;
+}
+.apexcharts-xaxistooltip-bottom:before {
+  border-bottom-color: #90A4AE;
+}
+
+.apexcharts-xaxistooltip-bottom.dark:after {
+  border-bottom-color: rgba(0, 0, 0, 0.5);
+}
+.apexcharts-xaxistooltip-bottom.dark:before {
+  border-bottom-color: rgba(0, 0, 0, 0.5);
+}
+
+.apexcharts-xaxistooltip-top:after {
+  border-top-color:#ECEFF1
+}
+.apexcharts-xaxistooltip-top:before {
+  border-top-color: #90A4AE;
+}
+.apexcharts-xaxistooltip-top.dark:after {
+  border-top-color:rgba(0, 0, 0, 0.5);
+}
+.apexcharts-xaxistooltip-top.dark:before {
+  border-top-color: rgba(0, 0, 0, 0.5);
+}
+
+
+.apexcharts-xaxistooltip.active {
+  opacity: 1;
+  transition: 0.15s ease all;
+}
+
+.apexcharts-yaxistooltip {
+  opacity: 0;
+  padding: 4px 10px;
+  pointer-events: none;
+  color: #373d3f;
+  font-size: 13px;
+  text-align: center;
+  border-radius: 2px;
+  position: absolute;
+  z-index: 10;
+  background: #ECEFF1;
+  border: 1px solid #90A4AE;
+}
+
+.apexcharts-yaxistooltip.dark {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  color: #fff;
+}
+
+.apexcharts-yaxistooltip:after, .apexcharts-yaxistooltip:before {
+  top: 50%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+.apexcharts-yaxistooltip:after {
+  border-color: rgba(236, 239, 241, 0);
+  border-width: 6px;
+  margin-top: -6px;
+}
+.apexcharts-yaxistooltip:before {
+  border-color: rgba(144, 164, 174, 0);
+  border-width: 7px;
+  margin-top: -7px;
+}
+
+.apexcharts-yaxistooltip-left:after, .apexcharts-yaxistooltip-left:before {
+  left: 100%;
+}
+
+.apexcharts-yaxistooltip-right:after, .apexcharts-yaxistooltip-right:before {
+  right: 100%;
+}
+
+.apexcharts-yaxistooltip-left:after {
+  border-left-color: #ECEFF1;
+}
+.apexcharts-yaxistooltip-left:before {
+  border-left-color: #90A4AE;
+}
+.apexcharts-yaxistooltip-left.dark:after {
+  border-left-color: rgba(0, 0, 0, 0.5);
+}
+.apexcharts-yaxistooltip-left.dark:before {
+  border-left-color: rgba(0, 0, 0, 0.5);
+}
+
+.apexcharts-yaxistooltip-right:after {
+  border-right-color: #ECEFF1;
+}
+.apexcharts-yaxistooltip-right:before {
+  border-right-color: #90A4AE;
+}
+.apexcharts-yaxistooltip-right.dark:after {
+  border-right-color: rgba(0, 0, 0, 0.5);
+}
+.apexcharts-yaxistooltip-right.dark:before {
+  border-right-color: rgba(0, 0, 0, 0.5);
+}
+
+.apexcharts-yaxistooltip.active {
+  opacity: 1;
+}
+.apexcharts-yaxistooltip-hidden {
+  display: none;
+}
+
+.apexcharts-xcrosshairs, .apexcharts-ycrosshairs {
+  pointer-events: none;
+  opacity: 0;
+  transition: 0.15s ease all;
+}
+
+.apexcharts-xcrosshairs.active, .apexcharts-ycrosshairs.active {
+  opacity: 1;
+  transition: 0.15s ease all;
+}
+
+.apexcharts-ycrosshairs-hidden {
+  opacity: 0;
+}
+
+.apexcharts-zoom-rect {
+  pointer-events: none;
+}
+.apexcharts-selection-rect {
+  cursor: move;
+}
+
+.svg_select_points, .svg_select_points_rot {
+  opacity: 0;
+  visibility: hidden;
+}
+.svg_select_points_l, .svg_select_points_r {
+  cursor: ew-resize;
+  opacity: 1;
+  visibility: visible;
+  fill: #888;
+}
+.apexcharts-canvas.zoomable .hovering-zoom {
+  cursor: crosshair
+}
+.apexcharts-canvas.zoomable .hovering-pan {
+  cursor: move
+}
+
+.apexcharts-xaxis,
+.apexcharts-yaxis {
+  pointer-events: none;
+}
+
+.apexcharts-zoom-icon,
+.apexcharts-zoom-in-icon,
+.apexcharts-zoom-out-icon,
+.apexcharts-reset-zoom-icon,
+.apexcharts-pan-icon,
+.apexcharts-selection-icon,
+.apexcharts-menu-icon,
+.apexcharts-toolbar-custom-icon {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  line-height: 24px;
+  color: #6E8192;
+  text-align: center;
+}
+
+
+.apexcharts-zoom-icon svg,
+.apexcharts-zoom-in-icon svg,
+.apexcharts-zoom-out-icon svg,
+.apexcharts-reset-zoom-icon svg,
+.apexcharts-menu-icon svg {
+  fill: #6E8192;
+}
+.apexcharts-selection-icon svg {
+  fill: #444;
+  transform: scale(0.76)
+}
+
+.dark .apexcharts-zoom-icon svg,
+.dark .apexcharts-zoom-in-icon svg,
+.dark .apexcharts-zoom-out-icon svg,
+.dark .apexcharts-reset-zoom-icon svg,
+.dark .apexcharts-pan-icon svg,
+.dark .apexcharts-selection-icon svg,
+.dark .apexcharts-menu-icon svg,
+.dark .apexcharts-toolbar-custom-icon svg{
+  fill: #f3f4f5;
+}
+
+.apexcharts-canvas .apexcharts-zoom-icon.selected svg,
+.apexcharts-canvas .apexcharts-selection-icon.selected svg,
+.apexcharts-canvas .apexcharts-reset-zoom-icon.selected svg {
+  fill: #008FFB;
+}
+.light .apexcharts-selection-icon:not(.selected):hover svg,
+.light .apexcharts-zoom-icon:not(.selected):hover svg,
+.light .apexcharts-zoom-in-icon:hover svg,
+.light .apexcharts-zoom-out-icon:hover svg,
+.light .apexcharts-reset-zoom-icon:hover svg,
+.light .apexcharts-menu-icon:hover svg {
+  fill: #333;
+}
+
+.apexcharts-selection-icon, .apexcharts-menu-icon {
+  position: relative;
+}
+.apexcharts-reset-zoom-icon {
+  margin-left: 5px;
+}
+.apexcharts-zoom-icon, .apexcharts-reset-zoom-icon, .apexcharts-menu-icon {
+  transform: scale(0.85);
+}
+
+.apexcharts-zoom-in-icon, .apexcharts-zoom-out-icon {
+  transform: scale(0.7)
+}
+
+.apexcharts-zoom-out-icon {
+  margin-right: 3px;
+}
+
+.apexcharts-pan-icon {
+  transform: scale(0.62);
+  position: relative;
+  left: 1px;
+  top: 0px;
+}
+.apexcharts-pan-icon svg {
+  fill: #fff;
+  stroke: #6E8192;
+  stroke-width: 2;
+}
+.apexcharts-pan-icon.selected svg {
+  stroke: #008FFB;
+}
+.apexcharts-pan-icon:not(.selected):hover svg {
+  stroke: #333;
+}
+
+.apexcharts-toolbar {
+  position: absolute;
+  z-index: 11;
+  top: 0px;
+  right: 3px;
+  max-width: 176px;
+  text-align: right;
+  border-radius: 3px;
+  padding: 0px 6px 2px 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.apexcharts-toolbar svg {
+  pointer-events: none;
+}
+
+.apexcharts-menu {
+  background: #fff;
+  position: absolute;
+  top: 100%;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  padding: 3px;
+  right: 10px;
+  opacity: 0;
+  min-width: 110px;
+  transition: 0.15s ease all;
+  pointer-events: none;
+}
+
+.apexcharts-menu.open {
+  opacity: 1;
+  pointer-events: all;
+  transition: 0.15s ease all;
+}
+
+.apexcharts-menu-item {
+  padding: 6px 7px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.light .apexcharts-menu-item:hover {
+  background: #eee;
+}
+.dark .apexcharts-menu {
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+}
+
+@media screen and (min-width: 768px) {
+  .apexcharts-toolbar {
+    /*opacity: 0;*/
+  }
+
+  .apexcharts-canvas:hover .apexcharts-toolbar {
+    opacity: 1;
+  }
+}
+
+.apexcharts-datalabel.hidden {
+  opacity: 0;
+}
+
+.apexcharts-pie-label,
+.apexcharts-datalabel, .apexcharts-datalabel-label, .apexcharts-datalabel-value {
+  cursor: default;
+  pointer-events: none;
+}
+
+.apexcharts-pie-label-delay {
+  opacity: 0;
+  animation-name: opaque;
+  animation-duration: 0.3s;
+  animation-fill-mode: forwards;
+  animation-timing-function: ease;
+}
+
+.apexcharts-canvas .hidden {
+  opacity: 0;
+}
+
+.apexcharts-hide .apexcharts-series-points {
+  opacity: 0;
+}
+
+.apexcharts-area-series .apexcharts-series-markers .apexcharts-marker.no-pointer-events,
+.apexcharts-line-series .apexcharts-series-markers .apexcharts-marker.no-pointer-events, .apexcharts-radar-series path, .apexcharts-radar-series polygon {
+  pointer-events: none;
+}
+
+/* markers */
+
+.apexcharts-marker {
+  transition: 0.15s ease all;
+}
+
+@keyframes opaque {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Resize generated styles */
+@keyframes resizeanim {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.resize-triggers {
+  animation: 1ms resizeanim;
+  visibility: hidden;
+  opacity: 0;
+}
+
+.resize-triggers, .resize-triggers > div, .contract-trigger:before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.resize-triggers > div {
+  background: #eee;
+  overflow: auto;
+}
+
+.contract-trigger:before {
+  width: 200%;
+  height: 200%;
+}
+</style><style id="smooth-scrollbar-style">
+[data-scrollbar] {
+  display: block;
+  position: relative;
+}
+
+.scroll-content {
+  -webkit-transform: translate3d(0, 0, 0);
+          transform: translate3d(0, 0, 0);
+}
+
+.scrollbar-track {
+  position: absolute;
+  opacity: 0;
+  z-index: 1;
+  background: rgba(222, 222, 222, .75);
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  -webkit-transition: opacity 0.5s 0.5s ease-out;
+          transition: opacity 0.5s 0.5s ease-out;
+}
+.scrollbar-track.show,
+.scrollbar-track:hover {
+  opacity: 1;
+  -webkit-transition-delay: 0s;
+          transition-delay: 0s;
+}
+
+.scrollbar-track-x {
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 8px;
+}
+.scrollbar-track-y {
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 100%;
+}
+.scrollbar-thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  background: rgba(0, 0, 0, .5);
+  border-radius: 4px;
+}
+</style>
+
+<style>
+    .sssection {
+        padding: 10px;
+    }
+    .sssection .ssheader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .sssection .sslabel {
+        color: #fff;
+        font-size: 16px;
+        font-weight: 500;
+    }
+    .sssection .ssperc {
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    .sssection #percss {
+        display: flex;
+        justify-content: space-between;
+        gap: 5px;
+    }
+    .sssection .bar {
+        width: 10%;
+        height: 10px;
+        background: rgb(91, 32, 32) !important; /* Default dark red */
+        border-radius: 2px;
+        transition: background 0.3s ease;
+    }
+    .sssection .bar.active {
+        background: rgb(255, 0, 0) !important; /* Full blown sharp red */
+    }
+</style>
+
+<style>
+  .bo2x .tpro {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.bo2x .label {
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+}
+.bo2x .labelv {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+}
+.bo2x .a {
+    margin-top: 10px;
+}
+.bo2x .pcontainer {
+    width: 100%;
+    height: 10px;
+    background: rgb(91, 32, 32); /* Default dark red, matching signal bars */
+    border-radius: 2px;
+    overflow: hidden;
+}
+.bo2x .pin {
+    height: 100%;
+    background: rgb(0, 255, 0) !important; /* Full blown green */
+    width: 0%; /* Default width, updated by JS */
+    transition: width 0.3s ease;
+}
+</style>
+
+
+</head>
+
+
+<body style="background-color:black;" class="">
+   
+
+<section class="content">
+
+    <div class="iq-sidebar" style="background-color:#171717;">
+    <div class="iq-sidebar-logo d-flex justify-content-between">
+        <a href="#" class="header-logo">
+            <img src="images/logo.svg" class="img-fluid rounded-normal" alt="">
+        </a>
+        <div class="iq-menu-bt-sidebar">
+            <div class="iq-menu-bt align-self-center">
+                <div class="wrapper-menu">
+                    <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
+                    <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="sidebar-scrollbar" data-scrollbar="true" tabindex="-1" style="overflow: hidden; outline: none;"><div class="scroll-content">
+        <nav class="iq-sidebar-menu">
+            
+            <ul id="iq-sidebar-toggle" class="iq-menu">
+                <li>
+                    <a href="/dashboard" class="iq-waves-effect" style="color:#fff;"><i class="ai-home-alt1"></i><span>Dashboard</span></a>
+                </li>
+                                <li>
+                    <a href="/verify/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-person-check"></i><span>Verify Account</span></a>
+                </li>
+                                <li>
+                    <a href="/deposit" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-database-add"></i><span>Deposit</span></a>
+                </li>
+                <li>
+                    <a href="/withdraw" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-coin"></i><span>Withdraw</span></a>
+                </li>
+                <li>
+                    <a href="/page/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-robot"></i><span>Affiliate Packages</span></a>
+                </li>
+                <li>
+                    <a href="/upgrade" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-arrow-90deg-up"></i><span>Upgrade</span></a>
+                </li>
+                
+                 <li>
+                  <a href="/chat" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-chat-dots"></i><span>Chat</span></a>
+                </li>
+
+               <li>
+                    <a href="/copy-expert" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>Copy Experts</span></a>
+                </li>
+
+                <li>
+                    <a href="/ongoing-copy-trades/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>ongoing-copytrades</span></a>
+                </li>
+                
+                <li>
+                    <a href="/signal-package" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-broadcast-pin"></i><span>signals</span></a>
+                </li>
+                <li>
+                    <a href="/trading-live/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="ai-align-bottom"></i><span>Live Trading</span></a>
+                </li>
+                <li>
+                    <a href="/trading-stock/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="ai-data"></i><span>Stocks Trading</span></a>
+                </li>
+                <li>
+                    <a href="/crypto" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-currency-bitcoin"></i><span>Buy Crypto</span></a>
+                </li>
+                
+                <li>
+                    <a href="mailto:support@digital-topfigmarkets.com" class="iq-waves-effect" style="color:#fff;"><i class="ai-envelope"></i><span>Email us</span></a>
+                </li>
+                <li>
+                    <a href="/edit/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="ai-gear"></i><span>settings</span></a>
+                </li>
+                 <li>
+                    <a href="/transactions/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="ai-arrow-right-left"></i><span>Transaction History</span></a>
+                </li>
+               
+
+                 <li>
+                    <a href="/logout" class="iq-waves-effect" style="color:#fff;"><i class="ai-sign-out"></i><span>Sign out</span></a>
+                </li>
+             
+                </ul>
+        </nav>
+    </div><div class="scrollbar-track scrollbar-track-x" style="display: none;"><div class="scrollbar-thumb scrollbar-thumb-x" style="width: 300px; transform: translate3d(0px, 0px, 0px);"></div></div><div class="scrollbar-track scrollbar-track-y" style="display: block;"><div class="scrollbar-thumb scrollbar-thumb-y" style="height: 463.426px; transform: translate3d(0px, 0px, 0px);"></div></div></div>
+</div>
+<!-- TOP Nav Bar -->
+<div class="iq-top-navbar" style="background-color:#171717;">
+    <div class="iq-navbar-custom">
+        <nav class="navbar navbar-expand-lg navbar-light p-0">
+            <div class="iq-menu-bt d-flex align-items-center">
+                <div class="wrapper-menu">
+                    <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
+                    <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
+                </div>
+                <div class="iq-navbar-logo d-flex justify-content-between">
+                    <a href="#" class="header-logo">
+                        <img src="images/favicon.svg" class="img-fluid rounded-normal" alt="">
+                    </a>
+                </div>
+            </div>
+           
+            
+            <div class="d-flex flex-column" style="margin-top:-20px;"> 
+   
+    <div class="hn-1"></div>
+   <div class="hn-2" style="margin-left:-18px;"><%=user.fullname%></div>
+  </div>
+  <div>
+            <ul class="navbar-list">
+                <li class="line-height">
+                    <a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
+                        </a><div class="profile-img" alt="user"><a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
+                        <img src="/wp-user/assets5i/img/pers.svg"> 
+                    </a>
+                    <div class="iq-sub-dropdown iq-user-dropdown">
+                        <div class="iq-card shadow-none m-0">
+                            <div class="iq-card-body p-0 " style="background-color:#171717;">
+                                <div class="bg-primary p-3">
+                                    <h5 class="mb-0 text-white line-height"><%=user.fullname%></h5>
+                                    <span class="text-white font-size-12"><%=user.verifiedStatus%></span>
+                                </div>
+                                <a href="profile" class="iq-sub-card iq-bg-primary-hover">
+                                    <div class="media align-items-center">
+                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                            <i class="ri-file-user-line"></i>
+                                        </div>
+                                        <div class="media-body ml-3">
+                                            <h6 class="mb-0 " style="color:#fff;">My Profile</h6>
+                                            <p class="mb-0 font-size-12">View personal profile details.</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                 <!--<a href="profile-edit.html" class="iq-sub-card iq-bg-primary-hover">
+                                    <div class="media align-items-center">
+                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                            <i class="ri-profile-line"></i>
+                                        </div>
+                                       <div class="media-body ml-3">
+                                            <h6 class="mb-0 ">Edit Profile</h6>
+                                            <p class="mb-0 font-size-12">Modify your personal details.</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                <a href="/wp-user/account-setting.html" class="iq-sub-card iq-bg-primary-hover">
+                                    <div class="media align-items-center">
+                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                            <i class="ri-account-box-line"></i>
+                                        </div>
+                                        <div class="media-body ml-3">
+                                            <h6 class="mb-0 ">Account settings</h6>
+                                            <p class="mb-0 font-size-12">Manage your account parameters.</p>
+                                        </div>
+                                    </div>
+                                </a>-->
+                                <a href="edit/<%=user._id%>" class="iq-sub-card iq-bg-primary-hover">
+                                    <div class="media align-items-center">
+                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                            <i class="ri-lock-line"></i>
+                                        </div>
+                                        <div class="media-body ml-3">
+                                            <h6 class="mb-0 " style="color:#fff;">Privacy Settings</h6>
+                                            <p class="mb-0 font-size-12">Control your privacy parameters.</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                <div class="d-inline-block w-100 text-center p-3">
+                                    <a class="bg-primary iq-sign-btn" href="logout" role="button">Sign Out<i class="ri-login-box-line ml-2"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div></li>
+            </ul>
+        </div></nav>
+    </div>
+</div> 
+ <div class="d-flex flex-column" style="margin-top:55px;"> 
+   
+  </div>
+  </div>
+
+  <!-- othe main content -->
+<div style="margin-top:1%;"> 
+
+  <div>
+    <!-- put widget-->
+<!-- TradingView Widget BEGIN -->
+<div class="tradingview-widget-container" style="width: 100%; height: 76px;">
+  <iframe scrolling="no" allowtransparency="true" frameborder="0" src="https://www.tradingview-widget.com/embed-widget/ticker-tape/?locale=en#%7B%22symbols%22%3A%5B%7B%22proName%22%3A%22FOREXCOM%3ASPXUSD%22%2C%22title%22%3A%22S%26P%20500%22%7D%2C%7B%22proName%22%3A%22FOREXCOM%3ANSXUSD%22%2C%22title%22%3A%22US%20100%22%7D%2C%7B%22proName%22%3A%22FX_IDC%3AEURUSD%22%2C%22title%22%3A%22EUR%20to%20USD%22%7D%2C%7B%22proName%22%3A%22BITSTAMP%3ABTCUSD%22%2C%22title%22%3A%22Bitcoin%22%7D%2C%7B%22proName%22%3A%22BITSTAMP%3AETHUSD%22%2C%22title%22%3A%22Ethereum%22%7D%5D%2C%22showSymbolLogo%22%3Atrue%2C%22colorTheme%22%3A%22dark%22%2C%22isTransparent%22%3Atrue%2C%22displayMode%22%3A%22regular%22%2C%22width%22%3A%22100%25%22%2C%22height%22%3A76%2C%22utm_source%22%3A%22digital-figtopmarkets.com%22%2C%22utm_medium%22%3A%22widget_new%22%2C%22utm_campaign%22%3A%22ticker-tape%22%2C%22page-uri%22%3A%22digital-figtopmarkets.com%2Fwp-user%2Fdashboard%22%7D" title="ticker tape TradingView widget" lang="en" style="user-select: none; box-sizing: border-box; display: block; height: 44px; width: 100%;"></iframe>
+  <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/?utm_source=digital-figtopmarkets.com&amp;utm_medium=widget_new&amp;utm_campaign=ticker-tape" rel="noopener nofollow" target="_blank"><span class="blue-text"></span></a></div>
+  
+<!-- TradingView Widget END -->
+ 
+ <div class="boxc d-flex flex-column" style="padding-bottom: 1rem;">
+  <div class="av rs">Available Balance </div>
+  <div class="d-flex justify-content-center">
+    <div class="am rs"><%=user.currency%><%=user.available%></div></div>
+        <div class="ns">NON-SPENDABLE</div>
+      <div class="d-flex justify-content-between rs">
+    <div class="le-i">Active Deposit</div>
+    <div class="ri-i"><%=user.currency%><%=user.activeDeposit%></div>
+  </div>
+  <div class="d-flex justify-content-between rs">
+    <div class="le-i">Total Earnings</div> 
+    <div class="ri-i"><%=user.currency%><%=user.totalEarning%></div>
+  </div>
+  <div class="d-flex justify-content-between rs">
+    <div class="le-i">Total WIthdrawal</div> 
+    <div class="ri-i"><%=user.currency%><%=user.totalWidthdraw%></div>
+  </div>
+
+  <div class="d-flex justify-content-between rs">
+    <div class="le-i">Account Status</div> 
+    <div class="ri-i"><span class="c3"><%=user.verifiedStatus%></span></div>
+  </div>
+
+ </div>
+
+
+ <div class="boxc d-flex flex-column" style="padding: 1rem;margin:1rem 0rem;">
+
+  <div class="sssection">
+    <div class="ssheader">
+        <div class="sslabel">Signal Strength</div>
+        <div class="ssperc" id="ss1"><%= user.signalProg %>%</div>
+    </div>
+    <div id="percss">
+        <div class="bar" id="ss10"></div>
+        <div class="bar" id="ss20"></div>
+        <div class="bar" id="ss30"></div>
+        <div class="bar" id="ss40"></div>
+        <div class="bar" id="ss50"></div>
+        <div class="bar" id="ss60"></div>
+        <div class="bar" id="ss70"></div>
+        <div class="bar" id="ss80"></div>
+        <div class="bar" id="ss90"></div>
+        <div class="bar" id="ss100"></div>
+    </div>
+</div>
+
+		<!-- <div class="sssection">
+			<div class="ssheader">
+				<div class="sslabel">Signal strength</div>
+				<div class="ssperc" id="ss1"></div>
+			</div>
+			<div id="percss"><div class="bar" id="ss10" style="background: rgb(91, 32, 32);"></div><div class="bar" id="ss20" style="background: rgb(91, 32, 32);"></div><div class="bar" id="ss30" style="background: rgb(91, 32, 32);"></div><div class="bar" id="ss40" style="background: rgb(91, 32, 32);"></div><div class="bar" id="ss50" style="background: rgb(91, 32, 32);"></div><div class="bar" id="ss60" style="background: rgb(91, 32, 32);"></div><div class="bar" id="ss70" style="background: rgb(91, 32, 32);"></div><div class="bar" id="ss80" style="background: rgb(91, 32, 32);"></div><div class="bar" id="ss90" style="background: rgb(91, 32, 32);"></div><div class="bar" id="ss100" style="background: rgb(91, 32, 32);"></div></div>
+		</div> -->
+		
+	</div>
+ <div class="boxc d-flex flex-column" style="padding: 1rem;margin:1rem 0rem;">
+     <div style="display:flex; justify-content:space-between;align-items:center;">
+         <div class="fl" style="padding-right:1rem; ">
+    		<div style="color: green;"><%=user.progPlus%></div>
+    		<div style="color: red;"><%=user.progMinus%></div>
+    	</div>
+    	<div style="width: 57px; height: 20px; position: relative">
+          <div style="width: 57px; height: 20px; left: 0px; top: 0px; position: absolute; background: rgba(80, 175, 149, 0.15); border-radius: 9.63px"></div>
+          <div style="left: 17px; top: 1.5px; position: absolute; color: #50AF95; font-size: 10px; font-family: Inter; font-weight: 800; word-wrap: break-word">LIVE</div>
+        </div>
+    </div>
+
+    <!-- Trade Progress Section -->
+<div class="bo2x">
+    <div class="tpro" style="margin-top:.5rem;">
+        <div class="label">Trade Progress</div>
+        <div class="labelv"><%= user.prog %>%</div>
+    </div> 
+    <div class="a"> 
+        <div class="pcontainer">
+            <div class="pin" id="tradeProgBar"></div> 
+        </div> 
+    </div>
+</div>
+ 
+</div>
+		
+
+  <div>
+    <!-- put widget-->
+    
+</div>
+<!-- TradingView Widget BEGIN -->
+<div class="tradingview-widget-container" style="width: 100%; height: 104px;">
+  <iframe scrolling="no" allowtransparency="true" frameborder="0" src="https://www.tradingview-widget.com/embed-widget/tickers/?locale=en#%7B%22symbols%22%3A%5B%7B%22proName%22%3A%22FOREXCOM%3ASPXUSD%22%2C%22title%22%3A%22S%26P%20500%22%7D%2C%7B%22proName%22%3A%22FOREXCOM%3ANSXUSD%22%2C%22title%22%3A%22US%20100%22%7D%2C%7B%22proName%22%3A%22FX_IDC%3AEURUSD%22%2C%22title%22%3A%22EUR%20to%20USD%22%7D%2C%7B%22proName%22%3A%22BITSTAMP%3ABTCUSD%22%2C%22title%22%3A%22Bitcoin%22%7D%2C%7B%22proName%22%3A%22BITSTAMP%3AETHUSD%22%2C%22title%22%3A%22Ethereum%22%7D%5D%2C%22isTransparent%22%3Atrue%2C%22showSymbolLogo%22%3Atrue%2C%22colorTheme%22%3A%22dark%22%2C%22width%22%3A%22100%25%22%2C%22height%22%3A104%2C%22utm_source%22%3A%22digital-figtopmarkets.com%22%2C%22utm_medium%22%3A%22widget_new%22%2C%22utm_campaign%22%3A%22tickers%22%2C%22page-uri%22%3A%22digital-figtopmarkets.com%2Fwp-user%2Fdashboard%22%7D" title="tickers TradingView widget" lang="en" style="user-select: none; box-sizing: border-box; display: block; height: calc(100% - 32px); width: 100%;"></iframe>
+  <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/?utm_source=digital-figtopmarkets.com&amp;utm_medium=widget_new&amp;utm_campaign=tickers" rel="noopener nofollow" target="_blank"><span class="blue-text"></span></a></div>
+  
+<style>
+	.tradingview-widget-copyright {
+		font-size: 13px !important;
+		line-height: 32px !important;
+		text-align: center !important;
+		vertical-align: middle !important;
+		/* @mixin sf-pro-display-font; */
+		font-family: -apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif !important;
+		color: #B2B5BE !important;
+	}
+
+	.tradingview-widget-copyright .blue-text {
+		color: #2962FF !important;
+	}
+
+	.tradingview-widget-copyright a {
+		text-decoration: none !important;
+		color: #B2B5BE !important;
+	}
+
+	.tradingview-widget-copyright a:visited {
+		color: #B2B5BE !important;
+	}
+
+	.tradingview-widget-copyright a:hover .blue-text {
+		color: #1E53E5 !important;
+	}
+
+	.tradingview-widget-copyright a:active .blue-text {
+		color: #1848CC !important;
+	}
+
+	.tradingview-widget-copyright a:visited .blue-text {
+		color: #2962FF !important;
+	}
+	</style></div>
+<!-- TradingView Widget END -->
+<!-- TradingView Widget END -->
+<!-- TradingView Widget BEGIN -->
+<div class="tradingview-widget-container" style="margin-top: -40px; width: 100%; height: 500px;">
+  <iframe scrolling="no" allowtransparency="true" frameborder="0" src="https://www.tradingview-widget.com/embed-widget/market-overview/?locale=en#%7B%22colorTheme%22%3A%22dark%22%2C%22dateRange%22%3A%2212M%22%2C%22showChart%22%3Afalse%2C%22width%22%3A%22100%25%22%2C%22height%22%3A500%2C%22largeChartUrl%22%3A%22%22%2C%22isTransparent%22%3Atrue%2C%22showSymbolLogo%22%3Atrue%2C%22showFloatingTooltip%22%3Afalse%2C%22tabs%22%3A%5B%7B%22title%22%3A%22Indices%22%2C%22symbols%22%3A%5B%7B%22s%22%3A%22INDEX%3ABTCUSD%22%7D%2C%7B%22s%22%3A%22OANDA%3ANAS100USD%22%7D%2C%7B%22s%22%3A%22OANDA%3ANAS100USD%22%7D%2C%7B%22s%22%3A%22BLACKBULL%3AUS30%22%7D%2C%7B%22s%22%3A%22NASDAQ%3ATSLA%22%7D%2C%7B%22s%22%3A%22NASDAQ%3AAAPL%22%7D%2C%7B%22s%22%3A%22NASDAQ%3ANVDA%22%7D%2C%7B%22s%22%3A%22NASDAQ%3ANFLX%22%7D%2C%7B%22s%22%3A%22FRED%3AFEDFUNDS%22%7D%2C%7B%22s%22%3A%22NASDAQ%3APYPL%22%7D%2C%7B%22s%22%3A%22NASDAQ%3ACOIN%22%7D%2C%7B%22s%22%3A%22NYSE%3ABABA%22%7D%5D%2C%22originalTitle%22%3A%22Indices%22%7D%2C%7B%22title%22%3A%22Futures%22%2C%22symbols%22%3A%5B%7B%22s%22%3A%22CME_MINI%3AES1!%22%2C%22d%22%3A%22S%26P%20500%22%7D%2C%7B%22s%22%3A%22CME%3A6E1!%22%2C%22d%22%3A%22Euro%22%7D%2C%7B%22s%22%3A%22COMEX%3AGC1!%22%2C%22d%22%3A%22Gold%22%7D%2C%7B%22s%22%3A%22NYMEX%3ACL1!%22%2C%22d%22%3A%22WTI%20Crude%20Oil%22%7D%2C%7B%22s%22%3A%22NYMEX%3ANG1!%22%2C%22d%22%3A%22Gas%22%7D%2C%7B%22s%22%3A%22CBOT%3AZC1!%22%2C%22d%22%3A%22Corn%22%7D%5D%2C%22originalTitle%22%3A%22Futures%22%7D%2C%7B%22title%22%3A%22Bonds%22%2C%22symbols%22%3A%5B%7B%22s%22%3A%22CBOT%3AZB1!%22%2C%22d%22%3A%22T-Bond%22%7D%2C%7B%22s%22%3A%22CBOT%3AUB1!%22%2C%22d%22%3A%22Ultra%20T-Bond%22%7D%2C%7B%22s%22%3A%22EUREX%3AFGBL1!%22%2C%22d%22%3A%22Euro%20Bund%22%7D%2C%7B%22s%22%3A%22EUREX%3AFBTP1!%22%2C%22d%22%3A%22Euro%20BTP%22%7D%2C%7B%22s%22%3A%22EUREX%3AFGBM1!%22%2C%22d%22%3A%22Euro%20BOBL%22%7D%5D%2C%22originalTitle%22%3A%22Bonds%22%7D%2C%7B%22title%22%3A%22Forex%22%2C%22symbols%22%3A%5B%7B%22s%22%3A%22FX%3AEURUSD%22%2C%22d%22%3A%22EUR%20to%20USD%22%7D%2C%7B%22s%22%3A%22FX%3AGBPUSD%22%2C%22d%22%3A%22GBP%20to%20USD%22%7D%2C%7B%22s%22%3A%22FX%3AUSDJPY%22%2C%22d%22%3A%22USD%20to%20JPY%22%7D%2C%7B%22s%22%3A%22FX%3AUSDCHF%22%2C%22d%22%3A%22USD%20to%20CHF%22%7D%2C%7B%22s%22%3A%22FX%3AAUDUSD%22%2C%22d%22%3A%22AUD%20to%20USD%22%7D%2C%7B%22s%22%3A%22FX%3AUSDCAD%22%2C%22d%22%3A%22USD%20to%20CAD%22%7D%5D%2C%22originalTitle%22%3A%22Forex%22%7D%5D%2C%22utm_source%22%3A%22digital-figtopmarkets.com%22%2C%22utm_medium%22%3A%22widget_new%22%2C%22utm_campaign%22%3A%22market-overview%22%2C%22page-uri%22%3A%22digital-figtopmarkets.com%2Fwp-user%2Fdashboard%22%7D" title="market overview TradingView widget" lang="en" style="user-select: none; box-sizing: border-box; display: block; height: calc(100% - 32px); width: 100%;"></iframe>
+  <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/?utm_source=digital-figtopmarkets.com&amp;utm_medium=widget_new&amp;utm_campaign=market-overview" rel="noopener nofollow" target="_blank"><span class="blue-text"></span></a></div>
+  
+<style>
+	.tradingview-widget-copyright {
+		font-size: 13px !important;
+		line-height: 32px !important;
+		text-align: center !important;
+		vertical-align: middle !important;
+		/* @mixin sf-pro-display-font; */
+		font-family: -apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif !important;
+		color: #B2B5BE !important;
+	}
+
+	.tradingview-widget-copyright .blue-text {
+		color: #2962FF !important;
+	}
+
+	.tradingview-widget-copyright a {
+		text-decoration: none !important;
+		color: #B2B5BE !important;
+	}
+
+	.tradingview-widget-copyright a:visited {
+		color: #B2B5BE !important;
+	}
+
+	.tradingview-widget-copyright a:hover .blue-text {
+		color: #1E53E5 !important;
+	}
+
+	.tradingview-widget-copyright a:active .blue-text {
+		color: #1848CC !important;
+	}
+
+	.tradingview-widget-copyright a:visited .blue-text {
+		color: #2962FF !important;
+	}
+	</style></div>
+<!-- TradingView Widget END -->
+  <style>
+	.tradingview-widget-copyright {
+		font-size: 13px !important;
+		line-height: 32px !important;
+		text-align: center !important;
+		vertical-align: middle !important;
+		/* @mixin sf-pro-display-font; */
+		font-family: -apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif !important;
+		color: #B2B5BE !important;
+	}
+
+	.tradingview-widget-copyright .blue-text {
+		color: #2962FF !important;
+	}
+
+	.tradingview-widget-copyright a {
+		text-decoration: none !important;
+		color: #B2B5BE !important;
+	}
+
+	.tradingview-widget-copyright a:visited {
+		color: #B2B5BE !important;
+	}
+
+	.tradingview-widget-copyright a:hover .blue-text {
+		color: #1E53E5 !important;
+	}
+
+	.tradingview-widget-copyright a:active .blue-text {
+		color: #1848CC !important;
+	}
+
+	.tradingview-widget-copyright a:visited .blue-text {
+		color: #2962FF !important;
+	}
+	</style></div>
+ 
+</div>
+
+</div>
+<!-- end of main content section tag -->
+<!-- Smartsupp Live Chat script -->
+<script type="text/javascript">
+var _smartsupp = _smartsupp || {};
+_smartsupp.key = 'a44c7b8d40ebcc7b06d581447f29fec09a2fc041';
+window.smartsupp||(function(d) {
+  var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
+  s=d.getElementsByTagName('script')[0];c=d.createElement('script');
+  c.type='text/javascript';c.charset='utf-8';c.async=true;
+  c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
+})(document);
+</script>
+<noscript> Powered by <a href=“https://www.smartsupp.com” target=“_blank”>Smartsupp</a></noscript>
+
+</section>
+
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Signal Strength Script (unchanged)
+            const signalProg = parseInt('<%= user.signalProg %>') || 0;
+            console.log('signalProg:', signalProg);
+            const bars = [
+                { id: 'ss10', threshold: 10 },
+                { id: 'ss20', threshold: 20 },
+                { id: 'ss30', threshold: 30 },
+                { id: 'ss40', threshold: 40 },
+                { id: 'ss50', threshold: 50 },
+                { id: 'ss60', threshold: 60 },
+                { id: 'ss70', threshold: 70 },
+                { id: 'ss80', threshold: 80 },
+                { id: 'ss90', threshold: 90 },
+                { id: 'ss100', threshold: 100 }
+            ];
+            bars.forEach(bar => {
+                const element = document.getElementById(bar.id);
+                if (!element) {
+                    console.error(`Element with ID ${bar.id} not found`);
+                    return;
+                }
+                if (signalProg >= bar.threshold) {
+                    element.classList.add('active');
+                    console.log(`Added active class to ${bar.id}`);
+                } else {
+                    element.classList.remove('active');
+                    console.log(`Removed active class from ${bar.id}`);
+                }
+            });
+
+            // Trade Progress Script (unchanged)
+            const tradeProg = parseInt('<%= user.prog %>') || 0;
+            console.log('tradeProg:', tradeProg);
+            const tradeProgBar = document.getElementById('tradeProgBar');
+            if (tradeProgBar) {
+                tradeProgBar.style.width = `${tradeProg}%`;
+                console.log(`Set tradeProgBar width to ${tradeProg}%`);
+            } else {
+                console.error('Trade progress bar element not found');
+            }
+
+            // Ensure progPlus and progMinus are preserved
+            const progPlus = '<%= user.progPlus || '0' %>';
+            const progMinus = '<%= user.progMinus || '0' %>';
+            const progPlusElement = document.getElementById('progPlus');
+            const progMinusElement = document.getElementById('progMinus');
+            if (progPlusElement && progMinusElement) {
+                progPlusElement.textContent = progPlus;
+                progMinusElement.textContent = progMinus;
+                console.log(`Set progPlus to ${progPlus} and progMinus to ${progMinus}`);
+            } else {
+                console.error('progPlus or progMinus element not found');
+            }
+        });
+    </script>
+
+
+
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="assets5i/custom/custom.js"></script>
+
+
+
+ <script src="assets0/notify.js"></script>
+ <script type="text/javascript" src="assets0/custom/custom.js"></script>
+ <!-- Optional JavaScript -->
+    <script src="../plugins/jquery-3.1.1.min.js"></script>
+    <script src="../plugins/sweetalerts/sweetalert2.min.js"></script>
+    <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.js"></script>
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <!--<script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>-->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- Appear JavaScript -->
+    <script src="js/jquery.appear.js"></script>
+    <!-- Countdown JavaScript -->
+    <script src="js/countdown.min.js"></script>
+    <!-- Counterup JavaScript -->
+    <script src="js/waypoints.min.js"></script>
+    <script src="js/jquery.counterup.min.js"></script>
+    <!-- Wow JavaScript -->
+    <script src="js/wow.min.js"></script>
+    <!-- Apexcharts JavaScript -->
+    <script src="js/apexcharts.js"></script>
+    <!-- Slick JavaScript -->
+    <script src="js/slick.min.js"></script>
+    <!-- Select2 JavaScript -->
+    <script src="js/select2.min.js"></script>
+    <!-- Owl Carousel JavaScript -->
+    <script src="js/owl.carousel.min.js"></script>
+    <!-- Magnific Popup JavaScript -->
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <!-- Smooth Scrollbar JavaScript -->
+    <script src="js/smooth-scrollbar.js"></script>
+    <!-- lottie JavaScript -->
+    <script src="js/lottie.js"></script>
+    <!-- am core JavaScript -->
+    <script src="js/core.js"></script>
+    <!-- am charts JavaScript -->
+    <script src="js/charts.js"></script>
+    <!-- am animated JavaScript -->
+    <script src="js/animated.js"></script>
+    <!-- am kelly JavaScript -->
+    <script src="js/kelly.js"></script>
+    <!-- am maps JavaScript -->
+    <script src="js/maps.js"></script>
+    <!-- am worldLow JavaScript -->
+    <script src="js/worldLow.js"></script>
+    <!-- Style Customizer -->
+    <script src="js/style-customizer.js"></script>
+    <!-- Chart Custom JavaScript -->
+    <script src="js/chart-custom.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="js/custom.js"></script>
+    
+    <script type="text/javascript" src="nt/nt.js"></script>
+	<script type="text/javascript" src="nt/f.js"></script>
+	
+	<script>
+	    
+</script>
+
+
+<!-- <footer class="iq-footer" style=" background-color:#171717; color:#fff;">
+    <div class="container-fluid">
+       <div class="row">
+          <div class="col-lg-6">
+             <ul class="list-inline mb-0">
+                <li class="list-inline-item"><a href="/policy">Privacy Policy</a></li>
+                <li class="list-inline-item"><a href="/terms">Terms of Use</a></li>
+             </ul>
+          </div>
+          <div class="col-lg-6 text-right">
+             Copyright 2024<a href="#" style="color:#fff;">  Digital Figtop  </a> All Rights Reserved.
+          </div>
+       </div>
+    </div>
+   
+ </footer> -->
+<svg id="SvgjsSvg1001" width="2" height="0" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" style="overflow: hidden; top: -100%; left: -100%; position: absolute; opacity: 0;"><defs id="SvgjsDefs1002"></defs><polyline id="SvgjsPolyline1003" points="0,0"></polyline><path id="SvgjsPath1004" d="M0 0 "></path></svg>
+<iframe id="chat-application-iframe" title="Smartsupp" aria-hidden="true" style="display: block; position: fixed; top: 0px; left: 0px; width: 1px; height: 1px; opacity: 0; border: none; z-index: -1; pointer-events: none;"></iframe>
+<div id="smartsupp-widget-container"><!----><!----><!----> <!----><!----> <!----><div data-testid="widgetButtonFrame" style="border-radius: 9999px; box-shadow: rgba(0, 0, 0, 0.06) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 2px 32px; color-scheme: normal; height: 56px; position: fixed; bottom: 24px; left: initial; right: 12px; z-index: 10000000; width: 56px;"><iframe allowfullscreen="" scrolling="no" id="widgetButtonFrame" title="Smartsupp widget button" style="position: absolute; width: 100%; height: 100%; border: none; display: block; text-align: left; margin: 0px; padding: 0px; top: 0px; left: 0px; opacity: 1;"></iframe><!----></div><!----> <!----><!----> <!----><!----><!---->
+</div>
+</body>
+</html>
+
+and my admin frontend like this
+
+<section class="content">
+
+    <div class="iq-sidebar" style="background-color:#171717;">
+    <div class="iq-sidebar-logo d-flex justify-content-between">
+        <a href="#" class="header-logo">
+            <img src="images/logo.svg" class="img-fluid rounded-normal" alt="">
+        </a>
+        <div class="iq-menu-bt-sidebar">
+            <div class="iq-menu-bt align-self-center">
+                <div class="wrapper-menu">
+                    <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
+                    <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="sidebar-scrollbar" data-scrollbar="true" tabindex="-1" style="overflow: hidden; outline: none;"><div class="scroll-content">
+        <nav class="iq-sidebar-menu">
+            
+            <ul id="iq-sidebar-toggle" class="iq-menu">
+                <li>
+                    <a href="/adminRoute" class="iq-waves-effect" style="color:#fff;"><i class="ai-home-alt1"></i><span>Dashboard</span></a>
+                </li>
+                                <li>
+                    <a href="/allVerify" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-person-check"></i><span>all verification</span></a>
+                </li>
+                                <li>
+                    <a href="/allFunding" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-database-add"></i><span>all Deposit</span></a>
+                </li>
+
+                 <li>
+                    <a href="/all-copytrades" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>all createdExperts</span></a>
+                </li>
+                 <li>
+                    <a href="/user-copytrades" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>all usersCopytrade</span></a>
+                </li>
+                <li>
+                    <a href="/allWidthdrawals" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-coin"></i><span>all Withdrawrals</span></a>
+                </li>
+                <li>
+                    <a href="/all-affiliates" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-robot"></i><span>Affiliate Packages</span></a>
+                </li>
+                <li>
+                    <a href="/all-accountUpgrade" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-arrow-90deg-up"></i><span>Upgrade</span></a>
+                </li>
+
+                 <li>
+                <a href="/all-chats" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-chat-dots"></i><span>All Chats</span></a>
+            </li>
+              
+                
+                <li>
+                    <a href="/all-signal" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-broadcast-pin"></i><span>all signals</span></a>
+                </li>
+                <li>
+                    <a href="/all-livetrade" class="iq-waves-effect" style="color:#fff;"><i class="ai-align-bottom"></i><span>all  Trading</span></a>
+                </li>
+                <li>
+                    <a href="/all-tradestock" class="iq-waves-effect" style="color:#fff;"><i class="ai-data"></i><span>all StocksTrades</span></a>
+                </li>
+                
+                <li>
+                    <a href="mailto:support@digital-figtopmarkets.com" class="iq-waves-effect" style="color:#fff;"><i class="ai-envelope"></i><span>Email us</span></a>
+                </li>
+                 <li>
+                    <a href="/all-wallets" class="iq-waves-effect" style="color:#fff;"><i class="ai-arrow-right-left"></i><span>wallet Addresses</span></a>
+                </li>
+                 <li>
+                    <a href="/logout" class="iq-waves-effect" style="color:#fff;"><i class="ai-sign-out"></i><span>logout out</span></a>
+                </li>
+                
+                </ul>
+        </nav>
+    </div><div class="scrollbar-track scrollbar-track-x" style="display: none;"><div class="scrollbar-thumb scrollbar-thumb-x" style="width: 300px; transform: translate3d(0px, 0px, 0px);"></div></div><div class="scrollbar-track scrollbar-track-y" style="display: block;"><div class="scrollbar-thumb scrollbar-thumb-y" style="height: 463.426px; transform: translate3d(0px, 0px, 0px);"></div></div></div>
+</div>
+<!-- TOP Nav Bar -->
+<div class="iq-top-navbar" style="background-color:#171717;">
+    <div class="iq-navbar-custom">
+        <nav class="navbar navbar-expand-lg navbar-light p-0">
+            <div class="iq-menu-bt d-flex align-items-center">
+                <div class="wrapper-menu">
+                    <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
+                    <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
+                </div>
+                <div class="iq-navbar-logo d-flex justify-content-between">
+                    <a href="#" class="header-logo">
+                        <img src="images/favicon.svg" class="img-fluid rounded-normal" alt="">
+                    </a>
+                </div>
+            </div>
+           
+            
+            <div class="d-flex flex-column" style="margin-top:-20px;"> 
+   
+    <div class="hn-1"></div>
+   <div class="hn-2" style="margin-left:-18px;"><%=user.fullname%></div>
+  </div>
+  <div>
+            <ul class="navbar-list">
+                <li class="line-height">
+                    <a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
+                        </a><div class="profile-img" alt="user"><a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
+                        <img src="/wp-user/assets5i/img/pers.svg"> 
+                    </a>
+                    <div class="iq-sub-dropdown iq-user-dropdown">
+                        <div class="iq-card shadow-none m-0">
+                            <div class="iq-card-body p-0 " style="background-color:#171717;">
+                                <div class="bg-primary p-3">
+                                    <h5 class="mb-0 text-white line-height"><%=user.fullname%></h5>
+                                </div>
+                                <a href="/profile" class="iq-sub-card iq-bg-primary-hover">
+                                    <div class="media align-items-center">
+                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                            <i class="ri-file-user-line"></i>
+                                        </div>
+                                        <div class="media-body ml-3">
+                                            <h6 class="mb-0 " style="color:#fff;">My Profile</h6>
+                                            <p class="mb-0 font-size-12">View personal profile details.</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                
+                             
+                                <div class="d-inline-block w-100 text-center p-3">
+                                    <a class="bg-primary iq-sign-btn" href="logout" role="button">Sign Out<i class="ri-login-box-line ml-2"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div></li>
+            </ul>
+        </div></nav>
+    </div>
+</div> 
+ <div class="d-flex flex-column" style="margin-top:55px;"> 
+   
+  </div>
+  </div>
+
+<!-- Ensure Bootstrap 5 CSS and JS are included in your project -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<div class="container py-4">
+      <!-- Flash Messages for SweetAlert2 -->
+      <% if (success && success.length > 0) { %>
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Success',
+              text: '<%= success %>',
+              showConfirmButton: true,
+              timer: 3000,
+              timerProgressBar: true,
+              background: '#212529',
+              color: '#fff',
+              confirmButtonColor: '#286090'
+            });
+          });
+        </script>
+      <% } %>
+      <% if (error && error.length > 0) { %>
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: '<%= error %>',
+              showConfirmButton: true,
+              timer: 3000,
+              timerProgressBar: true,
+              background: '#212529',
+              color: '#fff',
+              confirmButtonColor: '#286090'
+            });
+          });
+        </script>
+      <% } %>
+
+      <!-- Search Form -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <form action="/searchUsers" method="POST" class="d-flex align-items-center gap-2">
+            <div class="input-group">
+              <span class="input-group-text bg-primary text-white border-0"><i class="bi bi-search"></i></span>
+              <input type="text" id="search" name="search" class="form-control shadow-sm" placeholder="Search by first or last name" value="">
+            </div>
+            <button type="submit" class="btn btn-primary shadow-sm">
+              <i class="bi bi-search"></i> Search
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Filter Dropdown -->
+      <div class="row mb-4">
+        <div class="col-12 col-md-4">
+          <label for="statusFilter" class="form-label fw-bold text-white">Filter by Status</label>
+          <select id="statusFilter" class="form-select shadow-sm">
+            <option value="all" <%= status === 'all' ? 'selected' : '' %>>All</option>
+            <option value="active" <%= status === 'active' ? 'selected' : '' %>>Active</option>
+            <option value="suspended" <%= status === 'suspended' ? 'selected' : '' %>>Suspended</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- User Table -->
+      <div class="card shadow-sm">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle">
+              <thead class="table-dark">
+                <tr>
+                  <th scope="col">
+                    <a href="?page=<%= page %>&sort=index&order=<%= sort === 'index' && order === 'asc' ? 'desc' : 'asc' %>&status=<%= status %>" class="text-white text-decoration-none">
+                      S/N
+                      <% if (sort === 'index') { %>
+                        <%= order === 'asc' ? '↑' : '↓' %>
+                      <% } %>
+                    </a>
+                  </th>
+                  <th scope="col">
+                    <a href="?page=<%= page %>&sort=fullname&order=<%= sort === 'fullname' && order === 'asc' ? 'desc' : 'asc' %>&status=<%= status %>" class="text-white text-decoration-none">
+                      Full Name
+                      <% if (sort === 'fullname') { %>
+                        <%= order === 'asc' ? '↑' : '↓' %>
+                      <% } %>
+                    </a>
+                  </th>
+                  <th scope="col">
+                    <a href="?page=<%= page %>&sort=email&order=<%= sort === 'email' && order === 'asc' ? 'desc' : 'asc' %>&status=<%= status %>" class="text-white text-decoration-none">
+                      Email
+                      <% if (sort === 'email') { %>
+                        <%= order === 'asc' ? '↑' : '↓' %>
+                      <% } %>
+                    </a>
+                  </th>
+                  <th scope="col">
+                    <a href="?page=<%= page %>&sort=country&order=<%= sort === 'country' && order === 'asc' ? 'desc' : 'asc' %>&status=<%= status %>" class="text-white text-decoration-none">
+                      Country
+                      <% if (sort === 'country') { %>
+                        <%= order === 'asc' ? '↑' : '↓' %>
+                      <% } %>
+                    </a>
+                  </th>
+                  <th scope="col">
+                    <a href="?page=<%= page %>&sort=phone&order=<%= sort === 'phone' && order === 'asc' ? 'desc' : 'asc' %>&status=<%= status %>" class="text-white text-decoration-none">
+                      Telephone
+                      <% if (sort === 'phone') { %>
+                        <%= order === 'asc' ? '↑' : '↓' %>
+                      <% } %>
+                    </a>
+                  </th>
+                  <th scope="col">
+                    <a href="?page=<%= page %>&sort=isSuspended&order=<%= sort === 'isSuspended' && order === 'asc' ? 'desc' : 'asc' %>&status=<%= status %>" class="text-white text-decoration-none">
+                      Status
+                      <% if (sort === 'isSuspended') { %>
+                        <%= order === 'asc' ? '↑' : '↓' %>
+                      <% } %>
+                    </a>
+                  </th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (users.length > 0) { %>
+                  <% users.forEach((element, index) => { %>
+                    <tr>
+                      <td><%= index + 1 + (page - 1) * 100 %></td>
+                      <td><%= element.fullname %></td>
+                      <td><%= element.email %></td>
+                      <td><%= element.country %></td>
+                      <td><%= element.tel %></td>
+                      <td>
+                        <span class="badge <%= element.isSuspended ? 'bg-danger' : 'bg-success' %>">
+                          <%= element.isSuspended ? 'Suspended' : 'Active' %>
+                        </span>
+                      </td>
+                      <td>
+                        <div class="d-flex gap-2">
+                          <a href="/viewUser/<%= element._id %>" class="btn btn-sm btn-primary" title="View">
+                            <i class="bi bi-eye"></i>
+                          </a>
+                        </td>
+                        <td>
+                          <a href="/editUser/<%= element._id %>" class="btn btn-sm btn-warning" title="Edit">
+                            <i class="bi bi-pencil"></i>
+                          </a>
+                          </td>
+                          <td>
+                          <form action="/suspendUser/<%= element._id %>" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-sm <%= element.isSuspended ? 'btn-success' : 'btn-secondary' %>" title="<%= element.isSuspended ? 'Activate' : 'Suspend' %>">
+                              <i class="bi <%= element.isSuspended ? 'bi-play-fill' : 'bi-pause-fill' %>"></i>
+                            </button>
+                          </form>
+                          </td>
+                          <td>
+                          <form action="/deleteUser/<%= element._id %>?_method=DELETE" method="POST" class="d-inline delete-form">
+                            <button type="submit" class="btn btn-sm btn-danger" title="Delete">
+                              <i class="bi bi-trash"></i>
+                            </button>
+                          </form>
+                          </td>
+                        </div>
+                      </td>
+                    </tr>
+                  <% }) %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="7" class="text-center py-4">No users found in the database!</td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination Controls -->
+      <% if (totalPages > 1) { %>
+        <nav aria-label="Pagination" class="mt-4">
+          <ul class="pagination justify-content-center">
+            <li class="page-item <%= page === 1 ? 'disabled' : '' %>">
+              <a class="page-link" href="<%= page === 1 ? '#' : `?page=${page - 1}&sort=${sort}&order=${order}&status=${status}` %>" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            <% for (let i = 1; i <= totalPages; i++) { %>
+              <li class="page-item <%= page === i ? 'active' : '' %>">
+                <a class="page-link" href="?page=<%= i %>&sort=<%= sort %>&order=<%= order %>&status=<%= status %>"><%= i %></a>
+              </li>
+            <% } %>
+            <li class="page-item <%= page === totalPages ? 'disabled' : '' %>">
+              <a class="page-link" href="<%= page === totalPages ? '#' : `?page=${page + 1}&sort=${sort}&order=${order}&status=${status}` %>" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      <% } %>
+    </div>
+
+  
+</section>
+
+
+just like the chat functionality create a real time notification functionality that when the user.available, user.totalEarning, user.totalWidthdraw, user.verifiedStatus and when deposit and withdrawal status are updated the user is notified likewise when the a deposit, withdrawal, upgrade, signal, verification and a chat is created the admin is notified these notification are also popping up in the browser also, add a notification icon, indicator  and modal that displays the notification  content when toggled to the user and admin frontend and using the user dashboard template create a frontend for the custom notification where admin can send notification to any user independently when the notification has been viewed/read it can disappear from the notification modal and the indicator that counts how many notification are present shall adjust appprioprately  all these  features just like the chat feature without any user.role/strictly admin conditioning and bring out the whole codes with the changes while preserving all codes and functionalities

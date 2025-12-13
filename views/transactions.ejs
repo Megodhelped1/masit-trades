@@ -1,0 +1,222 @@
+<%- include('partials/dashboardHeader')%>
+
+<body style="background-color:black;" class="">
+    <section class="content">
+        <div class="iq-sidebar" style="background-color:#171717;">
+            <div class="iq-sidebar-logo d-flex justify-content-between">
+                <a href="#" class="header-logo">
+                    <img src="/images/logo.svg" class="img-fluid rounded-normal" alt="">
+                </a>
+                <div class="iq-menu-bt-sidebar">
+                    <div class="iq-menu-bt align-self-center">
+                        <div class="wrapper-menu">
+                            <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
+                            <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="sidebar-scrollbar" data-scrollbar="true" tabindex="-1" style="overflow: hidden; outline: none;">
+                <div class="scroll-content">
+                    <nav class="iq-sidebar-menu">
+                        <ul id="iq-sidebar-toggle" class="iq-menu">
+                            <li><a href="/dashboard" class="iq-waves-effect" style="color:#fff;"><i class="ai-home-alt1"></i><span>Dashboard</span></a></li>
+                            <li><a href="/verify/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-person-check"></i><span>Verify Account</span></a></li>
+                            <li><a href="/deposit" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-database-add"></i><span>Deposit</span></a></li>
+                            <li><a href="/withdraw" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-coin"></i><span>Withdraw</span></a></li>
+                            <li><a href="/page/<%-user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-robot"></i><span>Affiliate Packages</span></a></li>
+                            <li><a href="/upgrade" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-arrow-90deg-up"></i><span>Upgrade</span></a></li> 
+                            <li>
+                  <a href="/chat" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-chat-dots"></i><span>Chat</span></a>
+                </li>
+
+                            <li><a href="/copy-expert/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>Copy Experts</span></a></li>
+                            <li><a href="/ongoing-copy-trades/<%= user._id %>" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>ongoing-copytrades</span></a></li>
+                            <li><a href="/signal-package" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-broadcast-pin"></i><span>signals</span></a></li>
+                            <li><a href="/trading-live/<%-user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="ai-align-bottom"></i><span>Live Trading</span></a></li>
+                            <li><a href="/trading-stock/<%-user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="ai-data"></i><span>Stocks Trading</span></a></li>
+                            <li><a href="/crypto" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-currency-bitcoin"></i><span>Buy Crypto</span></a></li>
+                            <li><a href="mailto:support@digital-topfigmarkets.com" class="iq-waves-effect" style="color:#fff;"><i class="ai-envelope"></i><span>Email us</span></a></li>
+                            <li><a href="/edit/<%-user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="ai-gear"></i><span>settings</span></a></li>
+                            <li><a href="/transactions/<%= user._id %>" class="iq-waves-effect" style="color:#fff;"><i class="ai-arrow-right-left"></i><span>Transaction History</span></a></li>
+                            <li><a href="/logout" class="iq-waves-effect" style="color:#fff;"><i class="ai-sign-out"></i><span>Sign out</span></a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="scrollbar-track scrollbar-track-x" style="display: none;">
+                    <div class="scrollbar-thumb scrollbar-thumb-x" style="width: 300px; transform: translate3d(0px, 0px, 0px);"></div>
+                </div>
+                <div class="scrollbar-track scrollbar-track-y" style="display: block;">
+                    <div class="scrollbar-thumb scrollbar-thumb-y" style="height: 463.426px; transform: translate3d(0px, 0px, 0px);"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOP Nav Bar -->
+        <div class="iq-top-navbar" style="background-color:#171717;">
+            <div class="iq-navbar-custom">
+                <nav class="navbar navbar-expand-lg navbar-light p-0">
+                    <div class="iq-menu-bt d-flex align-items-center">
+                        <div class="wrapper-menu">
+                            <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
+                            <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
+                        </div>
+                        <div class="iq-navbar-logo d-flex justify-content-between">
+                            <a href="#" class="header-logo">
+                                <img src="/images/favicon.svg" class="img-fluid rounded-normal" alt="">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column" style="margin-top:-20px;"> 
+                        <div class="hn-1"></div>
+                        <div class="hn-2" style="margin-left:-18px;"><%= user.fullname %></div>
+                    </div>
+                    <div>
+                        <ul class="navbar-list">
+                            <li class="line-height">
+                                <a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
+                                    <div class="profile-img" alt="user">
+                                        <img src="/wp-user/assets5i/img/pers.svg"> 
+                                    </a>
+                                    <div class="iq-sub-dropdown iq-user-dropdown">
+                                        <div class="iq-card shadow-none m-0">
+                                            <div class="iq-card-body p-0 " style="background-color:#171717;">
+                                                <div class="bg-primary p-3">
+                                                    <h5 class="mb-0 text-white line-height"><%= user.fullname %></h5>
+                                                    <span class="text-white font-size-12"><%= user.isVerified %></span>
+                                                </div>
+                                                <a href="profile" class="iq-sub-card iq-bg-primary-hover">
+                                                    <div class="media align-items-center">
+                                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                                            <i class="ri-file-user-line"></i>
+                                                        </div>
+                                                        <div class="media-body ml-3">
+                                                            <h6 class="mb-0 " style="color:#fff;">My Profile</h6>
+                                                            <p class="mb-0 font-size-12">View personal profile details.</p>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                                <a href="edit/<%=user._id%>" class="iq-sub-card iq-bg-primary-hover">
+                                                    <div class="media align-items-center">
+                                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                                            <i class="ri-lock-line"></i>
+                                                        </div>
+                                                        <div class="media-body ml-3">
+                                                            <h6 class="mb-0 " style="color:#fff;">Privacy Settings</h6>
+                                                            <p class="mb-0 font-size-12">Control your privacy parameters.</p>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                                <div class="d-inline-block w-100 text-center p-3">
+                                                    <a class="bg-primary iq-sign-btn" href="logout" role="button">Sign Out<i class="ri-login-box-line ml-2"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </div> 
+        <div class="d-flex flex-column" style="margin-top:55px;"></div>
+
+               <!-- Main content -->
+       <div class="container-fluid">
+            <h2 style="color:#fff;">Transaction History</h2>
+            <% if (messages.error) { %>
+                <div class="alert alert-danger"><%= messages.error %></div>
+            <% } %>
+            <h3 style="color:#fff;">Deposits</h3>
+            <!-- Debug: Display raw deposits data -->
+            <% if (!user.deposits || user.deposits.length === 0) { %>
+                <p style="color:#B3B3B3;">No deposits found.</p>
+            <% } else { %>
+                <table class="table" style="background-color:#222; color:#B3B3B3;">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Narration</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-white">
+                        <% user.deposits.forEach(deposit => { %>
+                            <% if (deposit && deposit._id) { %>
+                                <tr>
+                                    <td><%= deposit.type || 'N/A' %></td>
+                                    <td><%= deposit.amount || 'N/A' %></td>
+                                    <td><%= deposit.status || 'N/A' %></td>
+                                    <td><%= deposit.narration || 'N/A' %></td>
+                                    <td><%= deposit.createdAt ? new Date(deposit.createdAt).toLocaleDateString() : 'N/A' %></td>
+                                </tr>
+                            <% } %>
+                        <% }) %>
+                    </tbody>
+                </table>
+            <% } %>
+            <h3 style="color:#fff;">Withdrawals</h3>
+            <!-- Debug: Display raw withdrawals data -->
+            <% if (!user.withdraws || user.withdraws.length === 0) { %>
+                <p style="color:#B3B3B3;">No withdrawals found.</p>
+            <% } else { %>
+                <table class="table" style="background-color:#222; color:#B3B3B3;">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Narration</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-white">
+                        <% user.withdraws.forEach(withdrawal => { %>
+                            <% if (withdrawal && withdrawal._id) { %>
+                                <tr>
+                                    <td><%= withdrawal.type || 'N/A' %></td>
+                                    <td><%= withdrawal.amount || 'N/A' %></td>
+                                    <td><%= withdrawal.status || 'N/A' %></td>
+                                    <td><%= withdrawal.narration || 'N/A' %></td>
+                                    <td><%= withdrawal.createdAt ? new Date(withdrawal.createdAt).toLocaleDateString() : 'N/A' %></td>
+                                </tr>
+                            <% } %>
+                        <% }) %>
+                    </tbody>
+                </table>
+            <% } %>
+        </div>
+  
+    </section>
+
+    
+    <script>
+        $(document).ready(function() {
+            // Check if user is authenticated
+            const userId = '<%= user._id %>';
+            if (!userId) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'User not authenticated. Please log in.',
+                    timer: 2000
+                }).then(() => {
+                    window.location = '/signin';
+                });
+            }
+            <% if (messages.success) { %>
+                Swal.fire({
+                    title: "Success!",
+                    text: "<%= messages.success %>",
+                    type: "success",
+                    confirmButtonClass: 'btn btn-primary',
+                    buttonsStyling: false
+                });
+            <% } %>
+        });
+    </script>
+
+<%- include('partials/dashboardFooter')%>

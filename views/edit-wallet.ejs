@@ -1,0 +1,215 @@
+<%- include('partials/dynaHeader')%>
+</head>
+
+
+<body style="background-color:black;" class="">
+   
+
+<section class="content">
+
+    <div class="iq-sidebar" style="background-color:#171717;">
+    <div class="iq-sidebar-logo d-flex justify-content-between">
+        <a href="#" class="header-logo">
+            <img src="/images/logo.svg" class="img-fluid rounded-normal" alt="">
+        </a>
+        <div class="iq-menu-bt-sidebar">
+            <div class="iq-menu-bt align-self-center">
+                <div class="wrapper-menu">
+                    <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
+                    <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="sidebar-scrollbar" data-scrollbar="true" tabindex="-1" style="overflow: hidden; outline: none;"><div class="scroll-content">
+        <nav class="iq-sidebar-menu">
+            
+            <ul id="iq-sidebar-toggle" class="iq-menu">
+                <li>
+                    <a href="/adminRoute" class="iq-waves-effect" style="color:#fff;"><i class="ai-home-alt1"></i><span>Dashboard</span></a>
+                </li>
+                                <li>
+                    <a href="/allVerify" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-person-check"></i><span>all verification</span></a>
+                </li>
+
+                  <li>
+                    <a href="/all-copytrades" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>all createdExperts</span></a>
+                </li>
+                 <li>
+                    <a href="/user-copytrades" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>all usersCopytrade</span></a>
+                </li>
+                                <li>
+                    <a href="/allFunding" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-database-add"></i><span>all Deposit</span></a>
+                </li>
+                <li>
+                    <a href="/allWidthdrawals" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-coin"></i><span>all Withdrawrals</span></a>
+                </li>
+                <li>
+                    <a href="/all-affiliates" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-robot"></i><span>Affiliate Packages</span></a>
+                </li>
+                <li>
+                    <a href="/all-accountUpgrade" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-arrow-90deg-up"></i><span>Upgrade</span></a>
+                </li>
+              
+                
+                <li>
+                    <a href="/all-signal" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-broadcast-pin"></i><span>all signals</span></a>
+                </li>
+                <li>
+                    <a href="/all-livetrade" class="iq-waves-effect" style="color:#fff;"><i class="ai-align-bottom"></i><span>all  Trading</span></a>
+                </li>
+                <li>
+                    <a href="/all-tradestock" class="iq-waves-effect" style="color:#fff;"><i class="ai-data"></i><span>all StocksTrades</span></a>
+                </li>
+                
+                <li>
+                    <a href="mailto:support@digital-figtopmarkets.com" class="iq-waves-effect" style="color:#fff;"><i class="ai-envelope"></i><span>Email us</span></a>
+                </li>
+
+                <li>
+                    <a href="/all-wallets" class="iq-waves-effect" style="color:#fff;"><i class="ai-arrow-right-left"></i><span>wallet Addresses</span></a>
+                </li>
+                
+                 <li>
+                    <a href="/logout" class="iq-waves-effect" style="color:#fff;"><i class="ai-sign-out"></i><span>logout out</span></a>
+                </li>
+                
+                </ul>
+        </nav>
+    </div><div class="scrollbar-track scrollbar-track-x" style="display: none;"><div class="scrollbar-thumb scrollbar-thumb-x" style="width: 300px; transform: translate3d(0px, 0px, 0px);"></div></div><div class="scrollbar-track scrollbar-track-y" style="display: block;"><div class="scrollbar-thumb scrollbar-thumb-y" style="height: 463.426px; transform: translate3d(0px, 0px, 0px);"></div></div></div>
+</div>
+<!-- TOP Nav Bar -->
+<div class="iq-top-navbar" style="background-color:#171717;">
+    <div class="iq-navbar-custom">
+        <nav class="navbar navbar-expand-lg navbar-light p-0">
+            <div class="iq-menu-bt d-flex align-items-center">
+                <div class="wrapper-menu">
+                    <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
+                    <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
+                </div>
+                <div class="iq-navbar-logo d-flex justify-content-between">
+                    <a href="#" class="header-logo">
+                        <img src="images/favicon.svg" class="img-fluid rounded-normal" alt="">
+                    </a>
+                </div>
+            </div>
+           
+            
+            <div class="d-flex flex-column" style="margin-top:-20px;"> 
+   
+    <div class="hn-1"></div>
+   <div class="hn-2" style="margin-left:-18px;"><%=user.fullname%></div>
+  </div>
+  <div>
+            <ul class="navbar-list">
+                <li class="line-height">
+                    <a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
+                        </a><div class="profile-img" alt="user"><a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
+                        <img src="/wp-user/assets5i/img/pers.svg"> 
+                    </a>
+                    <div class="iq-sub-dropdown iq-user-dropdown">
+                        <div class="iq-card shadow-none m-0">
+                            <div class="iq-card-body p-0 " style="background-color:#171717;">
+                                <div class="bg-primary p-3">
+                                    <h5 class="mb-0 text-white line-height"><%=user.fullname%></h5>
+                                </div>
+                                <a href="/profile" class="iq-sub-card iq-bg-primary-hover">
+                                    <div class="media align-items-center">
+                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                            <i class="ri-file-user-line"></i>
+                                        </div>
+                                        <div class="media-body ml-3">
+                                            <h6 class="mb-0 " style="color:#fff;">My Profile</h6>
+                                            <p class="mb-0 font-size-12">View personal profile details.</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                
+                             
+                                <div class="d-inline-block w-100 text-center p-3">
+                                    <a class="bg-primary iq-sign-btn" href="logout" role="button">Sign Out<i class="ri-login-box-line ml-2"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div></li>
+            </ul>
+        </div></nav>
+    </div>
+</div> 
+ <div class="d-flex flex-column" style="margin-top:55px;"> 
+   
+  </div>
+  </div>
+
+  <!-- othe main content -->
+              <div class="container-fluid">
+        <h2>Edit Wallet</h2>
+        <% if (messages.error) { %>
+            <div class="alert alert-danger"><%= messages.error %></div>
+        <% } %>
+        <form action="/edit-wallet/<%= wallet._id %>" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label class="text-white">BTC Address</label>
+                <input type="text" name="btc_address" class="form-control" value="<%= wallet.btc_address %>">
+            </div>
+            <div class="form-group">
+                <label class="text-white">BTC Image (Optional)</label>
+                <input type="file" name="btc_image" class="form-control" accept="image/*">
+                <% if (wallet.btc_image) { %>
+                    <img src="<%= wallet.btc_image %>" alt="BTC Image" style="max-width: 100px;">
+                <% } %>
+            </div>
+            <div class="form-group">
+                <label class="text-white">ETH Address</label>
+                <input type="text" name="eth_address" class="form-control" value="<%= wallet.eth_address %>">
+            </div>
+            <div class="form-group">
+                <label class="text-white">ETH Image (Optional)</label>
+                <input type="file" name="eth_image" class="form-control" accept="image/*">
+                <% if (wallet.eth_image) { %>
+                    <img src="<%= wallet.eth_image %>" alt="ETH Image" style="max-width: 100px;">
+                <% } %>
+            </div>
+            <div class="form-group">
+                <label class="text-white">USDT Address</label>
+                <input type="text" name="usdt_address" class="form-control" value="<%= wallet.usdt_address %>">
+            </div>
+            <div class="form-group">
+                <label class="text-white">USDT Image (Optional)</label>
+                <input type="file" name="usdt_image" class="form-control" accept="image/*">
+                <% if (wallet.usdt_image) { %>
+                    <img src="<%= wallet.usdt_image %>" alt="USDT Image" style="max-width: 100px;">
+                <% } %>
+            </div>
+            <div class="form-group">
+                <label class="text-white">CashApp</label>
+                <input type="text" name="cashapp" class="form-control" value="<%= wallet.cashapp %>">
+            </div>
+            <div class="form-group">
+                <label class="text-white">CashApp Image (Optional)</label>
+                <input type="file" name="cashapp_image" class="form-control" accept="image/*">
+                <% if (wallet.cashapp_image) { %>
+                    <img src="<%= wallet.cashapp_image %>" alt="CashApp Image" style="max-width: 100px;">
+                <% } %>
+            </div>
+            <div class="form-group">
+                <label class="text-white">PayPal</label>
+                <input type="text" name="paypal" class="form-control" value="<%= wallet.paypal %>">
+            </div>
+            <div class="form-group">
+                <label>PayPal Image (Optional)</label>
+                <input type="file" name="paypal_image" class="form-control" accept="image/*">
+                <% if (wallet.paypal_image) { %>
+                    <img src="<%= wallet.paypal_image %>" alt="PayPal Image" style="max-width: 100px;">
+                <% } %>
+            </div>
+            <button type="submit" class="btn btn-primary">Update Wallet</button>
+        </form>
+    </div>
+</section>
+
+
+
+
+<%- include('partials/dynaFooter')%>

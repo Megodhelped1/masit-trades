@@ -1,0 +1,495 @@
+<%- include('partials/dynaHeader')%>
+
+<body style="background-color:black;" class="">
+   
+
+<section class="content">
+
+    <div class="iq-sidebar" style="background-color:#171717;">
+    <div class="iq-sidebar-logo d-flex justify-content-between">
+        <a href="#" class="header-logo">
+            <img src="/images/logo.svg" class="img-fluid rounded-normal" alt="">
+        </a>
+        <div class="iq-menu-bt-sidebar">
+            <div class="iq-menu-bt align-self-center">
+                <div class="wrapper-menu">
+                    <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
+                    <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="sidebar-scrollbar" data-scrollbar="true" tabindex="-1" style="overflow: hidden; outline: none;"><div class="scroll-content">
+        <nav class="iq-sidebar-menu">
+            
+            <ul id="iq-sidebar-toggle" class="iq-menu">
+                <li>
+                    <a href="/adminRoute" class="iq-waves-effect" style="color:#fff;"><i class="ai-home-alt1"></i><span>Dashboard</span></a>
+                </li>
+                                <li>
+                    <a href="/allVerify" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-person-check"></i><span>all verification</span></a>
+                </li>
+                                <li>
+                    <a href="/allFunding" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-database-add"></i><span>all Deposit</span></a>
+                </li>
+
+                 <li>
+                    <a href="/all-copytrades" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>all createdExperts</span></a>
+                </li>
+                 <li>
+                    <a href="/user-copytrades" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>all usersCopytrade</span></a>
+                </li>
+                <li>
+                    <a href="/allWidthdrawals" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-coin"></i><span>all Withdrawrals</span></a>
+                </li>
+                <li>
+                    <a href="/all-affiliates" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-robot"></i><span>Affiliate Packages</span></a>
+                </li>
+                <li>
+                    <a href="/all-accountUpgrade" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-arrow-90deg-up"></i><span>Upgrade</span></a>
+                </li>
+              
+                
+                <li>
+                    <a href="/all-signal" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-broadcast-pin"></i><span>all signals</span></a>
+                </li>
+                <li>
+                    <a href="/all-livetrade" class="iq-waves-effect" style="color:#fff;"><i class="ai-align-bottom"></i><span>all  Trading</span></a>
+                </li>
+                <li>
+                    <a href="/all-tradestock" class="iq-waves-effect" style="color:#fff;"><i class="ai-data"></i><span>all StocksTrades</span></a>
+                </li>
+                
+                <li>
+                    <a href="mailto:support@digital-topfigmarkets.com" class="iq-waves-effect" style="color:#fff;"><i class="ai-envelope"></i><span>Email us</span></a>
+                </li>
+                 <li>
+                    <a href="/all-wallets" class="iq-waves-effect" style="color:#fff;"><i class="ai-arrow-right-left"></i><span>wallet Addresses</span></a>
+                </li>
+                 <li>
+                    <a href="/logout" class="iq-waves-effect" style="color:#fff;"><i class="ai-sign-out"></i><span>logout out</span></a>
+                </li>
+                
+                </ul>
+        </nav>
+    </div><div class="scrollbar-track scrollbar-track-x" style="display: none;"><div class="scrollbar-thumb scrollbar-thumb-x" style="width: 300px; transform: translate3d(0px, 0px, 0px);"></div></div><div class="scrollbar-track scrollbar-track-y" style="display: block;"><div class="scrollbar-thumb scrollbar-thumb-y" style="height: 463.426px; transform: translate3d(0px, 0px, 0px);"></div></div></div>
+</div>
+<!-- TOP Nav Bar -->
+<div class="iq-top-navbar" style="background-color:#171717;">
+    <div class="iq-navbar-custom">
+        <nav class="navbar navbar-expand-lg navbar-light p-0">
+            <div class="iq-menu-bt d-flex align-items-center">
+                <div class="wrapper-menu">
+                    <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
+                    <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
+                </div>
+                <div class="iq-navbar-logo d-flex justify-content-between">
+                    <a href="#" class="header-logo">
+                        <img src="/images/favicon.svg" class="img-fluid rounded-normal" alt="">
+                    </a>
+                </div>
+            </div>
+           
+            
+            <div class="d-flex flex-column" style="margin-top:-20px;"> 
+   
+    <div class="hn-1"></div>
+   <div class="hn-2" style="margin-left:-18px;"><%=user.fullname%></div>
+  </div>
+  <div>
+            <ul class="navbar-list">
+                <li class="line-height">
+                    <a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
+                        </a><div class="profile-img" alt="user"><a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
+                        <img src="/wp-user/assets5i/img/pers.svg"> 
+                    </a>
+                    <div class="iq-sub-dropdown iq-user-dropdown">
+                        <div class="iq-card shadow-none m-0">
+                            <div class="iq-card-body p-0 " style="background-color:#171717;">
+                                <div class="bg-primary p-3">
+                                    <h5 class="mb-0 text-white line-height"><%=user.fullname%></h5>
+                                </div>
+                                <a href="/profile" class="iq-sub-card iq-bg-primary-hover">
+                                    <div class="media align-items-center">
+                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                            <i class="ri-file-user-line"></i>
+                                        </div>
+                                        <div class="media-body ml-3">
+                                            <h6 class="mb-0 " style="color:#fff;">My Profile</h6>
+                                            <p class="mb-0 font-size-12">View personal profile details.</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                
+                             
+                                <div class="d-inline-block w-100 text-center p-3">
+                                    <a class="bg-primary iq-sign-btn" href="logout" role="button">Sign Out<i class="ri-login-box-line ml-2"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div></li>
+            </ul>
+        </div></nav>
+    </div>
+</div> 
+ <div class="d-flex flex-column" style="margin-top:55px;"> 
+   
+  </div>
+  </div>
+
+  <!-- othe main content -->
+
+  <div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Header Section -->
+            <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2 text-white">Editing: <%= user.fullname %></h1>
+                <div class="text-end">
+                    <small class="text-white"><b>User ID:</b> <%= user._id %></small>
+                </div>
+            </div>
+
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/adminRoute">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"><%= user.fullname %></li>
+                </ol>
+            </nav>
+
+            <!-- Edit Form -->
+            <form id="editUserForm" action="/editUser/<%= user._id %>?_method=PUT" method="POST" class="bg-dark p-4 rounded shadow" enctype="application/x-www-form-urlencoded">
+                <!-- Personal Information -->
+                <h4 class="mb-3 text-white">Personal Information</h4>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="fullname" class="form-label text-white">Full Name</label>
+                        <input type="text" class="form-control" id="fullname" name="fullname" value="<%= user.fullname %>" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="username" class="form-label text-white">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" value="<%= user.username %>" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="email" class="form-label text-white">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="tel" class="form-label text-white">Phone</label>
+                        <input type="tel" class="form-control" id="tel" name="tel" value="<%= user.tel %>" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="country" class="form-label text-white">Country</label>
+                        <input type="text" class="form-control" id="country" name="country" value="<%= user.country %>" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="city" class="form-label text-white">City</label>
+                        <input type="text" class="form-control" id="city" name="city" value="<%= user.city %>" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="zip_code" class="form-label text-white">Zip Code</label>
+                        <input type="text" class="form-control" id="zip_code" name="zip_code" value="<%= user.zip_code %>">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="address" class="form-label text-white">Address</label>
+                        <input type="text" class="form-control" id="address" name="address" value="<%= user.address %>">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="currency" class="form-label text-white">Currency</label>
+                        <input type="text" class="form-control" id="currency" name="currency" value="<%= user.currency %>" required>
+                    </div>
+                </div>
+
+                <!-- Account Information -->
+                <h4 class="mb-3 text-white">Account Information</h4>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="balance" class="form-label text-white">Balance</label>
+                        <input type="number" step="0.01" class="form-control" id="balance" name="balance" value="<%= user.balance %>">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="available" class="form-label text-white">Available Balance</label>
+                        <input type="text" class="form-control" id="available" name="available" value="<%= user.available %>">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="activeDeposit" class="form-label text-white">Active Deposit</label>
+                        <input type="text" class="form-control" id="activeDeposit" name="activeDeposit" value="<%= user.activeDeposit %>">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="profit" class="form-label text-white">Profit</label>
+                        <input type="text" class="form-control" id="profit" name="profit" value="<%= user.profit %>">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="totalEarning" class="form-label text-white">Total Earning</label>
+                        <input type="text" class="form-control" id="totalEarning" name="totalEarning" value="<%= user.totalEarning %>">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="totalWidthdraw" class="form-label text-white">Total Withdraw</label>
+                        <input type="text" class="form-control" id="totalWidthdraw" name="totalWidthdraw" value="<%= user.totalWidthdraw %>">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="prog" class="form-label text-white">Progress</label>
+                        <input type="number" class="form-control" id="prog" name="prog" value="<%= user.prog %>">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="signalProg" class="form-label text-white">Signal Progress</label>
+                        <input type="text" class="form-control" id="signalProg" name="signalProg" value="<%= user.signalProg %>">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="progPlus" class="form-label text-white">Progress Plus</label>
+                        <input type="text" class="form-control" id="progPlus" name="progPlus" value="<%= user.progPlus %>">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="progMinus" class="form-label text-white">Progress Minus</label>
+                        <input type="text" class="form-control" id="progMinus" name="progMinus" value="<%= user.progMinus %>">
+                    </div>
+                </div>
+
+                <!-- Verification & Status -->
+                <h4 class="mb-3 text-white">Verification & Status</h4>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="isVerified" class="form-label text-white">Email Verified</label>
+                        <select class="form-select" id="isVerified" name="isVerified" required>
+                            <option value="true" <%= user.isVerified ? 'selected' : '' %>>Yes</option>
+                            <option value="false" <%= !user.isVerified ? 'selected' : '' %>>No</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="kycVerified" class="form-label text-white">KYC Verified</label>
+                        <select class="form-select" id="kycVerified" name="kycVerified" required>
+                            <option value="true" <%= user.kycVerified ? 'selected' : '' %>>Yes</option>
+                            <option value="false" <%= !user.kycVerified ? 'selected' : '' %>>No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="verifiedStatus" class="form-label text-white">Verification Status</label>
+                        <input type="text" class="form-control" id="verifiedStatus" name="verifiedStatus" value="<%= user.verifiedStatus %>" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="isSuspended" class="form-label text-white">Is Suspended</label>
+                        <select class="form-select" id="isSuspended" name="isSuspended" required>
+                            <option value="true" <%= user.isSuspended ? 'selected' : '' %>>Yes</option>
+                            <option value="false" <%= !user.isSuspended ? 'selected' : '' %>>No</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Security -->
+                <h4 class="mb-3 text-white">Security</h4>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="security_question" class="form-label text-white">Security Question</label>
+                        <input type="text" class="form-control" id="security_question" name="security_question" value="<%= user.security_question || '' %>">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="session" class="form-label text-white">Trade Sessions</label>
+                        <input type="text" class="form-control" id="session" name="session" value="<%= user.session %>">
+                    </div>
+                </div>
+
+                <!-- Activity (Non-Editable) -->
+                <h4 class="mb-3 text-white">Activity (Non-Editable)</h4>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-white">Deposits</label>
+                        <input type="text" class="form-control" value="<%= user.deposits.length %> deposit(s)" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-white">Withdrawals</label>
+                        <input type="text" class="form-control" value="<%= user.withdraws.length %> withdrawal(s)" readonly>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-white">Upgrades</label>
+                        <input type="text" class="form-control" value="<%= user.upgrades.length %> upgrade(s)" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-white">Live Trades</label>
+                        <input type="text" class="form-control" value="<%= user.livetrades.length %> trade(s)" readonly>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-white">Copy Trades</label>
+                        <input type="text" class="form-control" value="<%= user.copyTrades.length %> trade(s)" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-white">Signals</label>
+                        <input type="text" class="form-control" value="<%= user.signals.length %> signal(s)" readonly>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-white">Verifications</label>
+                        <input type="text" class="form-control" value="<%= user.verified.length %> verification(s)" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-white">Stock Trades</label>
+                        <input type="text" class="form-control" value="<%= user.stocktrades.length %> trade(s)" readonly>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="submit" class="btn btn-primary">Update User</button>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" id="deleteButton" data-bs-target="#deleteModal">Delete User</button>
+                </div>
+            </form>
+
+            <!-- OTP Generation Section -->
+            <div class="mt-4 p-3 bg-dark text-white rounded">
+                <label class="form-label text-white">Generate OTP for Withdrawal</label>
+                <div class="d-flex gap-2">
+                    <input type="text" id="otpDisplay" class="form-control bg-secondary text-white" readonly>
+                    <button id="generateOtpBtn" class="btn btn-primary">Generate OTP</button>
+                </div>
+                <p id="otpMessage" class="mt-2"></p>
+            </div>
+
+            <!-- Delete Modal -->
+            <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteModalLabel">Confirm User Deletion</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>This will remove the user record of <b><%= user.fullname %></b>.<br>Are you sure?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <form action="/deleteUser/<%= user._id %>?_method=DELETE" method="POST">
+                                <button type="submit" class="btn btn-primary">Yes, Remove User</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+  
+  
+</section>
+
+<script>
+    // Handle form submission with AJAX
+    document.getElementById('editUserForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const submitButton = form.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Updating...';
+
+        try {
+            const formData = new URLSearchParams(new FormData(form));
+            const response = await Promise.race([
+                fetch(form.action, {
+                    method: 'POST', // Using POST with _method=PUT
+                    body: formData,
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                }),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), 10000))
+            ]);
+
+            const result = await response.json();
+            if (response.ok) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: result.message || 'User updated successfully',
+                    confirmButtonColor: '#3085d6'
+                }).then(() => {
+                    if (result.redirect) {
+                        window.location.href = result.redirect;
+                    } else {
+                        window.location.reload();
+                    }
+                });
+            } else {
+                throw new Error(result.error || 'Failed to update user');
+            }
+        } catch (err) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: err.message || 'An error occurred while updating the user',
+                confirmButtonColor: '#d33'
+            });
+        } finally {
+            submitButton.disabled = false;
+            submitButton.innerHTML = 'Update User';
+        }
+    });
+
+    // Display flash messages on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        const success = <%- JSON.stringify(success) %>;
+        const error = <%- JSON.stringify(error) %>;
+        if (success && success.length > 0) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: success[0],
+                confirmButtonColor: '#3085d6'
+            });
+        } else if (error && error.length > 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error[0],
+                confirmButtonColor: '#d33'
+            });
+        }
+    });
+
+    // OTP Generation (Placeholder - requires backend endpoint)
+    document.getElementById('generateOtpBtn')?.addEventListener('click', async () => {
+        const otpDisplay = document.getElementById('otpDisplay');
+        const otpMessage = document.getElementById('otpMessage');
+        otpDisplay.value = '';
+        otpMessage.textContent = 'Generating OTP...';
+
+        try {
+            const response = await fetch(`/generateOtp/${'<%= user._id %>'}`, {
+                method: 'POST'
+            });
+            const result = await response.json();
+            if (response.ok) {
+                otpDisplay.value = result.otp || '123456';
+                otpMessage.textContent = 'OTP generated successfully';
+                otpMessage.style.color = 'green';
+            } else {
+                throw new Error(result.error || 'Failed to generate OTP');
+            }
+        } catch (err) {
+            otpMessage.textContent = err.message || 'Error generating OTP';
+            otpMessage.style.color = 'red';
+        }
+    });
+</script>
+
+<%- include('partials/dynaFooter')%>

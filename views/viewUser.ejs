@@ -1,0 +1,476 @@
+<%- include('partials/dynaHeader')%>
+
+<body style="background-color:black;" class="">
+   
+
+<section class="content">
+
+    <div class="iq-sidebar" style="background-color:#171717;">
+    <div class="iq-sidebar-logo d-flex justify-content-between">
+        <a href="#" class="header-logo">
+            <img src="/images/logo.svg" class="img-fluid rounded-normal" alt="">
+        </a>
+        <div class="iq-menu-bt-sidebar">
+            <div class="iq-menu-bt align-self-center">
+                <div class="wrapper-menu">
+                    <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
+                    <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="sidebar-scrollbar" data-scrollbar="true" tabindex="-1" style="overflow: hidden; outline: none;"><div class="scroll-content">
+        <nav class="iq-sidebar-menu">
+            
+            <ul id="iq-sidebar-toggle" class="iq-menu">
+                <li>
+                    <a href="/adminRoute" class="iq-waves-effect" style="color:#fff;"><i class="ai-home-alt1"></i><span>Dashboard</span></a>
+                </li>
+                                <li>
+                    <a href="/allVerify" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-person-check"></i><span>all verification</span></a>
+                </li>
+                                <li>
+                    <a href="/allFunding" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-database-add"></i><span>all Deposit</span></a>
+                </li>
+
+                 <li>
+                    <a href="/all-copytrades" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>all createdExperts</span></a>
+                </li>
+                 <li>
+                    <a href="/user-copytrades" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>all usersCopytrade</span></a>
+                </li>
+                <li>
+                    <a href="/allWidthdrawals" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-coin"></i><span>all Withdrawrals</span></a>
+                </li>
+                <li>
+                    <a href="/all-affiliates" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-robot"></i><span>Affiliate Packages</span></a>
+                </li>
+                <li>
+                    <a href="/all-accountUpgrade" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-arrow-90deg-up"></i><span>Upgrade</span></a>
+                </li>
+              
+                
+                <li>
+                    <a href="/all-signal" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-broadcast-pin"></i><span>all signals</span></a>
+                </li>
+                <li>
+                    <a href="/all-livetrade" class="iq-waves-effect" style="color:#fff;"><i class="ai-align-bottom"></i><span>all  Trading</span></a>
+                </li>
+                <li>
+                    <a href="/all-tradestock" class="iq-waves-effect" style="color:#fff;"><i class="ai-data"></i><span>all StocksTrades</span></a>
+                </li>
+                
+                <li>
+                    <a href="mailto:support@digital-topfigmarkets.com" class="iq-waves-effect" style="color:#fff;"><i class="ai-envelope"></i><span>Email us</span></a>
+                </li>
+                 <li>
+                    <a href="/all-wallets" class="iq-waves-effect" style="color:#fff;"><i class="ai-arrow-right-left"></i><span>wallet Addresses</span></a>
+                </li>
+                 <li>
+                    <a href="/logout" class="iq-waves-effect" style="color:#fff;"><i class="ai-sign-out"></i><span>logout out</span></a>
+                </li>
+                
+                </ul>
+        </nav>
+    </div><div class="scrollbar-track scrollbar-track-x" style="display: none;"><div class="scrollbar-thumb scrollbar-thumb-x" style="width: 300px; transform: translate3d(0px, 0px, 0px);"></div></div><div class="scrollbar-track scrollbar-track-y" style="display: block;"><div class="scrollbar-thumb scrollbar-thumb-y" style="height: 463.426px; transform: translate3d(0px, 0px, 0px);"></div></div></div>
+</div>
+<!-- TOP Nav Bar -->
+<div class="iq-top-navbar" style="background-color:#171717;">
+    <div class="iq-navbar-custom">
+        <nav class="navbar navbar-expand-lg navbar-light p-0">
+            <div class="iq-menu-bt d-flex align-items-center">
+                <div class="wrapper-menu">
+                    <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
+                    <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
+                </div>
+                <div class="iq-navbar-logo d-flex justify-content-between">
+                    <a href="#" class="header-logo">
+                        <img src="/images/favicon.svg" class="img-fluid rounded-normal" alt="">
+                    </a>
+                </div>
+            </div>
+           
+            
+            <div class="d-flex flex-column" style="margin-top:-20px;"> 
+   
+    <div class="hn-1"></div>
+   <div class="hn-2" style="margin-left:-18px;"><%=user.fullname%></div>
+  </div>
+  <div>
+            <ul class="navbar-list">
+                <li class="line-height">
+                    <a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
+                        </a><div class="profile-img" alt="user"><a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
+                        <img src="/wp-user/assets5i/img/pers.svg"> 
+                    </a>
+                    <div class="iq-sub-dropdown iq-user-dropdown">
+                        <div class="iq-card shadow-none m-0">
+                            <div class="iq-card-body p-0 " style="background-color:#171717;">
+                                <div class="bg-primary p-3">
+                                    <h5 class="mb-0 text-white line-height"><%=user.fullname%></h5>
+                                </div>
+                                <a href="/profile" class="iq-sub-card iq-bg-primary-hover">
+                                    <div class="media align-items-center">
+                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                            <i class="ri-file-user-line"></i>
+                                        </div>
+                                        <div class="media-body ml-3">
+                                            <h6 class="mb-0 " style="color:#fff;">My Profile</h6>
+                                            <p class="mb-0 font-size-12">View personal profile details.</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                
+                             
+                                <div class="d-inline-block w-100 text-center p-3">
+                                    <a class="bg-primary iq-sign-btn" href="logout" role="button">Sign Out<i class="ri-login-box-line ml-2"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div></li>
+            </ul>
+        </div></nav>
+    </div>
+</div> 
+ <div class="d-flex flex-column" style="margin-top:55px;"> 
+   
+  </div>
+  </div>
+
+  <!-- othe main content -->
+
+ <!-- Main Content -->
+    <div class="container text-white py-4" style="min-height: 100vh; background-color: #212529;">
+      <!-- Flash Messages for SweetAlert2 -->
+      <% if (success && success.length > 0) { %>
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Success',
+              text: '<%= success %>',
+              showConfirmButton: true,
+              timer: 3000,
+              timerProgressBar: true,
+              background: '#212529',
+              color: '#fff',
+              confirmButtonColor: '#286090'
+            });
+          });
+        </script>
+      <% } %>
+      <% if (error && error.length > 0) { %>
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: '<%= error %>',
+              showConfirmButton: true,
+              timer: 3000,
+              timerProgressBar: true,
+              background: '#212529',
+              color: '#fff',
+              confirmButtonColor: '#286090'
+            });
+          });
+        </script>
+      <% } %>
+
+      <!-- Header Section -->
+      <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2"><%= user.fullname || 'N/A' %></h1>
+        <div class="text-end">
+          <small><b>User ID:</b> <%= user._id || 'N/A' %></small><br>
+          <small><b>Last Updated:</b> <%= user.updatedAt ? new Date(user.updatedAt).toLocaleString() : 'N/A' %></small>
+        </div>
+      </div>
+
+      <!-- Breadcrumb -->
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/adminRoute">Dashboard</a></li>
+          <li class="breadcrumb-item active" aria-current="page"><%= user.fullname || 'N/A' %></li>
+        </ol>
+      </nav>
+
+      <!-- User Details -->
+      <div class="row text-dark">
+        <div class="col-md-6">
+          <div class="card mb-3">
+            <div class="card-header">Personal Information</div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-4"><b>Name:</b></div>
+                  <div class="col-8"><%= user.fullname || 'N/A' %></div>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-4"><b>Username:</b></div>
+                  <div class="col-8"><%= user.username || 'N/A' %></div>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-4"><b>Email:</b></div>
+                  <div class="col-8"><%= user.email || 'N/A' %></div>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-4"><b>Telephone:</b></div>
+                  <div class="col-8"><%= user.tel || 'N/A' %></div>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-4"><b>Country:</b></div>
+                  <div class="col-8"><%= user.country || 'N/A' %></div>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-4"><b>City:</b></div>
+                  <div class="col-8"><%= user.city || 'N/A' %></div>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-4"><b>Zip Code:</b></div>
+                  <div class="col-8"><%= user.zip_code || 'N/A' %></div>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-4"><b>Address:</b></div>
+                  <div class="col-8"><%= user.address || 'N/A' %></div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card mb-3">
+            <div class="card-header">Account Information</div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-4"><b>Currency:</b></div>
+                  <div class="col-8"><%= user.currency || 'N/A' %></div>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-4"><b>Balance:</b></div>
+                  <div class="col-8">$<%= user.balance ? parseFloat(user.balance).toFixed(2) : '0.00' %></div>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-4"><b>Available Balance:</b></div>
+                  <div class="col-8">$<%= user.available ? parseFloat(user.available).toFixed(2) : '0.00' %></div>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-4"><b>Active Deposit:</b></div>
+                  <div class="col-8">$<%= user.activeDeposit ? parseFloat(user.activeDeposit).toFixed(2) : '0.00' %></div>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-4"><b>Profit:</b></div>
+                  <div class="col-8">$<%= user.profit ? parseFloat(user.profit).toFixed(2) : '0.00' %></div>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-4"><b>Total Earning:</b></div>
+                  <div class="col-8">$<%= user.totalEarning ? parseFloat(user.totalEarning).toFixed(2) : '0.00' %></div>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-4"><b>Total Withdrawal:</b></div>
+                  <div class="col-8">$<%= user.totalWidthdraw ? parseFloat(user.totalWidthdraw).toFixed(2) : '0.00' %></div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="row text-dark">
+        <div class="col-md-6">
+          <div class="card mb-3">
+            <div class="card-header">Verification & Status</div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-4"><b>Email Verified:</b></div>
+                  <div class="col-8"><%= user.isVerified ? 'Yes' : 'No' %></div>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-4"><b>KYC Verified:</b></div>
+                  <div class="col-8"><%= user.kycVerified ? 'Yes' : 'No' %></div>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-4"><b>Verification Status:</b></div>
+                  <div class="col-8"><%= user.verifiedStatus || 'N/A' %></div>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-4"><b>Is Suspended:</b></div>
+                  <div class="col-8"><%= user.isSuspended ? 'Yes' : 'No' %></div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card mb-3">
+            <div class="card-header">Activity</div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item text-dark">
+                <div class="row">
+                  <div class="col-4"><b>Deposits:</b></div>
+                  <div class="col-8">
+                    <%= user.deposits ? user.deposits.length : 0 %> deposit(s)
+                    <% if (user.deposits && user.deposits.length > 0) { %>
+                      <ul>
+                        <% user.deposits.forEach(dep => { %>
+                          <li>ID: <%= dep._id %>, Amount: $<%= dep.amount ? parseFloat(dep.amount).toFixed(2) : 'N/A' %></li>
+                        <% }) %>
+                      </ul>
+                    <% } %>
+                  </div>
+                </div>
+              </li>
+              <li class="list-group-item text-dark">
+                <div class="row">
+                  <div class="col-4"><b>Withdrawals:</b></div>
+                  <div class="col-8">
+                    <%= user.withdrawals ? user.withdrawals.length : 0 %> withdrawal(s)
+                    <% if (user.withdrawals && user.withdrawals.length > 0) { %>
+                      <ul>
+                        <% user.withdrawals.forEach(wd => { %>
+                          <li>ID: <%= wd._id %>, Amount: $<%= wd.amount ? parseFloat(wd.amount).toFixed(2) : 'N/A' %></li>
+                        <% }) %>
+                      </ul>
+                    <% } %>
+                  </div>
+                </div>
+              </li>
+              <li class="list-group-item ">
+                <div class="row">
+                  <div class="col-4"><b>Upgrades:</b></div>
+                  <div class="col-8 text-white">
+                    <%= user.upgrades ? user.upgrades.length : 0 %> upgrade(s)
+                    <% if (user.upgrades && user.upgrades.length > 0) { %>
+                      <ul>
+                        <% user.upgrades.forEach(up => { %>
+                          <li>ID: <%= up._id %></li>
+                        <% }) %>
+                      </ul>
+                    <% } %>
+                  </div>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-4"><b>Live Trades:</b></div>
+                  <div class="col-8 text-dark">
+                    <%= user.livetrades ? user.livetrades.length : 0 %> trade(s)
+                    <% if (user.livetrades && user.livetrades.length > 0) { %>
+                      <ul>
+                        <% user.livetrades.forEach(tr => { %>
+                          <li>ID: <%= tr._id %></li>
+                        <% }) %>
+                      </ul>
+                    <% } %>
+                  </div>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-4"><b>Copy Trades:</b></div>
+                  <div class="col-8">
+                    <%= user.copyTrades ? user.copyTrades.length : 0 %> trade(s)
+                    <% if (user.copyTrades && user.copyTrades.length > 0) { %>
+                      <ul>
+                        <% user.copyTrades.forEach(ct => { %>
+                          <li>ID: <%= ct._id %></li>
+                        <% }) %>
+                      </ul>
+                    <% } %>
+                  </div>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-4"><b>Verifications:</b></div>
+                  <div class="col-8">
+                    <%= user.verified ? user.verified.length : 0 %> verification(s)
+                    <% if (user.verified && user.verified.length > 0) { %>
+                      <ul>
+                        <% user.verified.forEach(vr => { %>
+                          <li>ID: <%= vr._id %></li>
+                        <% }) %>
+                      </ul>
+                    <% } %>
+                  </div>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-4"><b>Signals:</b></div>
+                  <div class="col-8">
+                    <%= user.signals ? user.signals.length : 0 %> signal(s)
+                    <% if (user.signals && user.signals.length > 0) { %>
+                      <ul>
+                        <% user.signals.forEach(sg => { %>
+                          <li>ID: <%= sg._id %></li>
+                        <% }) %>
+                      </ul>
+                    <% } %>
+                  </div>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-4"><b>Stock Trades:</b></div>
+                  <div class="col-8">
+                    <%= user.stocktrades ? user.stocktrades.length : 0 %> trade(s)
+                    <% if (user.stocktrades && user.stocktrades.length > 0) { %>
+                      <ul>
+                        <% user.stocktrades.forEach(st => { %>
+                          <li>ID: <%= st._id %></li>
+                        <% }) %>
+                      </ul>
+                    <% } %>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+</section>
+
+
+
+<%- include('partials/dynaFooter')%>

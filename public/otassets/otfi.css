@@ -1,0 +1,118 @@
+.t15oontop {
+  background: rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(15px);
+          backdrop-filter: blur(15px);
+  display: grid;
+  justify-content: center;
+  position: fixed;
+  z-index: 10000;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100vh;
+}
+.t15oontop .t15ocon {
+  /*
+  	min-width:433px;
+  	*/
+  max-width: 433px;
+  width: 100%;
+  height: 100vh;
+  overflow-y: scroll;
+  flex-shrink: 0;
+}
+.t15oontop .t15ocon .t15oheadpart {
+  display: flex;
+  justify-content: space-between;
+  margin: 18px 23px;
+  align-items: center;
+}
+.t15oontop .t15ocon .t15oheadpart .t15orightpart {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.2rem;
+}
+.t15oontop .t15ocon .t15oheadpart .t15orightpart button {
+  color: #FFF;
+  font-family: inter;
+  font-size: 7px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  padding: 12px 15px;
+  border: 0;
+}
+.t15oontop .t15ocon .t15oheadpart .t15orightpart button.t15oclos1e {
+  border-radius: 6px;
+  background: rgba(217, 217, 217, 0.18);
+}
+.t15oontop .t15ocon .t15oheadpart .t15orightpart button.t15oma1r {
+  border-radius: 6px;
+  background: #08B04F;
+}
+.t15oontop .t15ocon .t15oheadpart .t15oleftpart {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.t15oontop .t15ocon .t15oheadpart .t15oleftpart img {
+  -o-object-fit: contain;
+     object-fit: contain;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+.t15oontop .t15ocon .t15oheadpart .t15oleftpart .t15oinleft .t15oro1w1 {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.t15oontop .t15ocon .t15oheadpart .t15oleftpart .t15oinleft .t15oro1w1 .t15onam {
+  color: #FFF;
+  font-family: Inter;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+.t15oontop .t15ocon .t15oheadpart .t15oleftpart .t15oinleft .t15oro1w1 img {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+.t15oontop .t15ocon .t15oheadpart .t15oleftpart .t15oinleft .t15oro2w1 {
+  color: #FFF;
+  font-family: inter;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+.t15oontop .t15ocon .t15olin1e {
+  background: rgba(255, 255, 255, 0.2);
+  width: 100%;
+  height: 1px;
+}
+.t15oontop .t15ocon .t15oheading {
+  color: #FFF;
+  font-family: Inter;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  margin: 18px 23px;
+  white-space: pre-line;
+  overflow-wrap: break-word;
+}
+.t15oontop .t15ocon .t15obody {
+  color: #FFF;
+  font-family: inter;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  margin: 18px 23px;
+  white-space: pre-line;
+  overflow-wrap: break-word;
+}

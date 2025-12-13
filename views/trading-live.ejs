@@ -1,0 +1,389 @@
+<%- include('partials/dashboardHeader')%>
+
+
+<body style="background-color:black;" class="">
+   
+
+<section class="content">
+
+    <div class="iq-sidebar" style="background-color:#171717;">
+    <div class="iq-sidebar-logo d-flex justify-content-between">
+        <a href="#" class="header-logo">
+            <img src="/images/logo.svg" class="img-fluid rounded-normal" alt="">
+        </a>
+        <div class="iq-menu-bt-sidebar">
+            <div class="iq-menu-bt align-self-center">
+                <div class="wrapper-menu">
+                    <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
+                    <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="sidebar-scrollbar" data-scrollbar="true" tabindex="-1" style="overflow: hidden; outline: none;"><div class="scroll-content">
+        <nav class="iq-sidebar-menu">
+            
+            <ul id="iq-sidebar-toggle" class="iq-menu">
+                <li>
+                    <a href="/dashboard" class="iq-waves-effect" style="color:#fff;"><i class="ai-home-alt1"></i><span>Dashboard</span></a>
+                </li>
+                                <li>
+                    <a href="/verify/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-person-check"></i><span>Verify Account</span></a>
+                </li>
+                                <li>
+                    <a href="/deposit" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-database-add"></i><span>Deposit</span></a>
+                </li>
+                <li>
+                    <a href="/withdraw" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-coin"></i><span>Withdraw</span></a>
+                </li>
+                <li>
+                    <a href="/page/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-robot"></i><span>Affiliate Packages</span></a>
+                </li>
+                <li>
+                    <a href="/upgrade" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-arrow-90deg-up"></i><span>Upgrade</span></a>
+                </li>
+
+                 <li>
+                  <a href="/chat" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-chat-dots"></i><span>Chat</span></a>
+                </li>
+                
+               <li>
+                    <a href="/copy-expert" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>Copy Experts</span></a>
+                </li>
+
+                <li>
+                    <a href="/ongoing-copy-trades/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>ongoing-copytrades</span></a>
+                </li>
+                
+                <li>
+                    <a href="/signal-package" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-broadcast-pin"></i><span>signals</span></a>
+                </li>
+                <li>
+                    <a href="/trading-live/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="ai-align-bottom"></i><span>Live Trading</span></a>
+                </li>
+                <li>
+                    <a href="/trading-stock/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="ai-data"></i><span>Stocks Trading</span></a>
+                </li>
+                <li>
+                    <a href="/crypto" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-currency-bitcoin"></i><span>Buy Crypto</span></a>
+                </li>
+                
+                <li>
+                    <a href="mailto:support@digital-topfigmarkets.com" class="iq-waves-effect" style="color:#fff;"><i class="ai-envelope"></i><span>Email us</span></a>
+                </li>
+                <li>
+                    <a href="/edit/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="ai-gear"></i><span>settings</span></a>
+                </li>
+                 <li>
+                    <a href="/transactions/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="ai-arrow-right-left"></i><span>Transaction History</span></a>
+                </li>
+                 <li>
+                    <a href="/logout" class="iq-waves-effect" style="color:#fff;"><i class="ai-sign-out"></i><span>Sign out</span></a>
+                </li>
+                
+                </ul>
+        </nav>
+    </div><div class="scrollbar-track scrollbar-track-x" style="display: none;"><div class="scrollbar-thumb scrollbar-thumb-x" style="width: 300px; transform: translate3d(0px, 0px, 0px);"></div></div><div class="scrollbar-track scrollbar-track-y" style="display: block;"><div class="scrollbar-thumb scrollbar-thumb-y" style="height: 463.426px; transform: translate3d(0px, 0px, 0px);"></div></div></div>
+</div>
+<!-- TOP Nav Bar -->
+<div class="iq-top-navbar" style="background-color:#171717;">
+    <div class="iq-navbar-custom">
+        <nav class="navbar navbar-expand-lg navbar-light p-0">
+            <div class="iq-menu-bt d-flex align-items-center">
+                <div class="wrapper-menu">
+                    <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
+                    <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
+                </div>
+                <div class="iq-navbar-logo d-flex justify-content-between">
+                    <a href="#" class="header-logo">
+                        <img src="/images/favicon.svg" class="img-fluid rounded-normal" alt="">
+                    </a>
+                </div>
+            </div>
+           
+            
+            <div class="d-flex flex-column" style="margin-top:-20px;"> 
+   
+    <div class="hn-1"></div>
+   <div class="hn-2" style="margin-left:-18px;"><%=user.fullname%></div>
+  </div>
+  <div>
+            <ul class="navbar-list">
+                <li class="line-height">
+                    <a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
+                        </a><div class="profile-img" alt="user"><a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
+                        <img src="/wp-user/assets5i/img/pers.svg"> 
+                    </a>
+                    <div class="iq-sub-dropdown iq-user-dropdown">
+                        <div class="iq-card shadow-none m-0">
+                            <div class="iq-card-body p-0 " style="background-color:#171717;">
+                                <div class="bg-primary p-3">
+                                    <h5 class="mb-0 text-white line-height"><%=user.fullname%></h5>
+                                    <span class="text-white font-size-12"><%=user.isVerified%></span>
+                                </div>
+                                <a href="profile" class="iq-sub-card iq-bg-primary-hover">
+                                    <div class="media align-items-center">
+                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                            <i class="ri-file-user-line"></i>
+                                        </div>
+                                        <div class="media-body ml-3">
+                                            <h6 class="mb-0 " style="color:#fff;">My Profile</h6>
+                                            <p class="mb-0 font-size-12">View personal profile details.</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                 <!--<a href="profile-edit.html" class="iq-sub-card iq-bg-primary-hover">
+                                    <div class="media align-items-center">
+                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                            <i class="ri-profile-line"></i>
+                                        </div>
+                                       <div class="media-body ml-3">
+                                            <h6 class="mb-0 ">Edit Profile</h6>
+                                            <p class="mb-0 font-size-12">Modify your personal details.</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                <a href="/wp-user/account-setting.html" class="iq-sub-card iq-bg-primary-hover">
+                                    <div class="media align-items-center">
+                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                            <i class="ri-account-box-line"></i>
+                                        </div>
+                                        <div class="media-body ml-3">
+                                            <h6 class="mb-0 ">Account settings</h6>
+                                            <p class="mb-0 font-size-12">Manage your account parameters.</p>
+                                        </div>
+                                    </div>
+                                </a>-->
+                                <a href="edit/<%=user._id%>" class="iq-sub-card iq-bg-primary-hover">
+                                    <div class="media align-items-center">
+                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                            <i class="ri-lock-line"></i>
+                                        </div>
+                                        <div class="media-body ml-3">
+                                            <h6 class="mb-0 " style="color:#fff;">Privacy Settings</h6>
+                                            <p class="mb-0 font-size-12">Control your privacy parameters.</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                <div class="d-inline-block w-100 text-center p-3">
+                                    <a class="bg-primary iq-sign-btn" href="logout" role="button">Sign Out<i class="ri-login-box-line ml-2"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div></li>
+            </ul>
+        </div></nav>
+    </div>
+</div> 
+ <div class="d-flex flex-column" style="margin-top:55px;"> 
+   
+  </div>
+  </div>
+
+  <!-- othe main content -->
+   <div class="wrapper">
+        <div id="content-page" class="content-page" style="margin-top: 30px;">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12 col-lg-9">
+                        <div class="iq-card" style="background-color: #171717; color: #B3B3B3;">
+                            <div class="iq-card-header d-flex justify-content-between">
+                                <div class="iq-header-title">
+                                    <h4 class="card-title" style="color: white;">Live Trading</h4>
+                                </div>
+                            </div>
+                            <div class="iq-card-body">
+                                <h4 style="color: white; text-align: center;"><b>Add Live Trade</b></h4>
+                                <form action="/trading-live/<%= user._id %>" method="post" autocomplete="off" class="was-validated">
+                                    <div class="row">
+                                        <div class="form-group col-md-12">
+                                            <select name="trading_type" class="form-control" required>
+                                                <option value="">---Select Trading Type---</option>
+                                                <option value="CRYPTOCURRENCY">CRYPTOCURRENCY</option>
+                                                <option value="FOREX">FOREX</option>
+                                                <option value="Margin Trade">Margin Trade</option>
+                                                <option value="1">1</option>
+                                                <option value="10">10</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-6 mb-3">
+                                            <label style="color: white;">Currency Pair</label>
+                                            <input type="text" class="form-control" name="currency_pair" placeholder="Enter Currency Pair example: BTC/ETH" required>
+                                        </div>
+                                        <div class="form-group col-md-6 mb-3">
+                                            <label style="color: white;">Lot Size</label>
+                                            <input type="text" class="form-control" name="lot_size" placeholder="Enter Lot Size" required>
+                                        </div>
+                                        <div class="form-group col-md-4 mb-3">
+                                            <label style="color: white;">Entry Price</label>
+                                            <input type="text" class="form-control" name="entry_price" placeholder="Enter Entry Price" required>
+                                        </div>
+                                        <div class="form-group col-md-4 mb-3">
+                                            <label style="color: white;">Stop Loss</label>
+                                            <input type="text" class="form-control" name="stop_loss" placeholder="Enter Stop Loss" required>
+                                        </div>
+                                        <div class="form-group col-md-4 mb-3">
+                                            <label style="color: white;">Take Profit</label>
+                                            <input type="text" class="form-control" name="take_profit" placeholder="Enter Take Profit" required>
+                                        </div>
+                                        <div class="form-group col-md-12">
+                                            <label style="color: white;">Select Action</label>
+                                            <select name="trading_action" class="form-control" required>
+                                                <option value="BUY">BUY</option>
+                                                <option value="SELL">SELL</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-12">
+                                            <button class="btn btn-primary btn-lg btn-block" type="submit">Execute Trade</button>
+                                        </div>
+                                    </div>
+                                </form>
+                                <hr>
+                                <p style="color: white; text-align: center;"><b>Recent Live Trading History</b></p>
+                                <div class="table-responsive">
+                                    <table id="user-list-table" class="table table-striped table-bordered mt-4" role="grid">
+                                        <thead>
+                                            <tr>
+                                                <th style="color: white;">Trading Type</th>
+                                                <th style="color: white;">Currency Pair</th>
+                                                <th style="color: white;">Trading Action</th>
+                                                <th style="color: white;">Entry Price</th>
+                                                <th style="color: white;">Stop Loss</th>
+                                                <th style="color: white;">Take Profit</th>
+                                                <th style="color: white;">Status</th>
+                                                <th style="color: white;">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody style="background-color: #2A2929;">
+                                            <% livetrades.forEach(trade => { %>
+                                                <tr>
+                                                    <td style="color: black;"><%= trade.type %></td>
+                                                    <td style="color: black;"><%= trade.currencypair %></td>
+                                                    <td style="color: black;"><%= trade.action %></td>
+                                                    <td style="color: black;"><%= trade.entryPrice %></td>
+                                                    <td style="color: black;"><%= trade.stopLoss %></td>
+                                                    <td style="color: black;"><%= trade.takeProfit %></td>
+                                                    <td style="color: black;"><%= trade.status %></td>
+                                                    <td>
+                                                        <% if (trade.status === 'Open') { %>
+                                                            <form action="/trading-live-close/<%= trade._id %>" method="post" style="display: inline;">
+                                                                <button type="submit" class="btn btn-danger btn-sm">Close Trade</button>
+                                                            </form>
+                                                        <% } else { %>
+                                                            <span style="color: white;">Closed</span>
+                                                        <% } %>
+                                                    </td>
+                                                </tr>
+                                            <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/custom.js"></script>
+  
+<script>
+    // Display flash messages with SweetAlert
+    <% if (messages.success) { %>
+        Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: '<%= messages.success %>',
+            confirmButtonColor: '#1b55e2',
+        });
+    <% } %>
+    <% if (messages.error) { %>
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: '<%= messages.error %>',
+            confirmButtonColor: '#1b55e2',
+        });
+    <% } %>
+
+    // Handle form submission with AJAX
+    $('form[action*="/trading-live/"]').on('submit', function(e) {
+        e.preventDefault();
+        const form = $(this);
+        $.ajax({
+            url: form.attr('action'),
+            method: 'POST',
+            data: form.serialize(),
+            success: function(response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Trade executed successfully',
+                    confirmButtonColor: '#1b55e2',
+                }).then(() => {
+                    window.location.reload(); // Refresh to show updated trades
+                });
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: xhr.responseJSON?.message || 'Error executing trade',
+                    confirmButtonColor: '#1b55e2',
+                });
+            }
+        });
+    });
+
+    // Handle close trade button
+    $('form[action*="/trading-live-close/"]').on('submit', function(e) {
+        e.preventDefault();
+        const form = $(this);
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you want to close this trade?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#1b55e2',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, close it!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: form.attr('action'),
+                    method: 'POST',
+                    success: function() {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Closed',
+                            text: 'Trade closed successfully',
+                            confirmButtonColor: '#1b55e2',
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: xhr.responseJSON?.message || 'Error closing trade',
+                            confirmButtonColor: '#1b55e2',
+                        });
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+
+<%- include('partials/dashboardFooter')%>

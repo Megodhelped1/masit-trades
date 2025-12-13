@@ -1,0 +1,176 @@
+@import url(https://fonts.googleapis.com/css2?family=Inter:wght@100;
+
+@font-face {
+font-family: "Inter";
+src: url("static/Inter-Regular.ttf"); 
+}
+@font-face {
+font-family: "Montserrat";
+src: url("static/Montserrat-SemiBold.ttf"); 
+}
+
+@font-face {
+font-family: "Kdam Thmor";
+src: url("static/Kdam-Thmor-Regular.ttf"); 
+}
+
+
+body{
+	overflow: scroll;
+}
+
+.content {
+  max-width: 100%;
+  height: 100vh;
+  overflow-y: none;
+  margin: auto;
+  color: black;
+  padding: 10px;
+}
+
+.ph{
+	 
+ border-radius: 50%;
+ height: 40px;
+ width: 40px;
+ overflow: hidden;
+ display: flex;
+ justify-content: center;
+ align-items: center;
+
+
+}
+
+tr td.bee:first-child{
+	color: #000;
+font-family: Inter;
+font-size: 8px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+width:150px; 
+	}
+tr td.bee:nth-child(2){
+	color: #000;
+font-family: Inter;
+font-size: 8px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+	}
+
+	.gate{
+		border-radius: 16px;
+border: 1px solid #c40000;
+background: #FFF;
+padding: .5rem;
+	}
+
+	.outer-gate{
+		border-radius: 13px;
+background: #FFF;
+box-shadow: 0px 0px 4px 2px rgba(48, 48, 48, 0.13);
+padding: .5rem;
+	}
+
+	.t2{
+		width: 100%;
+		margin-top: .5rem;
+		margin-bottom: 1rem;
+	}
+
+	.l1{
+		color: #000;
+font-family: Inter;
+font-size: 10px;
+font-style: normal;
+font-weight: 500;
+line-height: normal;
+	}
+	.l2{
+		color: #000;
+font-family: Inter;
+font-size: 20px;
+font-style: normal;
+font-weight: 600;
+line-height: normal;
+	}
+	.l3{
+		color: #C40000;
+font-family: Inter;
+font-size: 8px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+	}
+	.r1 { 
+		text-align: right;
+
+		color: #000;
+font-family: Inter;
+font-size: 6px;
+font-style: normal;
+font-weight: 500;
+line-height: normal;
+
+	 }
+	 .r2{
+		text-align: right;
+
+		color: #000;
+font-family: Inter;
+font-size: 26px;
+font-style: normal;
+font-weight: 500;
+line-height: normal;
+
+	 }
+
+	 .td-item{
+	 	padding: .8rem;
+	 	margin-top: .5rem;
+	 	margin-bottom: .5rem;
+	 	width: 100%;
+
+	 	border-radius: 13px;
+background: #FFF;
+box-shadow: 0px 0px 4px 2px rgba(48, 48, 48, 0.13);
+	
+	text-decoration: none;
+	cursor: pointer;
+
+	 }
+	 .td-item:hover{
+
+	text-decoration: none;
+	 }
+
+tr td.cee:first-child{
+	padding-right: 1rem;
+	}
+tr td.cee:nth-child(2){
+
+	}
+	.z1{
+		color: #000;
+font-family: Inter;
+font-size: 10px;
+font-style: normal;
+font-weight: 500;
+line-height: normal;
+	padding-top: .3rem;
+	padding-bottom: .3rem;
+	}
+	.d1{
+		color: #c40000;
+font-family: Inter;
+font-size: 15px;
+font-style: normal;
+font-weight: 600;
+line-height: normal;
+	padding-bottom: .5rem;
+	}
+	
+.ph img{
+ width: 40px;
+}

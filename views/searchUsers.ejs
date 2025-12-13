@@ -1,0 +1,379 @@
+<%- include('partials/dynaHeader')%>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+<body style="background-color:black;" class="">
+   
+
+<section class="content">
+
+    <div class="iq-sidebar" style="background-color:#171717;">
+    <div class="iq-sidebar-logo d-flex justify-content-between">
+        <a href="#" class="header-logo">
+            <img src="/images/logo.svg" class="img-fluid rounded-normal" alt="">
+        </a>
+        <div class="iq-menu-bt-sidebar">
+            <div class="iq-menu-bt align-self-center">
+                <div class="wrapper-menu">
+                    <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
+                    <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="sidebar-scrollbar" data-scrollbar="true" tabindex="-1" style="overflow: hidden; outline: none;"><div class="scroll-content">
+        <nav class="iq-sidebar-menu">
+            
+            <ul id="iq-sidebar-toggle" class="iq-menu">
+                <li>
+                    <a href="/adminRoute" class="iq-waves-effect" style="color:#fff;"><i class="ai-home-alt1"></i><span>Dashboard</span></a>
+                </li>
+                                <li>
+                    <a href="/allVerify" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-person-check"></i><span>all verification</span></a>
+                </li>
+                                <li>
+                    <a href="/allFunding" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-database-add"></i><span>all Deposit</span></a>
+                </li>
+
+                 <li>
+                    <a href="/all-copytrades" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>all createdExperts</span></a>
+                </li>
+                 <li>
+                    <a href="/user-copytrades" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>all usersCopytrade</span></a>
+                </li>
+                <li>
+                    <a href="/allWidthdrawals" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-coin"></i><span>all Withdrawrals</span></a>
+                </li>
+                <li>
+                    <a href="/all-affiliates" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-robot"></i><span>Affiliate Packages</span></a>
+                </li>
+                <li>
+                    <a href="/all-accountUpgrade" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-arrow-90deg-up"></i><span>Upgrade</span></a>
+                </li>
+              
+                
+                <li>
+                    <a href="/all-signal" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-broadcast-pin"></i><span>all signals</span></a>
+                </li>
+                <li>
+                    <a href="/all-livetrade" class="iq-waves-effect" style="color:#fff;"><i class="ai-align-bottom"></i><span>all  Trading</span></a>
+                </li>
+                <li>
+                    <a href="/all-tradestock" class="iq-waves-effect" style="color:#fff;"><i class="ai-data"></i><span>all StocksTrades</span></a>
+                </li>
+                
+                <li>
+                    <a href="mailto:support@digital-topfigmarkets.com" class="iq-waves-effect" style="color:#fff;"><i class="ai-envelope"></i><span>Email us</span></a>
+                </li>
+                 <li>
+                    <a href="/all-wallets" class="iq-waves-effect" style="color:#fff;"><i class="ai-arrow-right-left"></i><span>wallet Addresses</span></a>
+                </li>
+                 <li>
+                    <a href="/logout" class="iq-waves-effect" style="color:#fff;"><i class="ai-sign-out"></i><span>logout out</span></a>
+                </li>
+                
+                </ul>
+        </nav>
+    </div><div class="scrollbar-track scrollbar-track-x" style="display: none;"><div class="scrollbar-thumb scrollbar-thumb-x" style="width: 300px; transform: translate3d(0px, 0px, 0px);"></div></div><div class="scrollbar-track scrollbar-track-y" style="display: block;"><div class="scrollbar-thumb scrollbar-thumb-y" style="height: 463.426px; transform: translate3d(0px, 0px, 0px);"></div></div></div>
+</div>
+<!-- TOP Nav Bar -->
+<div class="iq-top-navbar" style="background-color:#171717;">
+    <div class="iq-navbar-custom">
+        <nav class="navbar navbar-expand-lg navbar-light p-0">
+            <div class="iq-menu-bt d-flex align-items-center">
+                <div class="wrapper-menu">
+                    <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
+                    <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
+                </div>
+                <div class="iq-navbar-logo d-flex justify-content-between">
+                    <a href="#" class="header-logo">
+                        <img src="/images/favicon.svg" class="img-fluid rounded-normal" alt="">
+                    </a>
+                </div>
+            </div>
+           
+            
+            <div class="d-flex flex-column" style="margin-top:-20px;"> 
+   
+    <div class="hn-1"></div>
+   <div class="hn-2" style="margin-left:-18px;"><%=user.fullname%></div>
+  </div>
+  <div>
+            <ul class="navbar-list">
+                <li class="line-height">
+                    <a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
+                        </a><div class="profile-img" alt="user"><a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
+                        <img src="/wp-user/assets5i/img/pers.svg"> 
+                    </a>
+                    <div class="iq-sub-dropdown iq-user-dropdown">
+                        <div class="iq-card shadow-none m-0">
+                            <div class="iq-card-body p-0 " style="background-color:#171717;">
+                                <div class="bg-primary p-3">
+                                    <h5 class="mb-0 text-white line-height"><%=user.fullname%></h5>
+                                </div>
+                                <a href="/profile" class="iq-sub-card iq-bg-primary-hover">
+                                    <div class="media align-items-center">
+                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                            <i class="ri-file-user-line"></i>
+                                        </div>
+                                        <div class="media-body ml-3">
+                                            <h6 class="mb-0 " style="color:#fff;">My Profile</h6>
+                                            <p class="mb-0 font-size-12">View personal profile details.</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                
+                             
+                                <div class="d-inline-block w-100 text-center p-3">
+                                    <a class="bg-primary iq-sign-btn" href="logout" role="button">Sign Out<i class="ri-login-box-line ml-2"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div></li>
+            </ul>
+        </div></nav>
+    </div>
+</div> 
+ <div class="d-flex flex-column" style="margin-top:55px;"> 
+   
+  </div>
+  </div>
+
+  <!-- othe main content -->
+
+   <div class="container py-4">
+    <!-- Flash Messages for SweetAlert2 -->
+    <% if (success && success.length > 0) { %>
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: '<%= success %>',
+            showConfirmButton: true,
+            timer: 3000,
+            timerProgressBar: true,
+            background: '#212529',
+            color: '#fff',
+            confirmButtonColor: '#286090'
+          });
+        });
+      </script>
+    <% } %>
+    <% if (error && error.length > 0) { %>
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: '<%= error %>',
+            showConfirmButton: true,
+            timer: 3000,
+            timerProgressBar: true,
+            background: '#212529',
+            color: '#fff',
+            confirmButtonColor: '#286090'
+          });
+        });
+      </script>
+    <% } %>
+
+    <!-- Search Form -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <form action="/searchUsers" method="POST" class="d-flex align-items-center gap-2">
+          <div class="input-group">
+            <span class="input-group-text bg-primary text-white border-0"><i class="bi bi-search"></i></span>
+            <input type="text" id="search" name="search" class="form-control shadow-sm" placeholder="Search by first or last name" value="<%= search %>">
+          </div>
+          <button type="submit" class="btn btn-primary shadow-sm">
+            <i class="bi bi-search"></i> Search
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- User Table -->
+    <div class="card shadow-sm">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover table-striped align-middle">
+            <thead class="table-dark">
+              <tr>
+                <th scope="col">
+                  <a href="?page=<%= page %>&sort=index&order=<%= sort === 'index' && order === 'asc' ? 'desc' : 'asc' %>&search=<%= encodeURIComponent(search) %>" class="text-white text-decoration-none">
+                    S/N
+                    <% if (sort === 'index') { %>
+                      <%= order === 'asc' ? '↑' : '↓' %>
+                    <% } %>
+                  </a>
+                </th>
+                <th scope="col">
+                  <a href="?page=<%= page %>&sort=fullname&order=<%= sort === 'fullname' && order === 'asc' ? 'desc' : 'asc' %>&search=<%= encodeURIComponent(search) %>" class="text-white text-decoration-none">
+                    Full Name
+                    <% if (sort === 'fullname') { %>
+                      <%= order === 'asc' ? '↑' : '↓' %>
+                    <% } %>
+                  </a>
+                </th>
+                <th scope="col">
+                  <a href="?page=<%= page %>&sort=email&order=<%= sort === 'email' && order === 'asc' ? 'desc' : 'asc' %>&search=<%= encodeURIComponent(search) %>" class="text-white text-decoration-none">
+                    Email
+                    <% if (sort === 'email') { %>
+                      <%= order === 'asc' ? '↑' : '↓' %>
+                    <% } %>
+                  </a>
+                </th>
+                <th scope="col">
+                  <a href="?page=<%= page %>&sort=country&order=<%= sort === 'country' && order === 'asc' ? 'desc' : 'asc' %>&search=<%= encodeURIComponent(search) %>" class="text-white text-decoration-none">
+                    Country
+                    <% if (sort === 'country') { %>
+                      <%= order === 'asc' ? '↑' : '↓' %>
+                    <% } %>
+                  </a>
+                </th>
+                <th scope="col">
+                  <a href="?page=<%= page %>&sort=phone&order=<%= sort === 'phone' && order === 'asc' ? 'desc' : 'asc' %>&search=<%= encodeURIComponent(search) %>" class="text-white text-decoration-none">
+                    Telephone
+                    <% if (sort === 'phone') { %>
+                      <%= order === 'asc' ? '↑' : '↓' %>
+                    <% } %>
+                  </a>
+                </th>
+                <th scope="col">
+                  <a href="?page=<%= page %>&sort=isSuspended&order=<%= sort === 'isSuspended' && order === 'asc' ? 'desc' : 'asc' %>&search=<%= encodeURIComponent(search) %>" class="text-white text-decoration-none">
+                    Status
+                    <% if (sort === 'isSuspended') { %>
+                      <%= order === 'asc' ? '↑' : '↓' %>
+                    <% } %>
+                  </a>
+                </th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (users.length > 0) { %>
+                <% users.forEach((element, index) => { %>
+                  <tr>
+                    <td><%= index + 1 + (page - 1) * 100 %></td>
+                    <td><%= element.fullname %></td>
+                    <td><%= element.email %></td>
+                    <td><%= element.country %></td>
+                    <td><%= element.tel %></td>
+                    <td>
+                      <span class="badge <%= element.isSuspended ? 'bg-danger' : 'bg-success' %>">
+                        <%= element.isSuspended ? 'Suspended' : 'Active' %>
+                      </span>
+                    </td>
+                    <td>
+                      <div class="d-flex gap-2">
+                        <a href="/viewUser/<%= element._id %>" class="btn btn-sm btn-primary" title="View">
+                          <i class="bi bi-eye"></i>
+                        </a>
+                        <a href="/editUser/<%= element._id %>" class="btn btn-sm btn-warning" title="Edit">
+                          <i class="bi bi-pencil"></i>
+                        </a>
+                        <form action="/suspendUser/<%= element._id %>?_method=PUT" method="POST" class="d-inline suspend-form">
+                          <button type="submit" class="btn btn-sm <%= element.isSuspended ? 'btn-success' : 'btn-secondary' %>" title="<%= element.isSuspended ? 'Activate' : 'Suspend' %>">
+                            <i class="bi <%= element.isSuspended ? 'bi-play-fill' : 'bi-pause-fill' %>"></i>
+                          </button>
+                        </form>
+                        <form action="/deleteUser/<%= element._id %>?_method=DELETE" method="POST" class="d-inline delete-form">
+                          <button type="submit" class="btn btn-sm btn-danger" title="Delete">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <td colspan="7" class="text-center py-4">No users found matching "<%= search %>"</td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination Controls -->
+    <% if (totalPages > 1) { %>
+      <nav aria-label="Pagination" class="mt-4">
+        <ul class="pagination justify-content-center">
+          <li class="page-item <%= page === 1 ? 'disabled' : '' %>">
+            <a class="page-link" href="<%= page === 1 ? '#' : `?page=${page - 1}&sort=${sort}&order=${order}&search=${encodeURIComponent(search)}` %>" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          <% for (let i = 1; i <= totalPages; i++) { %>
+            <li class="page-item <%= page === i ? 'active' : '' %>">
+              <a class="page-link" href="?page=<%= i %>&sort=<%= sort %>&order=<%= order %>&search=<%= encodeURIComponent(search) %>"><%= i %></a>
+            </li>
+          <% } %>
+          <li class="page-item <%= page === totalPages ? 'disabled' : '' %>">
+            <a class="page-link" href="<%= page === totalPages ? '#' : `?page=${page + 1}&sort=${sort}&order=${order}&search=${encodeURIComponent(search)}` %>" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    <% } %>
+  </div>
+  
+</section>
+
+ <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    // Handle delete confirmation with SweetAlert2
+    document.querySelectorAll('.delete-form').forEach(form => {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        Swal.fire({
+          title: 'Are you sure?',
+          text: 'Do you want to delete this user? This action cannot be undone.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#dc3545',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: 'Yes, delete it!',
+          background: '#212529',
+          color: '#fff'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.submit();
+          }
+        });
+      });
+    });
+
+    // Handle suspend confirmation with SweetAlert2
+    document.querySelectorAll('.suspend-form').forEach(form => {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const action = this.querySelector('button').title;
+        Swal.fire({
+          title: `Are you sure?`,
+          text: `Do you want to ${action.toLowerCase()} this user?`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#286090',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: `Yes, ${action.toLowerCase()}!`,
+          background: '#212529',
+          color: '#fff'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.submit();
+          }
+        });
+      });
+    });
+  </script>
+
+<%- include('partials/dynaFooter')%>

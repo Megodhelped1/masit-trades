@@ -1,0 +1,97 @@
+
+<%- include('partials/_header'); -%>
+
+
+    <div class="login-box">
+      <div class="login-logo">
+        <!-- <a href="/"><img src="images/logo.png" class="img-responsive"></a> -->
+      </div>
+      <!-- /.login-logo -->
+      <!-- <div id="google_translate_element"></div> -->
+      <div class="login-box-body">
+        <p class="login-box-msg">Log In</p>
+        <!-- json response will be here -->
+        <div id="errorDiv">
+              </div>
+        <!-- json response will be here -->
+    
+        <form id="login-form" method="POST" action="/loginAdmin">
+           <div class="form-group has-feedback">
+            <input type="email" name="email" value="email" class="form-control" placeholder="Email"  required>
+            <span class="glyphicon glyphicon-user form-control-feedback"></span>
+            <span  class="email error"></span>
+          </div>
+          <div class="form-group has-feedback">
+            <input type="password" name="password" value="password" class="form-control" placeholder="Password"  required>
+            <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+            <span  class="password error"></span>
+          </div>
+          <div class="row">
+            <div class="col-xs-6">
+              <div class="checkbox icheck">
+                <label>
+                  <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false" style="position: relative;"><input type="checkbox" style="position: absolute; top: -20%; left: -20%; display: block; width: 140%; height: 140%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"><ins class="iCheck-helper" style="position: absolute; top: -20%; left: -20%; display: block; width: 140%; height: 140%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins></div> 
+                </label>
+              </div>
+            </div>
+            <!-- /.col -->
+            <div class="col-xs-6">
+              <button type="submit"  class="btn btn-info btn-block btn-flat" id="btn-login"><i class="fa fa-sign-in"></i> Login</button>
+            </div>
+            <!-- /.col -->
+          </div>
+        </form>
+        <br>
+      <!-- Forgot Password? <a href="forget-password">Recover Here</a><br>-->
+      <div class="text-center">
+        Don't have an account yet? <a href="/register" class="text-center">Register</a>
+    
+      </div>
+      <!-- /.login-box-body -->
+    </div>
+    </div>
+    <!-- /.login-box -->
+ 
+    
+            <script>
+              const form = document.querySelector('form');
+               const emailError = document.querySelector('.email.error');
+               const passwordError = document.querySelector('.password.error');
+               form.addEventListener('submit', async (e) => {
+                 e.preventDefault();
+                 // reset errors
+                 emailError.textContent = '';
+                 passwordError.textContent = '';
+                 // get values
+                 const email = form.email.value;
+                 const password = form.password.value;
+                 try {
+                   const res = await fetch('/login', { 
+                     method: 'POST', 
+                     body: JSON.stringify({ email, password }),
+                     headers: {'Content-Type': 'application/json'}
+                   });
+                   const data = await res.json();
+                   // console.log(data);
+                   if (data.errors) {
+                     emailError.textContent = data.errors.email;
+                     passwordError.textContent = data.errors.password;
+                   }
+                   if (data.user) {
+                     location.assign('/adminRoute');
+                   }
+                 }
+                 catch (err) {
+                   console.log(err);
+                 }
+               });
+             
+             
+             </script>
+    
+             
+    
+    
+    
+     <%- include('partials/_footer'); -%>
+    

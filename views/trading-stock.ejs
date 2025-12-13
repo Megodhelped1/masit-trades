@@ -1,0 +1,704 @@
+<%- include('partials/dashboardHeader')%>
+
+<body style="background-color:black;" class="">
+   
+
+<section class="content">
+
+    <div class="iq-sidebar" style="background-color:#171717;">
+    <div class="iq-sidebar-logo d-flex justify-content-between">
+        <a href="#" class="header-logo">
+            <img src="/images/logo.svg" class="img-fluid rounded-normal" alt="">
+        </a>
+        <div class="iq-menu-bt-sidebar">
+            <div class="iq-menu-bt align-self-center">
+                <div class="wrapper-menu">
+                    <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
+                    <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="sidebar-scrollbar" data-scrollbar="true" tabindex="-1" style="overflow: hidden; outline: none;"><div class="scroll-content">
+        <nav class="iq-sidebar-menu">
+            
+            <ul id="iq-sidebar-toggle" class="iq-menu">
+                <li>
+                    <a href="/dashboard" class="iq-waves-effect" style="color:#fff;"><i class="ai-home-alt1"></i><span>Dashboard</span></a>
+                </li>
+                                <li>
+                    <a href="/verify/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-person-check"></i><span>Verify Account</span></a>
+                </li>
+                                <li>
+                    <a href="/deposit" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-database-add"></i><span>Deposit</span></a>
+                </li>
+                <li>
+                    <a href="/withdraw" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-coin"></i><span>Withdraw</span></a>
+                </li>
+                <li>
+                    <a href="/page/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-robot"></i><span>Affiliate Packages</span></a>
+                </li>
+                <li>
+                    <a href="/upgrade" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-arrow-90deg-up"></i><span>Upgrade</span></a>
+                </li>
+
+                 <li>
+                  <a href="/chat" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-chat-dots"></i><span>Chat</span></a>
+                </li>
+                
+               <li>
+                    <a href="/copy-expert" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>Copy Experts</span></a>
+                </li>
+
+                <li>
+                    <a href="/ongoing-copy-trades/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>ongoing-copytrades</span></a>
+                </li>
+                
+                <li>
+                    <a href="/signal-package" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-broadcast-pin"></i><span>signals</span></a>
+                </li>
+                <li>
+                    <a href="/trading-live/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="ai-align-bottom"></i><span>Live Trading</span></a>
+                </li>
+                <li>
+                    <a href="/trading-stock/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="ai-data"></i><span>Stocks Trading</span></a>
+                </li>
+                <li>
+                    <a href="/crypto" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-currency-bitcoin"></i><span>Buy Crypto</span></a>
+                </li>
+                
+                <li>
+                    <a href="mailto:support@digital-topfigmarkets.com" class="iq-waves-effect" style="color:#fff;"><i class="ai-envelope"></i><span>Email us</span></a>
+                </li>
+                <li>
+                    <a href="/edit/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="ai-gear"></i><span>settings</span></a>
+                </li>
+                 <li>
+                    <a href="/transactions/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="ai-arrow-right-left"></i><span>Transaction History</span></a>
+                </li>
+                 <li>
+                    <a href="/logout" class="iq-waves-effect" style="color:#fff;"><i class="ai-sign-out"></i><span>Sign out</span></a>
+                </li>
+               
+                
+                </ul>
+        </nav>
+    </div><div class="scrollbar-track scrollbar-track-x" style="display: none;"><div class="scrollbar-thumb scrollbar-thumb-x" style="width: 300px; transform: translate3d(0px, 0px, 0px);"></div></div><div class="scrollbar-track scrollbar-track-y" style="display: block;"><div class="scrollbar-thumb scrollbar-thumb-y" style="height: 463.426px; transform: translate3d(0px, 0px, 0px);"></div></div></div>
+</div>
+<!-- TOP Nav Bar -->
+<div class="iq-top-navbar" style="background-color:#171717;">
+    <div class="iq-navbar-custom">
+        <nav class="navbar navbar-expand-lg navbar-light p-0">
+            <div class="iq-menu-bt d-flex align-items-center">
+                <div class="wrapper-menu">
+                    <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
+                    <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
+                </div>
+                <div class="iq-navbar-logo d-flex justify-content-between">
+                    <a href="#" class="header-logo">
+                        <img src="/images/favicon.svg" class="img-fluid rounded-normal" alt="">
+                    </a>
+                </div>
+            </div>
+           
+            
+            <div class="d-flex flex-column" style="margin-top:-20px;"> 
+   
+    <div class="hn-1"></div>
+   <div class="hn-2" style="margin-left:-18px;"><%=user.fullname%></div>
+  </div>
+  <div>
+            <ul class="navbar-list">
+                <li class="line-height">
+                    <a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
+                        </a><div class="profile-img" alt="user"><a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
+                        <img src="/wp-user/assets5i/img/pers.svg"> 
+                    </a>
+                    <div class="iq-sub-dropdown iq-user-dropdown">
+                        <div class="iq-card shadow-none m-0">
+                            <div class="iq-card-body p-0 " style="background-color:#171717;">
+                                <div class="bg-primary p-3">
+                                    <h5 class="mb-0 text-white line-height"><%=user.fullname%></h5>
+                                    <span class="text-white font-size-12"><%=user.isVerified%></span>
+                                </div>
+                                <a href="profile" class="iq-sub-card iq-bg-primary-hover">
+                                    <div class="media align-items-center">
+                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                            <i class="ri-file-user-line"></i>
+                                        </div>
+                                        <div class="media-body ml-3">
+                                            <h6 class="mb-0 " style="color:#fff;">My Profile</h6>
+                                            <p class="mb-0 font-size-12">View personal profile details.</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                 <!--<a href="profile-edit.html" class="iq-sub-card iq-bg-primary-hover">
+                                    <div class="media align-items-center">
+                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                            <i class="ri-profile-line"></i>
+                                        </div>
+                                       <div class="media-body ml-3">
+                                            <h6 class="mb-0 ">Edit Profile</h6>
+                                            <p class="mb-0 font-size-12">Modify your personal details.</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                <a href="/wp-user/account-setting.html" class="iq-sub-card iq-bg-primary-hover">
+                                    <div class="media align-items-center">
+                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                            <i class="ri-account-box-line"></i>
+                                        </div>
+                                        <div class="media-body ml-3">
+                                            <h6 class="mb-0 ">Account settings</h6>
+                                            <p class="mb-0 font-size-12">Manage your account parameters.</p>
+                                        </div>
+                                    </div>
+                                </a>-->
+                                <a href="edit/<%=user._id%>" class="iq-sub-card iq-bg-primary-hover">
+                                    <div class="media align-items-center">
+                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                            <i class="ri-lock-line"></i>
+                                        </div>
+                                        <div class="media-body ml-3">
+                                            <h6 class="mb-0 " style="color:#fff;">Privacy Settings</h6>
+                                            <p class="mb-0 font-size-12">Control your privacy parameters.</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                <div class="d-inline-block w-100 text-center p-3">
+                                    <a class="bg-primary iq-sign-btn" href="logout" role="button">Sign Out<i class="ri-login-box-line ml-2"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div></li>
+            </ul>
+        </div></nav>
+    </div>
+</div> 
+ <div class="d-flex flex-column" style="margin-top:55px;"> 
+   
+  </div>
+  </div>
+
+  <!-- othe main content -->
+
+  
+    <!-- Main Content -->
+    <div class="wrapper">
+      <div id="content-page" class="content-page" style="margin-top: 30px;">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-sm-12 col-lg-9">
+              <div class="iq-card">
+                <div class="iq-card" style="background-color: #171717; color: #B3B3B3;">
+                  <div class="iq-card-header d-flex justify-content-between">
+                    <div class="iq-header-title">
+                      <h4 class="card-title" style="color: white; font-family: 'Roboto' !important;">Stock Trading</h4>
+                    </div>
+                  </div>
+                  <div class="iq-card-body">
+                    <p><strong>Available Balance:</strong> $<span id="availableBalance"><%= parseFloat(user.available).toFixed(2) %></span></p>
+                    <p style="font-size: 25px; text-align: center;"><b>Add Stock Trade</b></p>
+                    <form action="/trading-stock/<%= user._id %>" method="post" autocomplete="off" id="stockTradeForm" class="was-validated">
+                      <div class="row">
+                        <div class="form-group col-md-4 mb-3">
+                          <label style="color: #B3B3B3;">Stock Ticker</label>
+                          <select name="stock_ticker" class="form-control" required>
+                            <option value="" disabled selected>Select Stock Ticker</option>
+                            <option value="TSLA">TSLA</option>
+                            <option value="PFE">PFE</option>
+                            <option value="ROKU">ROKU</option>
+                            <option value="MRNA">MRNA</option>
+                            <option value="PINS">PINS</option>
+                            <option value="ON">ON</option>
+                            <option value="DKNG">DKNG</option>
+                            <option value="UBER">UBER</option>
+                            <option value="COIN">COIN</option>
+                            <option value="APPS">APPS</option>
+                            <option value="QCOM">QCOM</option>
+                            <option value="CRSR">CRSR</option>
+                            <option value="PENN">PENN</option>
+                            <option value="SKLZ">SKLZ</option>
+                            <option value="PCG">PCG</option>
+                            <option value="CVS">CVS</option>
+                            <option value="TRVG">TRVG</option>
+                            <option value="CRNT">CRNT</option>
+                            <option value="ABNB">ABNB</option>
+                            <option value="ATVI">ATVI</option>
+                            <option value="MRO">MRO</option>
+                            <option value="MELI">MELI</option>
+                            <option value="DVN">DVN</option>
+                            <option value="FANG">FANG</option>
+                            <option value="BP">BP</option>
+                            <option value="PTON">PTON</option>
+                            <option value="CGC">CGC</option>
+                            <option value="VIAC">VIAC</option>
+                            <option value="AMG">AMG</option>
+                            <option value="FSLY">FSLY</option>
+                            <option value="UAA">UAA</option>
+                            <option value="EPD">EPD</option>
+                            <option value="ET">ET</option>
+                            <option value="NET">NET</option>
+                            <option value="AKTS">AKTS</option>
+                            <option value="ZG">ZG</option>
+                            <option value="GNRC">GNRC</option>
+                            <option value="ALX">ALX</option>
+                            <option value="CNA">CNA</option>
+                            <option value="TMUS">TMUS</option>
+                            <option value="SKC">SKC</option>
+                            <option value="RIG">RIG</option>
+                            <option value="APPL">APPL</option>
+                            <option value="MSFT">MSFT</option>
+                            <option value="GOOG">GOOG</option>
+                            <option value="AMZN">AMZN</option>
+                            <option value="FB">FB</option>
+                            <option value="TSM">TSM</option>
+                            <option value="DXCM">DXCM</option>
+                            <option value="NVDA">NVDA</option>
+                            <option value="JNJ">JNJ</option>
+                            <option value="UNH">UNH</option>
+                            <option value="V">V</option>
+                            <option value="XOM">XOM</option>
+                            <option value="JPM">JPM</option>
+                            <option value="MA">MA</option>
+                            <option value="CVX">CVX</option>
+                            <option value="PG">PG</option>
+                            <option value="WMT">WMT</option>
+                            <option value="BAC">BAC</option>
+                            <option value="HD">HD</option>
+                            <option value="LLY">LLY</option>
+                            <option value="BABA">BABA</option>
+                            <option value="KO">KO</option>
+                            <option value="GOOGL">GOOGL</option>
+                            <option value="NVO">NVO</option>
+                            <option value="ABBV">ABBV</option>
+                            <option value="AVGO">AVGO</option>
+                            <option value="ASML">ASML</option>
+                            <option value="PEP">PEP</option>
+                            <option value="SHEL">SHEL</option>
+                            <option value="MRK">MRK</option>
+                            <option value="TM">TM</option>
+                            <option value="TMO">TMO</option>
+                            <option value="VZ">VZ</option>
+                            <option value="COST">COST</option>
+                            <option value="ADBE">ADBE</option>
+                            <option value="ABT">ABT</option>
+                            <option value="AZN">AZN</option>
+                            <option value="DIS">DIS</option>
+                            <option value="DHR">DHR</option>
+                            <option value="ACN">ACN</option>
+                            <option value="ORCL">ORCL</option>
+                            <option value="NKE">NKE</option>
+                            <option value="CMCSA">CMCSA</option>
+                            <option value="CSCO">CSCO</option>
+                            <option value="CRM">CRM</option>
+                            <option value="MCD">MCD</option>
+                            <option value="INTC">INTC</option>
+                            <option value="BHP">BHP</option>
+                            <option value="WFC">WFC</option>
+                            <option value="AMD">AMD</option>
+                            <option value="LIN">LIN</option>
+                            <option value="PM">PM</option>
+                            <option value="BMY">BMY</option>
+                            <option value="UPS">UPS</option>
+                            <option value="COP">COP</option>
+                            <option value="NEE">NEE</option>
+                            <option value="TXN">TXN</option>
+                            <option value="TTE">TTE</option>
+                            <option value="T">T</option>
+                            <option value="RTX">RTX</option>
+                            <option value="MS">MS</option>
+                            <option value="RY">RY</option>
+                            <option value="UNP">UNP</option>
+                            <option value="HON">HON</option>
+                            <option value="HSBC">HSBC</option>
+                            <option value="AMGN">AMGN</option>
+                            <option value="IBM">IBM</option>
+                            <option value="MDT">MDT</option>
+                            <option value="SCHW">SCHW</option>
+                            <option value="RIO">RIO</option>
+                            <option value="AXP">AXP</option>
+                            <option value="LOW">LOW</option>
+                            <option value="EQNR">EQNR</option>
+                            <option value="AMT">AMT</option>
+                            <option value="LMT">LMT</option>
+                            <option value="CAT">CAT</option>
+                            <option value="ANTM">ANTM</option>
+                            <option value="SAP">SAP</option>
+                            <option value="UL">UL</option>
+                            <option value="INTU">INTU</option>
+                            <option value="SPGI">SPGI</option>
+                            <option value="SONY">SONY</option>
+                            <option value="GSK">GSK</option>
+                            <option value="DE">DE</option>
+                            <option value="GS">GS</option>
+                            <option value="HDB">HDB</option>
+                            <option value="DEO">DEO</option>
+                            <option value="BLK">BLK</option>
+                            <option value="PYPL">PYPL</option>
+                            <option value="BTI">BTI</option>
+                            <option value="NOW">NOW</option>
+                            <option value="C">C</option>
+                            <option value="AMAT">AMAT</option>
+                            <option value="PTR">PTR</option>
+                            <option value="CHTR">CHTR</option>
+                            <option value="BUD">BUD</option>
+                            <option value="MO">MO</option>
+                            <option value="EL">EL</option>
+                            <option value="JD">JD</option>
+                            <option value="ENB">ENB</option>
+                            <option value="PLD">PLD</option>
+                            <option value="BKNG">BKNG</option>
+                            <option value="ADP">ADP</option>
+                            <option value="SBUX">SBUX</option>
+                            <option value="PBR">PBR</option>
+                            <option value="CB">CB</option>
+                            <option value="VALE">VALE</option>
+                            <option value="NFLX">NFLX</option>
+                            <option value="MDLZ">MDLZ</option>
+                            <option value="BX">BX</option>
+                            <option value="SYK">SYK</option>
+                            <option value="ADI">ADI</option>
+                            <option value="DUK">DUK</option>
+                            <option value="GE">GE</option>
+                            <option value="EOG">EOG</option>
+                            <option value="BAM">BAM</option>
+                          </select>
+                        </div>
+                        <div class="form-group col-md-4 mb-3">
+                          <label style="color: #B3B3B3;">Amount</label>
+                          <input type="number" class="form-control" name="amount" placeholder="Enter Amount" min="1" step="0.01" required>
+                        </div>
+                        <div class="form-group col-md-4">
+                          <label style="color: #B3B3B3;">Select Action</label>
+                          <select name="trading_action" class="form-control" required>
+                            <option value="" disabled selected>Select Action</option>
+                            <option value="BUY">BUY</option>
+                            <option value="SELL">SELL</option>
+                          </select>
+                        </div>
+                        <div class="form-group col-md-12">
+                          <button class="btn btn-primary btn-lg btn-block" name="stock_trading" type="submit">Execute Stock Trade</button>
+                        </div>
+                      </div>
+                    </form>
+                    <hr>
+                    <p style="font-size: 25px; text-align: center;"><b>Recent Stock Trading History</b></p>
+                    <div class="table-responsive">
+                      <table id="user-list-table" class="table table-striped table-bordered mt-4" role="grid" aria-describedby="user-list-page-info">
+                        <thead>
+                          <tr>
+                            <th style="color: #000">Stock Ticker</th>
+                            <th style="color: #000">Trading Action</th>
+                            <th style="color: #000">Amount</th>
+                            <th style="color: #000">Status</th>
+                            <th style="color: #000">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody style="background-color: #2A2929;" id="stockTradesTable">
+                          <% if (stocktrades && stocktrades.length > 0) { %>
+                            <% stocktrades.forEach(trade => { %>
+                              <tr>
+                                <td style="color: #B3B3B3;"><%= trade.type || 'N/A' %></td>
+                                <td style="color: #B3B3B3;"><%= trade.action || 'N/A' %></td>
+                                <td style="color: #B3B3B3;">$<%= parseFloat(trade.amount).toFixed(2) || 'N/A' %></td>
+                                <td style="color: #B3B3B3;"><%= trade.status || 'N/A' %></td>
+                                <td>
+                                  <% if (trade.status === 'pending') { %>
+                                    <button class="btn btn-warning btn-sm close-trade" data-id="<%= trade._id %>">Close Trade</button>
+                                  <% } else { %>
+                                    <span>Closed</span>
+                                  <% } %>
+                                </td>
+                              </tr>
+                            <% }) %>
+                          <% } else { %>
+                            <tr><td colspan="5" style="color: #B3B3B3;">No stock trades found.</td></tr>
+                          <% } %>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+<!-- end of main tag -->
+</section>
+
+
+ <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+    // Flash messages
+    <% if (success && success.length > 0) { %>
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: '<%= success %>',
+        showConfirmButton: true,
+        timer: 3000,
+        timerProgressBar: true,
+        background: '#212529',
+        color: '#fff',
+        confirmButtonColor: '#286090'
+      });
+    <% } %>
+    <% if (error && error.length > 0) { %>
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: '<%= error %>',
+        showConfirmButton: true,
+        timer: 3000,
+        timerProgressBar: true,
+        background: '#212529',
+        color: '#fff',
+        confirmButtonColor: '#286090'
+      });
+    <% } %>
+
+    // Handle form submission with AJAX
+    document.getElementById('stockTradeForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      Swal.fire({
+        title: 'Processing...',
+        showConfirmButton: false,
+        background: '#212529',
+        color: '#fff',
+        allowOutsideClick: false
+      });
+
+      const form = e.target;
+      const stockTicker = form.querySelector('select[name="stock_ticker"]').value;
+      const amount = parseFloat(form.querySelector('input[name="amount"]').value);
+      const tradingAction = form.querySelector('select[name="trading_action"]').value;
+      const userId = '<%= user._id %>';
+      const availableBalance = parseFloat('<%= user.available %>');
+
+      // Client-side validation
+      if (!stockTicker || isNaN(amount) || amount <= 0 || !tradingAction) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Invalid Input',
+          text: 'All fields are required and amount must be greater than 0',
+          background: '#212529',
+          color: '#fff',
+          confirmButtonColor: '#286090'
+        });
+        return;
+      }
+
+      if (tradingAction === 'BUY' && amount > availableBalance) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Insufficient Balance',
+          text: 'You do not have enough balance to place this trade.',
+          background: '#212529',
+          color: '#fff',
+          confirmButtonColor: '#286090'
+        });
+        return;
+      }
+
+      Swal.fire({
+        title: 'Confirm Trade',
+        text: `Are you sure you want to ${tradingAction.toLowerCase()} ${stockTicker} for $${amount.toFixed(2)}?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#286090',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, place trade!',
+        background: '#212529',
+        color: '#fff'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            const formData = new URLSearchParams();
+            formData.append('stock_ticker', stockTicker);
+            formData.append('amount', amount);
+            formData.append('trading_action', tradingAction);
+
+            const response = await Promise.race([
+              fetch(`/trading-stock/${userId}`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData
+              }),
+              new Promise((_, reject) => setTimeout(() => reject(new Error('Request timed out')), 10000))
+            ]);
+
+            const result = await response.json();
+            if (response.ok) {
+              // Fetch updated stock trades
+              const tradesResponse = await fetch(`/trading-stock/${userId}/trades`);
+              if (!tradesResponse.ok) {
+                throw new Error('Failed to fetch stock trades');
+              }
+              const trades = await tradesResponse.json();
+              updateStockTradesTable(trades);
+
+              // Fetch updated user balance
+              const userResponse = await fetch(`/trading-stock/${userId}/user`);
+              if (!userResponse.ok) {
+                throw new Error('Failed to fetch user data');
+              }
+              const updatedUser = await userResponse.json();
+              document.getElementById('availableBalance').textContent = parseFloat(updatedUser.available).toFixed(2);
+
+              Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: result.success || 'Stock trade placed successfully',
+                background: '#212529',
+                color: '#fff',
+                confirmButtonColor: '#286090',
+                timer: 3000,
+                timerProgressBar: true
+              });
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: result.error || 'Failed to place stock trade',
+                background: '#212529',
+                color: '#fff',
+                confirmButtonColor: '#286090'
+              });
+            }
+          } catch (err) {
+            console.error('Submission error:', err);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: err.message || 'An error occurred while submitting the trade',
+              background: '#212529',
+              color: '#fff',
+              confirmButtonColor: '#286090'
+            });
+          }
+        } else {
+          Swal.close();
+        }
+      });
+    });
+
+    // Function to attach close trade event listeners
+    function attachCloseTradeListeners() {
+      document.querySelectorAll('.close-trade').forEach(button => {
+        button.addEventListener('click', async () => {
+          const tradeId = button.getAttribute('data-id');
+          const userId = '<%= user._id %>';
+
+          Swal.fire({
+            title: 'Confirm Close',
+            text: 'Are you sure you want to close this trade?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#286090',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, close trade!',
+            background: '#212529',
+            color: '#fff'
+          }).then(async (result) => {
+            if (result.isConfirmed) {
+              try {
+                const response = await Promise.race([
+                  fetch(`/trading-stock-close/${userId}/${tradeId}`, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                  }),
+                  new Promise((_, reject) => setTimeout(() => reject(new Error('Request timed out')), 10000))
+                ]);
+
+                const result = await response.json();
+                if (response.ok) {
+                  // Fetch updated stock trades
+                  const tradesResponse = await fetch(`/trading-stock/${userId}/trades`);
+                  if (!tradesResponse.ok) {
+                    throw new Error('Failed to fetch stock trades');
+                  }
+                  const trades = await tradesResponse.json();
+                  updateStockTradesTable(trades);
+
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: result.success || 'Trade closed successfully',
+                    background: '#212529',
+                    color: '#fff',
+                    confirmButtonColor: '#286090',
+                    timer: 3000,
+                    timerProgressBar: true
+                  });
+                } else {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: result.error || 'Failed to close trade',
+                    background: '#212529',
+                    color: '#fff',
+                    confirmButtonColor: '#286090'
+                  });
+                }
+              } catch (err) {
+                console.error('Close trade error:', err);
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: err.message || 'An error occurred while closing the trade',
+                  background: '#212529',
+                  color: '#fff',
+                  confirmButtonColor: '#286090'
+                });
+              }
+            } else {
+              Swal.close();
+            }
+          });
+        });
+      });
+    }
+
+    // Function to update stock trades table
+    function updateStockTradesTable(trades) {
+      const tableBody = document.getElementById('stockTradesTable');
+      tableBody.innerHTML = '';
+      if (trades.length > 0) {
+        trades.forEach(trade => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td style="color: #B3B3B3;">${trade.type || 'N/A'}</td>
+            <td style="color: #B3B3B3;">${trade.action || 'N/A'}</td>
+            <td style="color: #B3B3B3;">$${parseFloat(trade.amount).toFixed(2) || 'N/A'}</td>
+            <td style="color: #B3B3B3;">${trade.status || 'N/A'}</td>
+            <td>
+              ${trade.status === 'pending' ? `<button class="btn btn-warning btn-sm close-trade" data-id="${trade._id}">Close Trade</button>` : 'Closed'}
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+        attachCloseTradeListeners();
+      } else {
+        tableBody.innerHTML = '<tr><td colspan="5" style="color: #B3B3B3;">No stock trades found.</td></tr>';
+      }
+    }
+
+    // Initialize close trade listeners on page load
+    document.addEventListener('DOMContentLoaded', attachCloseTradeListeners);
+  </script>
+
+
+<%- include('partials/dashboardFooter')%>
+

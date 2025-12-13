@@ -1,0 +1,479 @@
+<%- include('partials/dashboardHeader') %>
+
+<head>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- SweetAlert2 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #171717;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+    }
+    .iq-sidebar, .iq-top-navbar {
+      background-color: #171717;
+    }
+    .iq-sub-card {
+      color: #fff;
+      background-color: #343a40;
+    }
+    .iq-sub-card:hover {
+      background-color: #495057;
+    }
+    .card {
+      border: none;
+      border-radius: 0.5rem;
+      background-color: #212529;
+    }
+    .card-header {
+      background-color: #343a40;
+      border-bottom: 1px solid #495057;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+    .form-control {
+      background-color: #343a40;
+      color: #fff;
+      border-color: #495057;
+      border-radius: 0.5rem;
+    }
+    .form-control::placeholder {
+      color: #adb5bd;
+    }
+    .btn-primary {
+      background-color: #286090;
+      border-color: #286090;
+    }
+    .btn-primary:hover {
+      background-color: #1f4a6b;
+      border-color: #1f4a6b;
+    }
+    .affiliate-card {
+      transition: transform 0.3s ease;
+    }
+    .affiliate-card:hover {
+      transform: translateY(-5px);
+    }
+    @media (max-width: 576px) {
+      .affiliate-card .d-flex {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+  </style>
+</head>
+
+
+<body style="background-color:black;" class="">
+    <section class="content">
+        <!-- Sidebar -->
+        <div class="iq-sidebar" style="background-color:#171717;">
+            <div class="iq-sidebar-logo d-flex justify-content-between">
+                <a href="#" class="header-logo">
+                    <img src="/images/logo.svg" class="img-fluid rounded-normal" alt="">
+                </a>
+                <div class="iq-menu-bt-sidebar">
+                    <div class="iq-menu-bt align-self-center">
+                        <div class="wrapper-menu">
+                            <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
+                            <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="sidebar-scrollbar" data-scrollbar="true" tabindex="-1" style="overflow: hidden; outline: none;">
+                <div class="scroll-content">
+                    <nav class="iq-sidebar-menu">
+                        <ul id="iq-sidebar-toggle" class="iq-menu">
+                            <li><a href="/dashboard" class="iq-waves-effect" style="color:#fff;"><i class="ai-home-alt1"></i><span>Dashboard</span></a></li>
+                            <li><a href="/verify/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-person-check"></i><span>Verify Account</span></a></li>
+                            <li><a href="/deposit" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-database-add"></i><span>Deposit</span></a></li>
+                            <li><a href="/withdraw" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-coin"></i><span>Withdraw</span></a></li>
+                            <li><a href="/page/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-robot"></i><span>Affiliate Packages</span></a></li>
+                            <li><a href="/upgrade" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-arrow-90deg-up"></i><span>Upgrade</span></a></li>
+                            <li><a href="/copy-expert/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>Copy Experts</span></a></li>
+
+                            <li>
+                    <a href="/ongoing-copy-trades/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>ongoing-copytrades</span></a>
+                </li>
+
+                            <li><a href="/signal-package" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-broadcast-pin"></i><span>Signals</span></a></li>
+                            <li><a href="/trading-live/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="ai-align-bottom"></i><span>Live Trading</span></a></li>
+                            <li><a href="/trading-stock/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="ai-data"></i><span>Stocks Trading</span></a></li>
+                            <li><a href="/crypto" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-currency-bitcoin"></i><span>Buy Crypto</span></a></li>
+                            <li><a href="mailto:support@digital-figtopmarkets.com" class="iq-waves-effect" style="color:#fff;"><i class="ai-envelope"></i><span>Email us</span></a></li>
+                            <li><a href="/edit/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="ai-gear"></i><span>Settings</span></a></li>
+                            <li><a href="/transactions/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="ai-arrow-right-left"></i><span>Transaction History</span></a></li>
+                            <li><a href="/logout" class="iq-waves-effect" style="color:#fff;"><i class="ai-sign-out"></i><span>Sign out</span></a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="scrollbar-track scrollbar-track-x" style="display: none;"><div class="scrollbar-thumb scrollbar-thumb-x" style="width: 300px; transform: translate3d(0px, 0px, 0px);"></div></div>
+                <div class="scrollbar-track scrollbar-track-y" style="display: block;"><div class="scrollbar-thumb scrollbar-thumb-y" style="height: 463.426px; transform: translate3d(0px, 0px, 0px);"></div></div>
+            </div>
+        </div>
+
+        <!-- TOP Nav Bar -->
+        <div class="iq-top-navbar" style="background-color:#171717;">
+            <div class="iq-navbar-custom">
+                <nav class="navbar navbar-expand-lg navbar-light p-0">
+                    <div class="iq-menu-bt d-flex align-items-center">
+                        <div class="wrapper-menu">
+                            <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
+                            <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
+                        </div>
+                        <div class="iq-navbar-logo d-flex justify-content-between">
+                            <a href="#" class="header-logo">
+                                <img src="/images/favicon.svg" class="img-fluid rounded-normal" alt="">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column" style="margin-top:-20px;">
+                        <div class="hn-1"></div>
+                        <div class="hn-2" style="margin-left:-18px;"><%=user.fullname%></div>
+                    </div>
+                    <div>
+                        <ul class="navbar-list">
+                            <li class="line-height">
+                                <a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
+                                    <div class="profile-img" alt="user">
+                                        <img src="/wp-user/assets5i/img/pers.svg">
+                                    </a>
+                                    <div class="iq-sub-dropdown iq-user-dropdown">
+                                        <div class="iq-card shadow-none m-0">
+                                            <div class="iq-card-body p-0" style="background-color:#171717;">
+                                                <div class="bg-primary p-3">
+                                                    <h5 class="mb-0 text-white line-height"><%=user.fullname%></h5>
+                                                    <span class="text-white font-size-12"><%=user.isVerified%></span>
+                                                </div>
+                                                <a href="profile" class="iq-sub-card iq-bg-primary-hover">
+                                                    <div class="media align-items-center">
+                                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                                            <i class="ri-file-user-line"></i>
+                                                        </div>
+                                                        <div class="media-body ml-3">
+                                                            <h6 class="mb-0" style="color:#fff;">My Profile</h6>
+                                                            <p class="mb-0 font-size-12">View personal profile details.</p>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                                <a href="edit/<%=user._id%>" class="iq-sub-card iq-bg-primary-hover">
+                                                    <div class="media align-items-center">
+                                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                                            <i class="ri-lock-line"></i>
+                                                        </div>
+                                                        <div class="media-body ml-3">
+                                                            <h6 class="mb-0" style="color:#fff;">Privacy Settings</h6>
+                                                            <p class="mb-0 font-size-12">Control your privacy parameters.</p>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                                <div class="d-inline-block w-100 text-center p-3">
+                                                    <a class="bg-primary iq-sign-btn" href="logout" role="button">Sign Out<i class="ri-login-box-line ml-2"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        <div class="d-flex flex-column" style="margin-top:55px;"></div>
+
+        <div class="container text-white py-4" style="min-height: 100vh; background-color: #212529;">
+      <!-- Flash Messages -->
+      <% if (success && success.length > 0) { %>
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Success',
+              text: '<%= success %>',
+              showConfirmButton: true,
+              timer: 3000,
+              timerProgressBar: true,
+              background: '#212529',
+              color: '#fff',
+              confirmButtonColor: '#286090'
+            });
+          });
+        </script>
+      <% } %>
+      <% if (error && error.length > 0) { %>
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: '<%= error %>',
+              showConfirmButton: true,
+              timer: 3000,
+              timerProgressBar: true,
+              background: '#212529',
+              color: '#fff',
+              confirmButtonColor: '#286090'
+            });
+          });
+        </script>
+      <% } %>
+
+      <!-- Header -->
+      <div class="card mb-4 text-white">
+        <div class="card-header">Affiliate Packages</div>
+        <div class="card-body">
+          <p>Subscribe to our Bot Affiliate Marketing Plans</p>
+          <p><strong>Available Balance:</strong> $<%= parseFloat(user.available).toFixed(2) %></p>
+        </div>
+      </div>
+
+      <!-- Affiliate Plans -->
+      <div class="row g-3">
+        <% const plans = [
+          { id: '3', type: 'Affiliate Tier Bot', min: 100, max: 1000, growth: '500% Daily Growth', roi: '10550%', duration: '3 days' },
+          { id: '4', type: 'Affiliate Tier Bot Niche', min: 2000, max: 10000, growth: '1000% Daily Growth', roi: '50000%', duration: '10 days' },
+          { id: '5', type: 'Affiliate Tier Bot Ecommerce', min: 5000, max: 100000, growth: '5000% Daily Growth', roi: '5500%', duration: '31 days' }
+        ] %>
+        <% plans.forEach(plan => { %>
+          <div class="col-md-4">
+            <div class="card affiliate-card">
+              <div class="card-header bg-primary text-white"><%= plan.type %></div>
+              <div class="card-body text-white">
+                <h5 class="card-title">$<%= plan.min.toFixed(2) %> - $<%= plan.max.toFixed(2) %></h5>
+                <p class="card-text"><%= plan.growth %></p>
+                <p class="card-text">ROI: <%= plan.roi %></p>
+                <p class="card-text">Duration: <%= plan.duration %></p>
+                <form method="POST" class="affiliate-form">
+                  <input type="hidden" name="aff_plan_id" value="<%= plan.id %>">
+                  <div class="input-group mb-2">
+                    <span class="input-group-text">$</span>
+                    <input type="number" class="form-control" name="amount" placeholder="Enter Amount" min="<%= plan.min %>" max="<%= plan.max %>" required>
+                  </div>
+                  <button type="submit" class="btn btn-primary w-100">Purchase Plan</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+
+      <!-- Affiliate Details -->
+      <div class="card mt-4">
+        <div class="card-header">Your Affiliate Plans</div>
+        <div class="card-body">
+          <% if (user.affliates && user.affliates.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table table-dark table-hover">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>ROI</th>
+                    <th>Duration</th>
+                    <th>Created At</th>
+                  </tr>
+                </thead>
+                <tbody id="affiliate-table">
+                  <% user.affliates.forEach(aff => { %>
+                    <tr>
+                      <td><%= aff.type || 'N/A' %></td>
+                      <td>$<%= parseFloat(aff.amount).toFixed(2) || 'N/A' %></td>
+                      <td><%= aff.roi || 'N/A' %></td>
+                      <td><%= aff.duration || 'N/A' %></td>
+                      <td><%= aff.createdAt ? new Date(aff.createdAt).toLocaleString() : 'N/A' %></td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <p>No affiliate plans purchased yet.</p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+       
+    </section>
+
+   <!-- JavaScript Dependencies -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    // Form submission with balance check
+    document.querySelectorAll('.affiliate-form').forEach(form => {
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        Swal.fire({
+          title: 'Processing...',
+          showConfirmButton: false,
+          background: '#212529',
+          color: '#fff',
+          allowOutsideClick: false
+        });
+        const affPlanId = this.querySelector('input[name="aff_plan_id"]').value;
+        const amount = parseFloat(this.querySelector('input[name="amount"]').value);
+        const userId = '<%= user._id %>';
+        const availableBalance = parseFloat('<%= user.available %>');
+
+        const plans = [
+          { id: '3', min: 100, max: 1000 },
+          { id: '4', min: 2000, max: 10000 },
+          { id: '5', min: 5000, max: 100000 }
+        ];
+        const plan = plans.find(p => p.id === affPlanId);
+
+        if (isNaN(amount) || amount < plan.min || amount > plan.max) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Invalid Amount',
+            text: `Amount must be between $${plan.min.toFixed(2)} and $${plan.max.toFixed(2)}`,
+            background: '#212529',
+            color: '#fff',
+            confirmButtonColor: '#286090'
+          });
+          return;
+        }
+
+        if (amount > availableBalance) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Insufficient Balance',
+            text: 'You do not have enough available balance to purchase this plan.',
+            background: '#212529',
+            color: '#fff',
+            confirmButtonColor: '#286090'
+          });
+          return;
+        }
+
+        Swal.fire({
+          title: 'Confirm Purchase',
+          text: `Are you sure you want to purchase the ${plan.id === '3' ? 'Affiliate Tier Bot' : plan.id === '4' ? 'Affiliate Tier Bot Niche' : 'Affiliate Tier Bot Ecommerce'} plan for $${amount.toFixed(2)}?`,
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#286090',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: 'Yes, purchase!',
+          background: '#212529',
+          color: '#fff'
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            try {
+              // Create URL-encoded form data
+              const formData = new URLSearchParams();
+              formData.append('aff_plan_id', affPlanId);
+              formData.append('amount', amount);
+
+              const response = await fetch(`/page/${userId}`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData,
+                redirect: 'manual' // Handle redirects manually
+              });
+
+              if (response.status === 0 || response.redirected) {
+                // Handle redirect manually
+                window.location.href = response.url || `/page/${userId}`;
+              } else if (response.ok) {
+                // If the response is OK (not a redirect), fetch updated data
+                const affiliateResponse = await fetch(`/page/${userId}/affiliates`);
+                if (!affiliateResponse.ok) {
+                  throw new Error('Failed to fetch affiliates');
+                }
+                const affiliates = await affiliateResponse.json();
+                updateAffiliateTable(affiliates);
+
+                const userResponse = await fetch(`/page/${userId}/user`);
+                if (!userResponse.ok) {
+                  throw new Error('Failed to fetch user data');
+                }
+                const updatedUser = await userResponse.json();
+                document.querySelector('.card-body p strong').nextSibling.textContent = ` $${parseFloat(updatedUser.available).toFixed(2)}`;
+
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Success',
+                  text: 'Affiliate plan purchased successfully',
+                  background: '#212529',
+                  color: '#fff',
+                  confirmButtonColor: '#286090',
+                  timer: 3000,
+                  timerProgressBar: true
+                });
+              } else {
+                const errorText = await response.text();
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: errorText || 'Failed to process your request',
+                  background: '#212529',
+                  color: '#fff',
+                  confirmButtonColor: '#286090'
+                });
+              }
+            } catch (error) {
+              console.error('Submission error:', error);
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message || 'Failed to process your request',
+                background: '#212529',
+                color: '#fff',
+                confirmButtonColor: '#286090'
+              });
+            }
+          } else {
+            Swal.close(); // Close the processing dialog if canceled
+          }
+        });
+      });
+    });
+
+    // Function to update affiliate table
+    function updateAffiliateTable(affiliates) {
+      const tableBody = document.getElementById('affiliate-table');
+      const parent = tableBody.parentElement.parentElement; // Get the card-body
+      tableBody.innerHTML = '';
+      if (affiliates.length > 0) {
+        affiliates.forEach(aff => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${aff.type || 'N/A'}</td>
+            <td>$${parseFloat(aff.amount).toFixed(2) || 'N/A'}</td>
+            <td>${aff.roi || 'N/A'}</td>
+            <td>${aff.duration || 'N/A'}</td>
+            <td>${aff.createdAt ? new Date(aff.createdAt).toLocaleString() : 'N/A'}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+        // Remove "No affiliate plans" message if present
+        if (parent.querySelector('p')) {
+          parent.querySelector('p').remove();
+        }
+      } else {
+        // Add "No affiliate plans" message
+        if (!parent.querySelector('p')) {
+          const noAffiliates = document.createElement('p');
+          noAffiliates.textContent = 'No affiliate plans purchased yet.';
+          parent.appendChild(noAffiliates);
+        }
+      }
+    }
+  </script>
+
+<%- include('partials/dashboardFooter')%>

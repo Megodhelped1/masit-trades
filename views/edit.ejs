@@ -1,0 +1,606 @@
+<%- include('partials/dashboardHeader')%>
+
+<body style="background-color:black;" class="">
+   
+
+<section class="content">
+
+    <div class="iq-sidebar" style="background-color:#171717;">
+    <div class="iq-sidebar-logo d-flex justify-content-between">
+        <a href="#" class="header-logo">
+            <img src="/images/logo.svg" class="img-fluid rounded-normal" alt="">
+        </a>
+        <div class="iq-menu-bt-sidebar">
+            <div class="iq-menu-bt align-self-center">
+                <div class="wrapper-menu">
+                    <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
+                    <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="sidebar-scrollbar" data-scrollbar="true" tabindex="-1" style="overflow: hidden; outline: none;"><div class="scroll-content">
+        <nav class="iq-sidebar-menu">
+            
+            <ul id="iq-sidebar-toggle" class="iq-menu">
+                <li>
+                    <a href="/dashboard" class="iq-waves-effect" style="color:#fff;"><i class="ai-home-alt1"></i><span>Dashboard</span></a>
+                </li>
+                                <li>
+                    <a href="/verify/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-person-check"></i><span>Verify Account</span></a>
+                </li>
+                                <li>
+                    <a href="/deposit" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-database-add"></i><span>Deposit</span></a>
+                </li>
+                <li>
+                    <a href="/withdraw" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-coin"></i><span>Withdraw</span></a>
+                </li>
+                <li>
+                    <a href="/page/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-robot"></i><span>Affiliate Packages</span></a>
+                </li>
+                <li>
+                    <a href="/upgrade" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-arrow-90deg-up"></i><span>Upgrade</span></a>
+                </li>
+
+                 <li>
+                  <a href="/chat" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-chat-dots"></i><span>Chat</span></a>
+                </li>
+                
+               <li>
+                    <a href="/copy-expert" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-copy"></i><span>Copy Experts</span></a>
+                </li>
+                
+                <li>
+                    <a href="/signal-package" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-broadcast-pin"></i><span>signals</span></a>
+                </li>
+                <li>
+                    <a href="/trading-live/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="ai-align-bottom"></i><span>Live Trading</span></a>
+                </li>
+                <li>
+                    <a href="/trading-stock/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="ai-data"></i><span>Stocks Trading</span></a>
+                </li>
+                <li>
+                    <a href="/crypto" class="iq-waves-effect" style="color:#fff;"><i class="bi bi-currency-bitcoin"></i><span>Buy Crypto</span></a>
+                </li>
+                
+                <li>
+                    <a href="mailto:support@digital-topfigmarkets.com" class="iq-waves-effect" style="color:#fff;"><i class="ai-envelope"></i><span>Email us</span></a>
+                </li>
+                <li>
+                    <a href="/edit/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="ai-gear"></i><span>settings</span></a>
+                </li>
+                 <li>
+                    <a href="/transactions/<%=user._id%>" class="iq-waves-effect" style="color:#fff;"><i class="ai-arrow-right-left"></i><span>Transaction History</span></a>
+                </li>
+                 <li>
+                    <a href="/logout" class="iq-waves-effect" style="color:#fff;"><i class="ai-sign-out"></i><span>Sign out</span></a>
+                </li>
+               
+                
+                </ul>
+        </nav>
+    </div><div class="scrollbar-track scrollbar-track-x" style="display: none;"><div class="scrollbar-thumb scrollbar-thumb-x" style="width: 300px; transform: translate3d(0px, 0px, 0px);"></div></div><div class="scrollbar-track scrollbar-track-y" style="display: block;"><div class="scrollbar-thumb scrollbar-thumb-y" style="height: 463.426px; transform: translate3d(0px, 0px, 0px);"></div></div></div>
+</div>
+<!-- TOP Nav Bar -->
+<div class="iq-top-navbar" style="background-color:#171717;">
+    <div class="iq-navbar-custom">
+        <nav class="navbar navbar-expand-lg navbar-light p-0">
+            <div class="iq-menu-bt d-flex align-items-center">
+                <div class="wrapper-menu">
+                    <div class="main-circle"><i class="ri-arrow-left-s-line" style="color:#ffF;"></i></div>
+                    <div class="hover-circle"><i class="ri-arrow-right-s-line" style="color:#ffF;"></i></div>
+                </div>
+                <div class="iq-navbar-logo d-flex justify-content-between">
+                    <a href="#" class="header-logo">
+                        <img src="/images/favicon.svg" class="img-fluid rounded-normal" alt="">
+                    </a>
+                </div>
+            </div>
+           
+            
+            <div class="d-flex flex-column" style="margin-top:-20px;"> 
+   
+    <div class="hn-1"></div>
+   <div class="hn-2" style="margin-left:-18px;"><%=user.fullname%></div>
+  </div>
+  <div>
+            <ul class="navbar-list">
+                <li class="line-height">
+                    <a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
+                        </a><div class="profile-img" alt="user"><a href="#" class="search-toggle iq-waves-effect d-flex align-items-center">
+                        <img src="/wp-user/assets5i/img/pers.svg"> 
+                    </a>
+                    <div class="iq-sub-dropdown iq-user-dropdown">
+                        <div class="iq-card shadow-none m-0">
+                            <div class="iq-card-body p-0 " style="background-color:#171717;">
+                                <div class="bg-primary p-3">
+                                    <h5 class="mb-0 text-white line-height"><%=user.fullname%></h5>
+                                    <span class="text-white font-size-12"><%=user.isVerified%></span>
+                                </div>
+                                <a href="profile" class="iq-sub-card iq-bg-primary-hover">
+                                    <div class="media align-items-center">
+                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                            <i class="ri-file-user-line"></i>
+                                        </div>
+                                        <div class="media-body ml-3">
+                                            <h6 class="mb-0 " style="color:#fff;">My Profile</h6>
+                                            <p class="mb-0 font-size-12">View personal profile details.</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                 <!--<a href="profile-edit.html" class="iq-sub-card iq-bg-primary-hover">
+                                    <div class="media align-items-center">
+                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                            <i class="ri-profile-line"></i>
+                                        </div>
+                                       <div class="media-body ml-3">
+                                            <h6 class="mb-0 ">Edit Profile</h6>
+                                            <p class="mb-0 font-size-12">Modify your personal details.</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                <a href="/wp-user/account-setting.html" class="iq-sub-card iq-bg-primary-hover">
+                                    <div class="media align-items-center">
+                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                            <i class="ri-account-box-line"></i>
+                                        </div>
+                                        <div class="media-body ml-3">
+                                            <h6 class="mb-0 ">Account settings</h6>
+                                            <p class="mb-0 font-size-12">Manage your account parameters.</p>
+                                        </div>
+                                    </div>
+                                </a>-->
+                                <a href="edit/<%=user._id%>" class="iq-sub-card iq-bg-primary-hover">
+                                    <div class="media align-items-center">
+                                        <div class="rounded iq-card-icon iq-bg-primary">
+                                            <i class="ri-lock-line"></i>
+                                        </div>
+                                        <div class="media-body ml-3">
+                                            <h6 class="mb-0 " style="color:#fff;">Privacy Settings</h6>
+                                            <p class="mb-0 font-size-12">Control your privacy parameters.</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                <div class="d-inline-block w-100 text-center p-3">
+                                    <a class="bg-primary iq-sign-btn" href="logout" role="button">Sign Out<i class="ri-login-box-line ml-2"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div></li>
+            </ul>
+        </div></nav>
+    </div>
+</div> 
+ <div class="d-flex flex-column" style="margin-top:55px;"> 
+   
+  </div>
+  </div>
+
+  <!-- othe main content -->
+
+      <!-- Main Content -->
+    <div class="wrapper">
+      <div id="content-page" class="content-page" style="margin-top: 90px;">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="iq-card">
+                <div class="iq-card-body p-0">
+                  <div class="iq-edit-list">
+                    <ul class="iq-edit-profile d-flex nav nav-pills">
+                      <li class="col-md-3 p-0">
+                        <a class="nav-link" style="background-color: #171717; color: #B3B3B3;" data-toggle="pill" href="#personal-information">Personal Information</a>
+                      </li>
+                      <li class="col-md-3 p-0">
+                        <a class="nav-link" style="background-color: #171717; color: #B3B3B3;" data-toggle="pill" href="#chang-pwd">Change Password</a>
+                      </li>
+                      <li class="col-md-3 p-0">
+                        <a class="nav-link" style="background-color: #171717; color: #B3B3B3;" data-toggle="pill" href="#emailandsms">Email and SMS</a>
+                      </li>
+                      <li class="col-md-3 p-0">
+                        <a class="nav-link active" style="background-color: #171717; color: #B3B3B3;" data-toggle="pill" href="#manage-contact">Manage Contact</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-12">
+              <div class="iq-edit-list-data">
+                <div class="tab-content">
+                  <!-- Personal Information -->
+                  <div class="tab-pane fade" id="personal-information" role="tabpanel">
+                    <div class="iq-card" style="background-color: #171717; color: #B3B3B3;">
+                      <div class="iq-card-header d-flex justify-content-between">
+                        <div class="iq-header-title">
+                          <h4 class="card-title" style="color: #B3B3B3;">Personal Information</h4>
+                        </div>
+                      </div>
+                      <div class="iq-card-body">
+                        <form id="personalInfoForm" method="post" action="/edit/<%= user._id %>" enctype="multipart/form-data">
+                          <div class="form-group row align-items-center">
+                            <div class="col-md-12">
+                              <div class="profile-img-edit">
+                                <img class="profile-pic" src="<%= user.image || '/images/user/11.png' %>" alt="profile-pic">
+                                <div class="p-image">
+                                  <i class="bi bi-pencil upload-button"></i>
+                                  <input class="file-upload" type="file" name="changepicture" accept="image/*">
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row align-items-center">
+                            <div class="form-group col-sm-6">
+                              <label for="fullname" style="color: #B3B3B3;">Full Name:</label>
+                              <input type="text" class="form-control" name="fullname" value="<%= user.fullname %>" required>
+                            </div>
+                            <div class="form-group col-sm-6">
+                              <label for="username" style="color: #B3B3B3;">Username:</label>
+                              <input type="text" class="form-control" name="username" value="<%= user.username %>" required>
+                            </div>
+                            <div class="form-group col-sm-6">
+                              <label for="city" style="color: #B3B3B3;">City:</label>
+                              <input type="text" class="form-control" name="city" value="<%= user.city %>" required>
+                            </div>
+                            <div class="form-group col-sm-6">
+                              <label class="d-block" style="color: #B3B3B3;">Gender:</label>
+                              <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="genderMale" name="gender" class="custom-control-input" value="Male" <%= user.gender === 'Male' ? 'checked' : '' %> required>
+                                <label class="custom-control-label" for="genderMale" style="color: #B3B3B3;">Male</label>
+                              </div>
+                              <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="genderFemale" name="gender" class="custom-control-input" value="Female" <%= user.gender === 'Female' ? 'checked' : '' %> required>
+                                <label class="custom-control-label" for="genderFemale" style="color: #B3B3B3;">Female</label>
+                              </div>
+                            </div>
+                            <div class="form-group col-sm-6">
+                              <label for="dob" style="color: #B3B3B3;">Date Of Birth:</label>
+                              <input type="date" class="form-control" name="dob" value="<%= user.dob ? user.dob.toISOString().split('T')[0] : '' %>" required>
+                            </div>
+                            <div class="form-group col-sm-6">
+                              <label style="color: #B3B3B3;">Marital Status:</label>
+                              <select class="form-control" name="marital_status" required>
+                                <option value="Single" <%= user.marital_status === 'Single' ? 'selected' : '' %>>Single</option>
+                                <option value="Married" <%= user.marital_status === 'Married' ? 'selected' : '' %>>Married</option>
+                                <option value="Widowed" <%= user.marital_status === 'Widowed' ? 'selected' : '' %>>Widowed</option>
+                                <option value="Divorced" <%= user.marital_status === 'Divorced' ? 'selected' : '' %>>Divorced</option>
+                                <option value="Separated" <%= user.marital_status === 'Separated' ? 'selected' : '' %>>Separated</option>
+                              </select>
+                            </div>
+                            <div class="form-group col-sm-6">
+                              <label style="color: #B3B3B3;">Age:</label>
+                              <select class="form-control" name="age" required>
+                                <option value="12 - 18" <%= user.age === '12 - 18' ? 'selected' : '' %>>12 - 18</option>
+                                <option value="19 - 32" <%= user.age === '19 - 32' ? 'selected' : '' %>>19 - 32</option>
+                                <option value="33 - 45" <%= user.age === '33 - 45' ? 'selected' : '' %>>33 - 45</option>
+                                <option value="46 - 62" <%= user.age === '46 - 62' ? 'selected' : '' %>>46 - 62</option>
+                                <option value="63 &gt;" <%= user.age === '63 &gt;' ? 'selected' : '' %>>63 &gt;</option>
+                              </select>
+                            </div>
+                            <div class="form-group col-sm-6">
+                              <label style="color: #B3B3B3;">Country:</label>
+                              <select class="form-control" name="country" required>
+                                <option value="Canada" <%= user.country === 'Canada' ? 'selected' : '' %>>Canada</option>
+                                <option value="Noida" <%= user.country === 'Noida' ? 'selected' : '' %>>Noida</option>
+                                <option value="USA" <%= user.country === 'USA' ? 'selected' : '' %>>USA</option>
+                                <option value="India" <%= user.country === 'India' ? 'selected' : '' %>>India</option>
+                                <option value="Africa" <%= user.country === 'Africa' ? 'selected' : '' %>>Africa</option>
+                              </select>
+                            </div>
+                            <div class="form-group col-sm-6">
+                              <label style="color: #B3B3B3;">State:</label>
+                              <select class="form-control" name="state" required>
+                                <option value="California" <%= user.state === 'California' ? 'selected' : '' %>>California</option>
+                                <option value="Florida" <%= user.state === 'Florida' ? 'selected' : '' %>>Florida</option>
+                                <option value="Georgia" <%= user.state === 'Georgia' ? 'selected' : '' %>>Georgia</option>
+                                <option value="Connecticut" <%= user.state === 'Connecticut' ? 'selected' : '' %>>Connecticut</option>
+                                <option value="Louisiana" <%= user.state === 'Louisiana' ? 'selected' : '' %>>Louisiana</option>
+                              </select>
+                            </div>
+                            <div class="form-group col-sm-12">
+                              <label style="color: #B3B3B3;">Address:</label>
+                              <textarea class="form-control" name="home_address" rows="5" required><%= user.address %></textarea>
+                            </div>
+                          </div>
+                          <button type="submit" name="updatePI" class="btn btn-primary mr-2">Submit</button>
+                          <button type="reset" class="btn btn-danger">Cancel</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Change Password -->
+                  <div class="tab-pane fade" id="chang-pwd" role="tabpanel">
+                    <div class="iq-card" style="background-color: #171717; color: #B3B3B3;">
+                      <div class="iq-card-header d-flex justify-content-between">
+                        <div class="iq-header-title">
+                          <h4 class="card-title" style="color: #B3B3B3;">Change Password</h4>
+                        </div>
+                      </div>
+                      <div class="iq-card-body">
+                        <form id="changePasswordForm" method="post" action="/edit/<%= user._id %>">
+                          <div class="form-group">
+                            <label for="current_password" style="color: #B3B3B3;">Current Password:</label>
+                            <a href="/forgot-password" class="float-right" style="color: #B3B3B3;">Forgot Password</a>
+                            <input type="password" class="form-control" name="current_password" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="new_password" style="color: #B3B3B3;">New Password:</label>
+                            <input type="password" class="form-control" name="new_password" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="verify_password" style="color: #B3B3B3;">Verify Password:</label>
+                            <input type="password" class="form-control" name="verify_password" required>
+                          </div>
+                          <button type="submit" name="changepassword" class="btn btn-primary mr-2">Submit</button>
+                          <button type="reset" class="btn btn-danger">Cancel</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Email and SMS -->
+                  <div class="tab-pane fade" id="emailandsms" role="tabpanel">
+                    <div class="iq-card" style="background-color: #171717; color: #B3B3B3;">
+                      <div class="iq-card-header d-flex justify-content-between">
+                        <div class="iq-header-title">
+                          <h4 class="card-title" style="color: #B3B3B3;">Email and SMS</h4>
+                        </div>
+                      </div>
+                      <div class="iq-card-body">
+                        <form id="emailSmsForm" method="post" action="/edit/<%= user._id %>">
+                          <div class="form-group row align-items-center">
+                            <label class="col-md-3" for="emailnotification" style="color: #B3B3B3;">Email Notification:</label>
+                            <div class="col-md-9 custom-control custom-switch">
+                              <input type="checkbox" class="custom-control-input" id="emailnotification" name="emailnotification" <%= user.emailnotification ? 'checked' : '' %>>
+                              <label class="custom-control-label" for="emailnotification"></label>
+                            </div>
+                          </div>
+                          <div class="form-group row align-items-center">
+                            <label class="col-md-3" for="smsnotification" style="color: #B3B3B3;">SMS Notification:</label>
+                            <div class="col-md-9 custom-control custom-switch">
+                              <input type="checkbox" class="custom-control-input" id="smsnotification" name="smsnotification" <%= user.smsnotification ? 'checked' : '' %>>
+                              <label class="custom-control-label" for="smsnotification"></label>
+                            </div>
+                          </div>
+                          <div class="form-group row align-items-center">
+                            <label class="col-md-3" style="color: #B3B3B3;">When To Email</label>
+                            <div class="col-md-9">
+                              <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="email01" name="email_notifications" value="new_notifications" <%= user.email_notifications?.includes('new_notifications') ? 'checked' : '' %>>
+                                <label style="color: #B3B3B3;" class="custom-control-label" for="email01">You have new notifications.</label>
+                              </div>
+                              <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="email02" name="email_notifications" value="direct_message" <%= user.email_notifications?.includes('direct_message') ? 'checked' : '' %>>
+                                <label style="color: #B3B3B3;" class="custom-control-label" for="email02">You're sent a direct message</label>
+                              </div>
+                              <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="email03" name="email_notifications" value="new_connection" <%= user.email_notifications?.includes('new_connection') ? 'checked' : '' %>>
+                                <label style="color: #B3B3B3;" class="custom-control-label" for="email03">Someone adds you as a connection</label>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="form-group row align-items-center">
+                            <label class="col-md-3" style="color: #B3B3B3;">When To Escalate Emails</label>
+                            <div class="col-md-9">
+                              <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="email04" name="escalate_emails" value="new_order" <%= user.escalate_emails?.includes('new_order') ? 'checked' : '' %>>
+                                <label style="color: #B3B3B3;" class="custom-control-label" for="email04">Upon new order.</label>
+                              </div>
+                              <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="email05" name="escalate_emails" value="membership_approval" <%= user.escalate_emails?.includes('membership_approval') ? 'checked' : '' %>>
+                                <label style="color: #B3B3B3;" class="custom-control-label" for="email05">New membership approval</label>
+                              </div>
+                              <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="email06" name="escalate_emails" value="member_registration" <%= user.escalate_emails?.includes('member_registration') ? 'checked' : '' %>>
+                                <label style="color: #B3B3B3;" class="custom-control-label" for="email06">Member registration</label>
+                              </div>
+                            </div>
+                          </div>
+                          <button type="submit" name="updateemail" class="btn btn-primary mr-2">Submit</button>
+                          <button type="reset" class="btn btn-danger">Cancel</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Manage Contact -->
+                  <div class="tab-pane fade active show" id="manage-contact" role="tabpanel">
+                    <div class="iq-card" style="background-color: #171717; color: #B3B3B3;">
+                      <div class="iq-card-header d-flex justify-content-between">
+                        <div class="iq-header-title">
+                          <h4 class="card-title" style="color: #B3B3B3;">Manage Contact</h4>
+                        </div>
+                      </div>
+                      <div class="iq-card-body">
+                        <form id="manageContactForm" method="post" action="/edit/<%= user._id %>">
+                          <div class="form-group">
+                            <label for="phone" style="color: #B3B3B3;">Contact Number:</label>
+                            <input type="text" class="form-control" name="phone" value="<%= user.tel %>" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="email" style="color: #B3B3B3;">Email:</label>
+                            <input type="email" class="form-control" name="email" value="<%= user.email %>" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="url" style="color: #B3B3B3;">Url:</label>
+                            <input type="url" class="form-control" name="url" value="<%= user.url || '' %>">
+                          </div>
+                          <button type="submit" name="updatedcontact" class="btn btn-primary mr-2">Submit</button>
+                          <button type="reset" class="btn btn-danger">Cancel</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+</section>
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="assets5i/custom/custom.js"></script>
+
+
+
+ <script src="assets0/notify.js"></script>
+ <script type="text/javascript" src="assets0/custom/custom.js"></script>
+ <!-- Optional JavaScript -->
+    <script src="../plugins/jquery-3.1.1.min.js"></script>
+    <script src="../plugins/sweetalerts/sweetalert2.min.js"></script>
+    <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.js"></script>
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <!--<script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>-->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- Appear JavaScript -->
+    <script src="js/jquery.appear.js"></script>
+    <!-- Countdown JavaScript -->
+    <script src="js/countdown.min.js"></script>
+    <!-- Counterup JavaScript -->
+    <script src="js/waypoints.min.js"></script>
+    <script src="js/jquery.counterup.min.js"></script>
+    <!-- Wow JavaScript -->
+    <script src="js/wow.min.js"></script>
+    <!-- Apexcharts JavaScript -->
+    <script src="js/apexcharts.js"></script>
+    <!-- Slick JavaScript -->
+    <script src="js/slick.min.js"></script>
+    <!-- Select2 JavaScript -->
+    <script src="js/select2.min.js"></script>
+    <!-- Owl Carousel JavaScript -->
+    <script src="js/owl.carousel.min.js"></script>
+    <!-- Magnific Popup JavaScript -->
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <!-- Smooth Scrollbar JavaScript -->
+    <script src="js/smooth-scrollbar.js"></script>
+    <!-- lottie JavaScript -->
+    <script src="js/lottie.js"></script>
+    <!-- am core JavaScript -->
+    <script src="js/core.js"></script>
+    <!-- am charts JavaScript -->
+    <script src="js/charts.js"></script>
+    <!-- am animated JavaScript -->
+    <script src="js/animated.js"></script>
+    <!-- am kelly JavaScript -->
+    <script src="js/kelly.js"></script>
+    <!-- am maps JavaScript -->
+    <script src="js/maps.js"></script>
+    <!-- am worldLow JavaScript -->
+    <script src="js/worldLow.js"></script>
+    <!-- Style Customizer -->
+    <script src="js/style-customizer.js"></script>
+    <!-- Chart Custom JavaScript -->
+    <script src="js/chart-custom.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="js/custom.js"></script>
+    
+    <script type="text/javascript" src="nt/nt.js"></script>
+	<script type="text/javascript" src="nt/f.js"></script>
+	
+ <script>
+    // Handle form submissions with AJAX
+    const forms = [
+      { id: 'personalInfoForm', isMultipart: true },
+      { id: 'changePasswordForm', isMultipart: false },
+      { id: 'emailSmsForm', isMultipart: false },
+      { id: 'manageContactForm', isMultipart: false },
+    ];
+
+    forms.forEach(({ id, isMultipart }) => {
+      const form = document.getElementById(id);
+      if (form) {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const formData = isMultipart ? new FormData(form) : new URLSearchParams(new FormData(form));
+          const submitButton = form.querySelector('button[type="submit"]');
+          submitButton.disabled = true;
+          submitButton.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Submitting...';
+
+          try {
+            const response = await Promise.race([
+              fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: isMultipart ? {} : { 'Content-Type': 'application/x-www-form-urlencoded' },
+              }),
+              new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), 10000)),
+            ]);
+
+            if (response.redirected) {
+              window.location.href = response.url;
+              return;
+            }
+
+            const result = await response.json();
+            if (response.ok) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: result.message || 'Operation successful',
+                confirmButtonColor: '#3085d6',
+              }).then(() => {
+                window.location.reload();
+              });
+            } else {
+              throw new Error(result.error || 'Operation failed');
+            }
+          } catch (err) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: err.message || 'An error occurred while submitting the form',
+              confirmButtonColor: '#d33',
+            });
+          } finally {
+            submitButton.disabled = false;
+            submitButton.innerHTML = 'Submit';
+          }
+        });
+      }
+    });
+
+    // Display flash messages on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      const messages = <%- JSON.stringify(messages) %>;
+      if (messages.success && messages.success.length > 0) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: messages.success[0],
+          confirmButtonColor: '#3085d6',
+        });
+      } else if (messages.error && messages.error.length > 0) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: messages.error[0],
+          confirmButtonColor: '#d33',
+        });
+      }
+    });
+
+    // Preview profile image before upload
+    document.querySelector('.file-upload').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          document.querySelector('.profile-pic').src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  </script>
+
+
+<%- include('partials/dashboardFooter')%>
