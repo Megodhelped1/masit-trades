@@ -120,12 +120,12 @@ module.exports.loginAdmin_post = async (req, res) => {
               req.flash('error', 'Invalid password.');
           } else if (err.message === 'Your account is not verified. Please verify it or create another account.') {
               req.flash('error', err.message);
-          } else if (err.message === 'Your account is suspended. If you believe this is a mistake, please contact support at support@signalsmine.org.') {
+          } else if (err.message === 'Your account is suspended. If you believe this is a mistake, please contact support at support@masi-trades.org.') {
               req.flash('error', err.message);
           } else {
               req.flash('error', 'An unexpected error occurred.');
           }
-          res.status(400).json({ errors, redirect: '/signin' });
+          res.status(400).json({ errors, redirect: '/loginAdmin' });
       }
 };
 
