@@ -14,7 +14,6 @@ const path = require('path');
 const { requireAuth, checkUser } = require('./server/authMiddleware/authMiddleware');
 // const cloudinary = require('cloudinary').v2;
 
-
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
