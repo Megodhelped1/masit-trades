@@ -1801,3 +1801,131 @@ module.exports.deleteStockTrade = async (req, res) => {
     res.redirect('/all-tradestock');
   }
 };
+
+module.exports.getAllChats = async (req, res) => {
+  try {
+    const chats = await Chat.find().populate('user');
+    res.render('allChats', { chats });
+  } catch (err) {
+    console.error(err);
+    req.flash('error', 'Something went wrong!');
+    res.redirect('/adminRoute');
+  }
+};
+
+module.exports.viewChat = async (req, res) => {
+  try {
+    const chat = await Chat.findById(req.params.id).populate('user');
+    if (!chat) {
+      req.flash('error', 'Chat not found');
+      return res.redirect('/all-chats');
+    }
+    res.render('viewChat', { chat });
+  } catch (err) {
+    console.error(err);
+    req.flash('error', 'Something went wrong!');
+    res.redirect('/all-chats');
+  }
+};
+
+module.exports.respondChat = async (req, res) => {
+  try {
+    const { content } = req.body;
+    let imageUrl = null;
+
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path);
+      imageUrl = result.secure_url;
+    }
+
+    const chat = await Chat.findById(req.params.id);
+    if (!chat) {
+      req.flash('error', 'Chat not found');
+      return res.redirect('/all-chats');
+    }
+
+    const message = {
+      sender: 'admin',
+      content,
+      image: imageUrl,
+      timestamp: new Date(),
+    };
+
+    chat.messages.push(message);
+    await chat.save();
+
+    // Emit message via Socket.IO
+    req.app.get('io').to(chat.user.toString()).emit('newMessage', message);
+    req.app.get('io').to('admin').emit('newMessage', { userId: chat.user, message });
+
+    // New: Notify user of admin response
+    const responseNotif = new Notification({
+      user: chat.user,
+      title: 'New Admin Response',
+      message: 'You have a new response in your chat.',
+      type: 'chat_message'
+    });
+    await responseNotif.save();
+    req.io.to(`notifications_${chat.user}`).emit('newNotification', responseNotif);
+
+    req.flash('success', 'Response sent');
+    res.redirect(`/chat/${req.params.id}`);
+  } catch (err) {
+    console.error(err);
+    req.flash('error', 'Something went wrong!');
+    res.redirect(`/chat/${req.params.id}`);
+  }
+};
+
+
+module.exports.deleteChat = async (req, res) => {
+  try {
+    await Chat.findByIdAndDelete(req.params.id);
+    req.flash('success', 'Chat deleted');
+    res.redirect('/all-chats');
+  } catch (err) {
+    console.error(err);
+    req.flash('error', 'Something went wrong!');
+    res.redirect('/all-chats');
+  }
+};
+
+// New: Admin notifications page
+module.exports.notificationsPage = async (req, res) => {
+  try {
+    const notifications = await Notification.find({ user: null }).sort({ createdAt: -1 }); // Admin notifications (user: null)
+    res.render('adminNotifications', { notifications });
+  } catch (error) {
+    console.error(error);
+    req.flash('error', 'Error loading notifications');
+    res.redirect('/adminRoute');
+  }
+};
+
+// New: Send custom notification to user
+module.exports.sendCustomNotification = async (req, res) => {
+  try {
+    const { title, message } = req.body;
+    const userId = req.params.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const customNotif = new Notification({
+      user: userId,
+      title,
+      message,
+      type: 'custom'
+    });
+    await customNotif.save();
+    req.io.to(`notifications_${userId}`).emit('newNotification', customNotif);
+
+    req.flash('success', 'Custom notification sent successfully');
+    res.redirect(`/viewUser/${userId}`);
+  } catch (error) {
+    console.error(error);
+    req.flash('error', 'Failed to send notification');
+    res.redirect('back');
+  }
+};
