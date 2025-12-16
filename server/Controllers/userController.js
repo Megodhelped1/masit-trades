@@ -32,149 +32,137 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
+
+
 // Generate verification URL dynamically
-// const generateVerificationUrl = (userId, verificationToken) => {
-//   const baseUrl = process.env.BASE_URL;
-//   return `${baseUrl}/verify-email?user=${userId}&ver_code=${verificationToken}`;
-// };
+const generateVerificationUrl = (userId, verificationToken) => {
+  const baseUrl = process.env.BASE_URL; // Fallback
+  return `${baseUrl}/verify-email?user=${userId}&ver_code=${verificationToken}`;
+};
 
-// Send verification email
-// const sendVerificationEmail = async (email, fullname, verificationToken, userId) => {
-//   const transporter = nodemailer.createTransport({
-//     host: 'smtp.gmail.com',
-//     port: 465,
-//     secure: true,
-//     auth: {
-//     user: 'digitaltopfigmairkets@gmail.com',
-//       pass: 'jgscqjhzpsulnagz'
-//     }
-//   });
+// Send verification email using Resend
+const sendVerificationEmail = async (email, fullname, verificationToken, userId) => {
+  const verificationUrl = generateVerificationUrl(userId, verificationToken);
 
-//   const verificationUrl = generateVerificationUrl(userId, verificationToken);
+  try {
+    const { data, error } = await resend.emails.send({
+      from: 'Support <support@digital-topfigmarkets.com>',
+      to: [email],
+      subject: 'Verify Your Email - Masi-Trades',
+      html: `
+        <div style="background-color: #1C2526; padding: 20px; font-family: Arial, sans-serif; color: #F5F6F5; text-align: center; max-width: 600px; margin: 0 auto;">
+          <!-- Header -->
+          <div style="background-color: #2E3A3B; padding: 15px; border-bottom: 2px solid #F5F6F5;">
+            <img src="https://masi-trades.org/img/logo.jpeg" alt="Masi Trades Logo" style="max-width: 150px; height: auto; display: block; margin: 0 auto;">
+            <h2 style="color: #F5F6F5; margin: 10px 0 0; font-size: 24px;">Verify Your Email Account</h2>
+          </div>
+          <!-- Body -->
+          <div style="padding: 20px; font-size: 16px; line-height: 1.5;">
+            <p>Hi ${fullname},</p>
+            <p style="color: #F5F6F5;">Thanks for creating an account with us at Masi-Trades. Please click the button below to verify your account:</p>
+            <a href="${verificationUrl}" style="display: inline-block; padding: 12px 24px; background-color: #3F3EED; color: white; text-decoration: none; border-radius: 4px; margin: 20px 0;">Confirm Email</a>
+            <p style="color: #F5F6F5;">If the button above doesn't work, please copy and paste this link into your browser:</p>
+            <p><a href="${verificationUrl}" style="color: #4A90E2; text-decoration: none;">${verificationUrl}</a></p>
+            <!-- Contact/Support Links -->
+            <div style="margin: 20px 0; display: flex; justify-content: center; gap: 20px;">
+              <a href="mailto:support@digital-topfigmarkets.com" style="color: #4A90E2; text-decoration: none; display: flex; align-items: center; gap: 5px;">
+                <img src="https://img.icons8.com/ios-filled/24/4A90E2/email.png" alt="Email Icon" style="width: 20px; height: 20px;">
+                <span>Contact Support</span>
+              </a>
+              <a href="masi-trades.org" style="color: #4A90E2; text-decoration: none; display: flex; align-items: center; gap: 5px;">
+                <img src="https://img.icons8.com/ios-filled/24/4A90E2/globe.png" alt="Website Icon" style="width: 20px; height: 20px;">
+                <span>Visit Website</span>
+              </a>
+            </div>
+          </div>
+          <!-- Footer -->
+          <div style="background-color: #2E3A3B; padding: 15px; border-top: 2px solid #F5F6F5; font-size: 14px;">
+            <p style="margin: 0 0 10px; color: #F5F6F5;">© ${new Date().getFullYear()} Masi-Trades. All rights reserved.</p>
+            <div style="display: flex; justify-content: center; gap: 20px;">
+              <a href="mailto:support@digital-topfigmarkets.com" style="color: #4A90E2; text-decoration: none; display: flex; align-items: center; gap: 5px;">
+                <img src="https://img.icons8.com/ios-filled/24/4A90E2/email.png" alt="Email Icon" style="width: 20px; height: 20px;">
+                <span>Contact Support</span>
+              </a>
+              <a href="masi-trades.org" style="color: #4A90E2; text-decoration: none; display: flex; align-items: center; gap: 5px;">
+                <img src="https://img.icons8.com/ios-filled/24/4A90E2/globe.png" alt="Website Icon" style="width: 20px; height: 20px;">
+                <span>Visit Website</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      `,
+    });
 
-//   const mailOptions = {
-//     from: 'support@digital-topfigmairkets.com', // Update to match your domain
-//     to: email,
-//     subject: 'Verify Your Email - Digital Figtop',
-//     html: `
-//       <div style="background-color: #1C2526; padding: 20px; font-family: Arial, sans-serif; color: #F5F6F5; text-align: center; max-width: 600px; margin: 0 auto;">
-//         <!-- Header -->
-//         <div style="background-color: #2E3A3B; padding: 15px; border-bottom: 2px solid #F5F6F5;">
-//           <img src="https://ci3.googleusercontent.com/meips/ADKq_NbWvndY7ipL-Nw8Hmdp3YA_hWPJyT9lZ-TMEC-sIUnu2jcyRInbm0Y0JFSMU-KNB5MRgIwNfml_cVYKSqj0543VjAghNO6rZA=s0-d-e1-ft#https://digital-figtopmarkets.com/images/email.png" alt="Digital Figtop Logo" style="max-width: 150px; height: auto; display: block; margin: 0 auto;">
-//           <h2 style="color: #F5F6F5; margin: 10px 0 0; font-size: 24px;">Verify Your Email Account</h2>
-//         </div>
-//         <!-- Body -->
-//         <div style="padding: 20px; font-size: 16px; line-height: 1.5;">
-//           <p>Hi ${fullname},</p>
-//           <p style="color: #F5F6F5;">Thanks for creating an account with us at Digital Figtop. Please click the button below to verify your account:</p>
-//           <a href="${verificationUrl}" style="display: inline-block; padding: 12px 24px; background-color: #3F3EED; color: white; text-decoration: none; border-radius: 4px; margin: 20px 0;">Confirm Email</a>
-//           <p style="color: #F5F6F5;">If the button above doesn't work, please copy and paste this link into your browser:</p>
-//           <p><a href="${verificationUrl}" style="color: #4A90E2; text-decoration: none;">${verificationUrl}</a></p>
-//           <!-- Contact/Support Links in Body -->
-//           <div style="margin: 20px 0; display: flex; justify-content: center; gap: 20px;">
-//             <a href="mailto:support@digital-topfigmairkets.com" style="color: #4A90E2; text-decoration: none; display: flex; align-items: center; gap: 5px;">
-//               <img src="https://img.icons8.com/ios-filled/24/4A90E2/email.png" alt="Email Icon" style="width: 20px; height: 20px;">
-//               <span>Contact Support</span>
-//             </a>
-//             <a href="digital-topfigmarkets.com" style="color: #4A90E2; text-decoration: none; display: flex; align-items: center; gap: 5px;">
-//               <img src="https://img.icons8.com/ios-filled/24/4A90E2/globe.png" alt="Website Icon" style="width: 20px; height: 20px;">
-//               <span>Visit Website</span>
-//             </a>
-//           </div>
-//         </div>
-//         <!-- Footer -->
-//         <div style="background-color: #2E3A3B; padding: 15px; border-top: 2px solid #F5F6F5; font-size: 14px;">
-//           <p style="margin: 0 0 10px; color: #F5F6F5;">© ${new Date().getFullYear()} Digital Figtop. All rights reserved.</p>
-//           <div style="display: flex; justify-content: center; gap: 20px;">
-//             <a href="mailto:support@digital-topfigmairkets.com" style="color: #4A90E2; text-decoration: none; display: flex; align-items: center; gap: 5px;">
-//               <img src="https://img.icons8.com/ios-filled/24/4A90E2/email.png" alt="Email Icon" style="width: 20px; height: 20px;">
-//               <span>Contact Support</span>
-//             </a>
-//             <a href="digital-topfigmairkets.com" style="color: #4A90E2; text-decoration: none; display: flex; align-items: center; gap: 5px;">
-//               <img src="https://img.icons8.com/ios-filled/24/4A90E2/globe.png" alt="Website Icon" style="width: 20px; height: 20px;">
-//               <span>Visit Website</span>
-//             </a>
-//           </div>
-//         </div>
-//       </div>
-//     `
-//   };
+    if (error) {
+      console.error('Resend error:', error);
+      throw new Error(error.message || 'Failed to send verification email');
+    }
 
-//   try {
-//     await transporter.sendMail(mailOptions);
-//     console.log('Verification email sent to:', email);
-//   } catch (error) {
-//     console.error('Error sending verification email:', error);
-//     throw error; // Re-throw to be caught in registerPage_post
-//   }
-// };
+    console.log('Verification email sent successfully:', data.id);
+  } catch (error) {
+    console.error('Error sending verification email:', error);
+    throw error;
+  }
+};
 
-// Send welcome email after verification
-// const sendWelcomeEmail = async (email, fullname, username, password, createdAt) => {
-//   const transporter = nodemailer.createTransport({
-//     host: 'smtp.gmail.com',
-//     port: 465,
-//     secure: true,
-//     auth: {
-//        user: 'digitaltopfigmairkets@gmail.com',
-//       pass: 'jgscqjhzpsulnagz'
-//     }
-//   });
+// Send welcome email using Resend
+const sendWelcomeEmail = async (email, fullname, username, password, createdAt) => {
+  const signInUrl = process.env.BASE_URL;
 
-//   const signInUrl = process.env.BASE_URL;
+  try {
+    const { data, error } = await resend.emails.send({
+      from: 'Support <support@digital-topfigmarkets.com>',
+      to: [email],
+      subject: 'Welcome to Masi-Trades',
+      html: `
+        <div style="background-color: #1C2526; padding: 20px; font-family: Arial, sans-serif; color: #F5F6F5; text-align: center; max-width: 600px; margin: 0 auto;">
+          <!-- Header -->
+          <div style="background-color: #2E3A3B; padding: 15px; border-bottom: 2px solid #F5F6F5;">
+            <img src="https://ci3.googleusercontent.com/meips/ADKq_NbWvndY7ipL-Nw8Hmdp3YA_hWPJyT9lZ-TMEC-sIUnu2jcyRInbm0Y0JFSMU-KNB5MRgIwNfml_cVYKSqj0543VjAghNO6rZA=s0-d-e1-ft#https://digital-figtopmarkets.com/images/email.png" alt="Digital Figtop Logo" style="max-width: 150px; height: auto; display: block; margin: 0 auto;">
+            <h2 style="color: #F5F6F5; margin: 10px 0 0; font-size: 24px;">Welcome, ${fullname}</h2>
+          </div>
+          <!-- Body -->
+          <div style="padding: 20px; font-size: 16px; line-height: 1.5;">
+            <h3 style="color: #F5F6F5; font-size: 18px;">We are happy to have you join us</h3>
+            <p style="color: #F5F6F5;">Your account registration and email verification was successful. Welcome to Digital Figtop.</p>
+            <p style="color: #F5F6F5; font-weight: bold;">Below is your personal details. Do not disclose to anyone.</p>
+            <hr style="border: 1px solid #4A4A4A; margin: 20px 0;">
+            <p style="color: #F5F6F5; text-align: left; margin: 10px 0;"><strong>Username:</strong> ${username}</p>
+            <p style="color: #F5F6F5; text-align: left; margin: 10px 0;"><strong>Email:</strong> ${email}</p>
+            <p style="color: #F5F6F5; text-align: left; margin: 10px 0;"><strong>Password:</strong> ${password}</p>
+            <hr style="border: 1px solid #4A4A4A; margin: 20px 0;">
+            <a href="${signInUrl}" style="display: inline-block; padding: 12px 24px; background-color: #3F3EED; color: white; text-decoration: none; border-radius: 4px; margin: 20px 0;">Sign In</a>
+            <p style="color: #F5F6F5; font-size: 14px;">Account created on: ${new Date(createdAt).toLocaleDateString()}</p>
+          </div>
+          <!-- Footer -->
+          <div style="background-color: #2E3A3B; padding: 15px; border-top: 2px solid #F5F6F5; font-size: 14px;">
+            <p style="margin: 0 0 10px; color: #F5F6F5;">© ${new Date().getFullYear()} Digital Figtop. All rights reserved.</p>
+            <div style="display: flex; justify-content: center; gap: 20px;">
+              <a href="mailto:support@digital-topfigmarkets.com" style="color: #4A90E2; text-decoration: none; display: flex; align-items: center; gap: 5px;">
+                <img src="https://img.icons8.com/ios-filled/24/4A90E2/email.png" alt="Email Icon" style="width: 20px; height: 20px;">
+                <span>Contact Support</span>
+              </a>
+              <a href="https://digital-topfigmarkets.com" style="color: #4A90E2; text-decoration: none; display: flex; align-items: center; gap: 5px;">
+                <img src="https://img.icons8.com/ios-filled/24/4A90E2/globe.png" alt="Website Icon" style="width: 20px; height: 20px;">
+                <span>Visit Website</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      `,
+    });
 
-//   const mailOptions = {
-//     from: 'support@digital-topfigmairkets.com',
-//     to: email,
-//     subject: 'Welcome to Digital Figtop',
-//     html: `
-//       <div style="background-color: #1C2526; padding: 20px; font-family: Arial, sans-serif; color: #F5F6F5; text-align: center; max-width: 600px; margin: 0 auto;">
-//         <!-- Header -->
-//         <div style="background-color: #2E3A3B; padding: 15px; border-bottom: 2px solid #F5F6F5;">
-//           <img src="https://ci3.googleusercontent.com/meips/ADKq_NbWvndY7ipL-Nw8Hmdp3YA_hWPJyT9lZ-TMEC-sIUnu2jcyRInbm0Y0JFSMU-KNB5MRgIwNfml_cVYKSqj0543VjAghNO6rZA=s0-d-e1-ft#https://digital-figtopmarkets.com/images/email.png" alt="Digital Figtop Logo" style="max-width: 150px; height: auto; display: block; margin: 0 auto;">
-//           <h2 style="color: #F5F6F5; margin: 10px 0 0; font-size: 24px;">Welcome, ${fullname}</h2>
-//         </div>
-//         <!-- Body -->
-//         <div style="padding: 20px; font-size: 16px; line-height: 1.5;">
-//           <h3 style="color: #F5F6F5; font-size: 18px;">We are happy to have you join us</h3>
-//           <p style="color: #F5F6F5;">Your account registration and email verification was successful. Welcome to Digital Figtop.</p>
-//           <p style="color: #F5F6F5; font-weight: bold;">Below is your personal details. Do not disclose to anyone.</p>
-//           <hr style="border: 1px solid #4A4A4A; margin: 20px 0;">
-//           <p style="color: #F5F6F5; text-align: left; margin: 10px 0;"><strong>Username:</strong> ${username}</p>
-//           <p style="color: #F5F6F5; text-align: left; margin: 10px 0;"><strong>Email:</strong> ${email}</p>
-//           <p style="color: #F5F6F5; text-align: left; margin: 10px 0;"><strong>Password:</strong> ${password}</p>
-//           <hr style="border: 1px solid #4A4A4A; margin: 20px 0;">
-//           <a href="${signInUrl}" style="display: inline-block; padding: 12px 24px; background-color: #3F3EED; color: white; text-decoration: none; border-radius: 4px; margin: 20px 0;">Sign In</a>
-//           <p style="color: #F5F6F5; font-size: 14px;">Account created on: ${new Date(createdAt).toLocaleDateString()}</p>
-//         </div>
-//         <!-- Footer -->
-//         <div style="background-color: #2E3A3B; padding: 15px; border-top: 2px solid #F5F6F5; font-size: 14px;">
-//           <p style="margin: 0 0 10px; color: #F5F6F5;">© ${new Date().getFullYear()} Digital Figtop. All rights reserved.</p>
-//           <div style="display: flex; justify-content: center; gap: 20px;">
-//             <a href="mailto:support@digital-topfigmairkets.com" style="color: #4A90E2; text-decoration: none; display: flex; align-items: center; gap: 5px;">
-//               <img src="https://img.icons8.com/ios-filled/24/4A90E2/email.png" alt="Email Icon" style="width: 20px; height: 20px;">
-//               <span>Contact Support</span>
-//             </a>
-//             <a href="digital-topfigmairkets.com" style="color: #4A90E2; text-decoration: none; display: flex; align-items: center; gap: 5px;">
-//               <img src="https://img.icons8.com/ios-filled/24/4A90E2/globe.png" alt="Website Icon" style="width: 20px; height: 20px;">
-//               <span>Visit Website</span>
-//             </a>
-//           </div>
-//         </div>
-//       </div>
-//     `
-//   };
+    if (error) throw error;
+    console.log('Welcome email sent successfully:', data.id);
+  } catch (error) {
+    console.error('Error sending welcome email:', error);
+    // Don't throw — verification already succeeded
+  }
+};
 
-//   try {
-//     await transporter.sendMail(mailOptions);
-//     console.log('Welcome email sent to:', email);
-//   } catch (error) {
-//     console.error('Error sending welcome email:', error);
-//     throw error; // Re-throw to handle in verifyEmail
-//   }
-// };
 
-// Unified handleErrors function
+
+
 const handleErrors = (err) => {
   let errors = {
     fullname: '',

@@ -9,13 +9,11 @@ const Signal = require("../Model/signal")
 const Livetrading = require("../Model/livetradingSchema")
 const stockTrade = require("../Model/stockTrade")
 const Affliate = require("../Model/affiliate")
-const Chat = require('../Model/Chat');
 const fs = require('fs');
 const validator = require('validator');
 const User = require('../Model/User');
 const cloudinary = require('cloudinary').v2;
 const nodemailer = require("nodemailer")
-const Notification = require('../Model/Notification'); // New import
 
 console.log('Cloudinary Config:', {
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -120,12 +118,12 @@ module.exports.loginAdmin_post = async (req, res) => {
               req.flash('error', 'Invalid password.');
           } else if (err.message === 'Your account is not verified. Please verify it or create another account.') {
               req.flash('error', err.message);
-          } else if (err.message === 'Your account is suspended. If you believe this is a mistake, please contact support at support@masi-trades.org.') {
+          } else if (err.message === 'Your account is suspended. If you believe this is a mistake, please contact support at support@signalsmine.org.') {
               req.flash('error', err.message);
           } else {
               req.flash('error', 'An unexpected error occurred.');
           }
-          res.status(400).json({ errors, redirect: '/loginAdmin' });
+          res.status(400).json({ errors, redirect: '/signin' });
       }
 };
 
@@ -357,8 +355,6 @@ module.exports.editUser_post = async (req, res) => {
       return res.status(400).json({ error: 'Invalid email format' });
     }
 
-    const originalUser = await User.findById(id); // Get original for comparison
-
     const updateData = {
       fullname,
       username,
@@ -395,55 +391,12 @@ module.exports.editUser_post = async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // New: Check for changes and notify user
-    if (originalUser.available !== user.available) {
-      const balanceNotif = new Notification({
-        user: id,
-        title: 'Balance Updated',
-        message: `Your available balance has been updated to ${user.available}.`,
-        type: 'balance_update'
-      });
-      await balanceNotif.save();
-      req.io.to(`notifications_${id}`).emit('newNotification', balanceNotif);
-    }
-    if (originalUser.totalEarning !== user.totalEarning) {
-      const earningNotif = new Notification({
-        user: id,
-        title: 'Earnings Updated',
-        message: `Your total earnings have been updated to ${user.totalEarning}.`,
-        type: 'earning_update'
-      });
-      await earningNotif.save();
-      req.io.to(`notifications_${id}`).emit('newNotification', earningNotif);
-    }
-    if (originalUser.totalWidthdraw !== user.totalWidthdraw) {
-      const withdrawNotif = new Notification({
-        user: id,
-        title: 'Withdrawal Total Updated',
-        message: `Your total withdrawals have been updated to ${user.totalWidthdraw}.`,
-        type: 'withdrawal_update'
-      });
-      await withdrawNotif.save();
-      req.io.to(`notifications_${id}`).emit('newNotification', withdrawNotif);
-    }
-    if (originalUser.verifiedStatus !== user.verifiedStatus) {
-      const verifyNotif = new Notification({
-        user: id,
-        title: 'Verification Status Updated',
-        message: `Your verification status is now ${user.verifiedStatus}.`,
-        type: 'verification_update'
-      });
-      await verifyNotif.save();
-      req.io.to(`notifications_${id}`).emit('newNotification', verifyNotif);
-    }
-
     return res.status(200).json({ message: 'User updated successfully', redirect: `/viewUser/${id}` });
   } catch (error) {
     console.error('Error in editUser_post:', error);
     return res.status(500).json({ error: 'Failed to update user' });
   }
 };
-
 // Render search results page
 module.exports.searchUsersPage = async (req, res) => {
   try {
@@ -547,139 +500,6 @@ module.exports.deletePage = async (req, res) => {
   }
 };
 
-//******************************************/ start of admin all chart controller **************************************//
-
-module.exports.getAllChats = async (req, res) => {
-  try {
-    const chats = await Chat.find().populate('user');
-    res.render('allChats', { chats });
-  } catch (err) {
-    console.error(err);
-    req.flash('error', 'Something went wrong!');
-    res.redirect('/adminRoute');
-  }
-};
-
-module.exports.viewChat = async (req, res) => {
-  try {
-    const chat = await Chat.findById(req.params.id).populate('user');
-    if (!chat) {
-      req.flash('error', 'Chat not found');
-      return res.redirect('/all-chats');
-    }
-    res.render('viewChat', { chat });
-  } catch (err) {
-    console.error(err);
-    req.flash('error', 'Something went wrong!');
-    res.redirect('/all-chats');
-  }
-};
-
-module.exports.respondChat = async (req, res) => {
-  try {
-    const { content } = req.body;
-    let imageUrl = null;
-
-    if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path);
-      imageUrl = result.secure_url;
-    }
-
-    const chat = await Chat.findById(req.params.id);
-    if (!chat) {
-      req.flash('error', 'Chat not found');
-      return res.redirect('/all-chats');
-    }
-
-    const message = {
-      sender: 'admin',
-      content,
-      image: imageUrl,
-      timestamp: new Date(),
-    };
-
-    chat.messages.push(message);
-    await chat.save();
-
-    // Emit message via Socket.IO
-    req.app.get('io').to(chat.user.toString()).emit('newMessage', message);
-    req.app.get('io').to('admin').emit('newMessage', { userId: chat.user, message });
-
-    // New: Notify user of admin response
-    const responseNotif = new Notification({
-      user: chat.user,
-      title: 'New Admin Response',
-      message: 'You have a new response in your chat.',
-      type: 'chat_message'
-    });
-    await responseNotif.save();
-    req.io.to(`notifications_${chat.user}`).emit('newNotification', responseNotif);
-
-    req.flash('success', 'Response sent');
-    res.redirect(`/chat/${req.params.id}`);
-  } catch (err) {
-    console.error(err);
-    req.flash('error', 'Something went wrong!');
-    res.redirect(`/chat/${req.params.id}`);
-  }
-};
-
-
-module.exports.deleteChat = async (req, res) => {
-  try {
-    await Chat.findByIdAndDelete(req.params.id);
-    req.flash('success', 'Chat deleted');
-    res.redirect('/all-chats');
-  } catch (err) {
-    console.error(err);
-    req.flash('error', 'Something went wrong!');
-    res.redirect('/all-chats');
-  }
-};
-
-// New: Admin notifications page
-module.exports.notificationsPage = async (req, res) => {
-  try {
-    const notifications = await Notification.find({ user: null }).sort({ createdAt: -1 }); // Admin notifications (user: null)
-    res.render('adminNotifications', { notifications });
-  } catch (error) {
-    console.error(error);
-    req.flash('error', 'Error loading notifications');
-    res.redirect('/adminRoute');
-  }
-};
-
-// New: Send custom notification to user
-module.exports.sendCustomNotification = async (req, res) => {
-  try {
-    const { title, message } = req.body;
-    const userId = req.params.userId;
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    const customNotif = new Notification({
-      user: userId,
-      title,
-      message,
-      type: 'custom'
-    });
-    await customNotif.save();
-    req.io.to(`notifications_${userId}`).emit('newNotification', customNotif);
-
-    req.flash('success', 'Custom notification sent successfully');
-    res.redirect(`/viewUser/${userId}`);
-  } catch (error) {
-    console.error(error);
-    req.flash('error', 'Failed to send notification');
-    res.redirect('back');
-  }
-};
-
-
-// **************************************** end of admin all chart controller *********************************************//
-
 
 // module.exports.generateOTP = async (req, res) => {
 //   try {
@@ -735,22 +555,7 @@ exports.editDepositPage = async (req, res) => {
 module.exports.updateDeposit = async (req, res) => {
     try {
         const { type, amount, narration, status } = req.body;
-        const originalDeposit = await Deposit.findById(req.params.id);
         await Deposit.findByIdAndUpdate(req.params.id, { type, amount, narration, status });
-
-        // New: If status changed, notify user
-        if (originalDeposit.status !== status) {
-          const user = await User.findById(originalDeposit.owner);
-          const depositNotif = new Notification({
-            user: originalDeposit.owner,
-            title: 'Deposit Status Updated',
-            message: `Your deposit of ${amount} ${type} is now ${status}.`,
-            type: 'deposit_created' // Reuse type or new
-          });
-          await depositNotif.save();
-          req.io.to(`notifications_${originalDeposit.owner}`).emit('newNotification', depositNotif);
-        }
-
         req.flash('success', 'Deposit updated successfully');
         res.redirect('/allFunding');
     } catch (error) {
@@ -899,18 +704,6 @@ module.exports.editWithdrawal = async (req, res) => {
         await withdrawal.save();
         console.log('Withdrawal saved:', withdrawal); // Debug log
 
-        // New: If status changed, notify user
-        if (originalStatus !== status) {
-          const withdrawalNotif = new Notification({
-            user: withdrawal.owner,
-            title: 'Withdrawal Status Updated',
-            message: `Your withdrawal of ${amount} ${withdrawal.type} is now ${status}.`,
-            type: 'withdrawal_created' // Reuse
-          });
-          await withdrawalNotif.save();
-          io.to(`notifications_${withdrawal.owner}`).emit('newNotification', withdrawalNotif);
-        }
-
         // Handle refund logic for rejected status or amount change
         if (status === 'rejected' && originalStatus !== 'rejected') {
             const user = await User.findById(withdrawal.owner);
@@ -921,17 +714,6 @@ module.exports.editWithdrawal = async (req, res) => {
             }
             user.available = (parseFloat(user.available) + parseFloat(withdrawal.amount)).toFixed(2);
             await user.save();
-
-            // New: Notify user of refund
-            const refundNotif = new Notification({
-              user: withdrawal.owner,
-              title: 'Withdrawal Rejected - Refunded',
-              message: `Your withdrawal was rejected and amount refunded to balance.`,
-              type: 'withdrawal_update'
-            });
-            await refundNotif.save();
-            req.io.to(`notifications_${withdrawal.owner}`).emit('newNotification', refundNotif);
-
             console.log('User balance updated (rejected):', user.available); // Debug log
         } else if (status !== 'rejected' && originalStatus === 'rejected') {
             const user = await User.findById(withdrawal.owner);
@@ -947,17 +729,6 @@ module.exports.editWithdrawal = async (req, res) => {
             }
             user.available = (parseFloat(user.available) - parseFloat(withdrawal.amount)).toFixed(2);
             await user.save();
-
-            // New: Notify user of status revert
-            const revertNotif = new Notification({
-              user: withdrawal.owner,
-              title: 'Withdrawal Status Reverted',
-              message: `Your withdrawal status has been updated from rejected.`,
-              type: 'withdrawal_update'
-            });
-            await revertNotif.save();
-            req.io.to(`notifications_${withdrawal.owner}`).emit('newNotification', revertNotif);
-
             console.log('User balance updated (revert rejection):', user.available); // Debug log
         } else if (status === 'rejected' && originalAmount !== withdrawal.amount) {
             const user = await User.findById(withdrawal.owner);
@@ -968,17 +739,6 @@ module.exports.editWithdrawal = async (req, res) => {
             }
             user.available = (parseFloat(user.available) - parseFloat(originalAmount) + parseFloat(withdrawal.amount)).toFixed(2);
             await user.save();
-
-            // New: Notify user of amount change
-            const amountNotif = new Notification({
-              user: withdrawal.owner,
-              title: 'Withdrawal Amount Updated',
-              message: `Your withdrawal amount has been adjusted to ${withdrawal.amount}.`,
-              type: 'withdrawal_update'
-            });
-            await amountNotif.save();
-            req.io.to(`notifications_${withdrawal.owner}`).emit('newNotification', amountNotif);
-
             console.log('User balance updated (amount change):', user.available); // Debug log
         }
 
@@ -1460,8 +1220,8 @@ exports.addWalletPage = (req, res) => {
 
 exports.addWallet_post = async (req, res) => {
     try {
-        const { btc_address, eth_address, usdt_address, cashapp, paypal } = req.body;
-        const walletData = { btc_address, eth_address, usdt_address, cashapp, paypal };
+        const { btc_address, eth_address, usdt_address,usdc_address, cashapp, paypal } = req.body;
+        const walletData = { btc_address, eth_address, usdt_address, usdc_address,cashapp, paypal };
 
         // Handle file uploads
         if (req.files) {
@@ -1480,6 +1240,13 @@ exports.addWallet_post = async (req, res) => {
                 walletData.usdt_image = result.secure_url;
                 fs.unlinkSync(req.files.usdt_image[0].path);
             }
+            // start usdc
+              if (req.files.usdc_image && req.files.usdc_image[0]) {
+                const result = await cloudinary.uploader.upload(req.files.usdc_image[0].path);
+                walletData.usdc_image = result.secure_url;
+                fs.unlinkSync(req.files.usdc_image[0].path);
+            }
+            //end usdc
             if (req.files.cashapp_image && req.files.cashapp_image[0]) {
                 const result = await cloudinary.uploader.upload(req.files.cashapp_image[0].path);
                 walletData.cashapp_image = result.secure_url;
@@ -1495,11 +1262,11 @@ exports.addWallet_post = async (req, res) => {
         const wallet = new Wallet(walletData);
         await wallet.save();
         req.flash('success', 'Wallet added successfully');
-        res.redirect('/all-wallets');
+        res.redirect('/wallets');
     } catch (error) {
         console.error(error);
         req.flash('error', 'Error adding wallet');
-        res.redirect('/all-wallets');
+        res.redirect('/add-wallet');
     }
 };
 
@@ -1522,8 +1289,8 @@ exports.editWalletPage = async (req, res) => {
 // Handle edit wallet form submission
 exports.updateWallet = async (req, res) => {
     try {
-        const { btc_address, eth_address, usdt_address, cashapp, paypal } = req.body;
-        const walletData = { btc_address, eth_address, usdt_address, cashapp, paypal };
+        const { btc_address, eth_address, usdt_address,usdc_address, cashapp, paypal } = req.body;
+        const walletData = { btc_address, eth_address, usdt_address,usdc_address, cashapp, paypal };
 
         // Handle file uploads
         if (req.files) {
@@ -1542,6 +1309,13 @@ exports.updateWallet = async (req, res) => {
                 walletData.usdt_image = result.secure_url;
                 fs.unlinkSync(req.files.usdt_image.path);
             }
+            // start
+             if (req.files.usdc_image) {
+                const result = await cloudinary.uploader.upload(req.files.usdc_image.path);
+                walletData.usdc_image = result.secure_url;
+                fs.unlinkSync(req.files.usdc_image.path);
+            }
+            // end
             if (req.files.cashapp_image) {
                 const result = await cloudinary.uploader.upload(req.files.cashapp_image.path);
                 walletData.cashapp_image = result.secure_url;
@@ -1814,6 +1588,34 @@ module.exports.editTrade = async (req, res) => {
   }
 };
 
+// Update a trade
+// module.exports.updateTrade = async (req, res) => {
+//   try {
+//     const { trading_type, currency_pair, lot_size, entry_price, stop_loss, take_profit, trading_action, status } = req.body;
+//     const livetrade = await Livetrading.findById(req.params.id);
+//     if (!livetrade) {
+//       req.flash('error', 'Trade not found');
+//       return res.redirect('/all-livetrade');
+//     }
+
+//     livetrade.type = trading_type;
+//     livetrade.currencypair = currency_pair;
+//     livetrade.lotsize = lot_size;
+//     livetrade.entryPrice = entry_price;
+//     livetrade.stopLoss = stop_loss;
+//     livetrade.takeProfit = take_profit;
+//     livetrade.action = trading_action;
+//     livetrade.status = status;
+
+//     await livetrade.save();
+//     req.flash('success', 'Trade updated successfully');
+//     res.redirect('/all-livetrade');
+//   } catch (err) {
+//     console.error(err);
+//     req.flash('error', 'Error updating trade');
+//     res.redirect('/all-livetrade');
+//   }
+// };
 
 module.exports.updateTrade = async (req, res) => {
     try {
