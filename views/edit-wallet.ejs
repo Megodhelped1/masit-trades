@@ -154,7 +154,7 @@
                 <input type="text" name="btc_address" class="form-control" value="<%= wallet.btc_address %>">
             </div>
             <div class="form-group">
-                <label class="text-white">BTC Image (Optional)</label>
+                <label  class="text-white">BTC Image (Optional)</label>
                 <input type="file" name="btc_image" class="form-control" accept="image/*">
                 <% if (wallet.btc_image) { %>
                     <img src="<%= wallet.btc_image %>" alt="BTC Image" style="max-width: 100px;">
@@ -182,6 +182,19 @@
                     <img src="<%= wallet.usdt_image %>" alt="USDT Image" style="max-width: 100px;">
                 <% } %>
             </div>
+            <!-- start usdc -->
+              <div class="form-group">
+                <label class="text-white">Usdc Address</label>
+                <input type="text" name="usdc_address" class="form-control" value="<%= wallet.usdc_address %>">
+            </div>
+              <div class="form-group">
+                <label class="text-white">Usdc Image (Optional)</label>
+                <input type="file" name="usdc_image" class="form-control" accept="image/*">
+                <% if (wallet.usdc_image) { %>
+                    <img src="<%= wallet.usdc_image %>" alt="USDC Image" style="max-width: 100px;">
+                <% } %>
+            </div>
+             <!-- end of usdc -->
             <div class="form-group">
                 <label class="text-white">CashApp</label>
                 <input type="text" name="cashapp" class="form-control" value="<%= wallet.cashapp %>">
@@ -198,7 +211,7 @@
                 <input type="text" name="paypal" class="form-control" value="<%= wallet.paypal %>">
             </div>
             <div class="form-group">
-                <label>PayPal Image (Optional)</label>
+                <label class="text-white">PayPal Image (Optional)</label>
                 <input type="file" name="paypal_image" class="form-control" accept="image/*">
                 <% if (wallet.paypal_image) { %>
                     <img src="<%= wallet.paypal_image %>" alt="PayPal Image" style="max-width: 100px;">
