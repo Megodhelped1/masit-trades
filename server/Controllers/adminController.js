@@ -1264,11 +1264,11 @@ exports.addWallet_post = async (req, res) => {
         const wallet = new Wallet(walletData);
         await wallet.save();
         req.flash('success', 'Wallet added successfully');
-        res.redirect('/add-wallet');
+        res.redirect('/all-wallets');
     } catch (error) {
         console.error(error);
         req.flash('error', 'Error adding wallet');
-        res.redirect('/add-wallet');
+        res.redirect('/all-wallets');
     }
 };
 
