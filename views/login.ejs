@@ -64,6 +64,19 @@
 
                                     <!-- login form begin -->
                                     <form class="uk-grid uk-form" id="loginForm" action="/login" method="POST">
+                                        <% if (typeof messages !== 'undefined' && messages.error) { %>
+  <div class="uk-alert-danger" data-uk-alert>
+    <a class="uk-alert-close" data-uk-close></a>
+    <p><%= messages.error %></p>
+  </div>
+<% } %>
+
+<% if (typeof messages !== 'undefined' && messages.success) { %>
+  <div class="uk-alert-success" data-uk-alert>
+    <a class="uk-alert-close" data-uk-close></a>
+    <p><%= messages.success %></p>
+  </div>
+<% } %>
                                         <div class="uk-margin-small uk-width-1-1 uk-inline">
                                             <span class="uk-form-icon uk-form-icon-flip fas fa-user fa-sm"></span>
                                             <input style="background-color:#0e121b;" 

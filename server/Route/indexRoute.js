@@ -20,6 +20,8 @@ router.get('/faq', userController.privacyPage);
 router.get('/register', userController.registerPage);
 router.post('/register', userController.registerPage_post);
 
+router.get('/verify-email', userController.verifyEmail);
+
 router.get('/login', userController.loginPage);
 router.post('/login', userController.loginPage_post);
 

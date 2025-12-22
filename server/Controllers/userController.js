@@ -12,27 +12,21 @@ const Signal = require("../Model/signal")
 const Livetrading = require("../Model/livetradingSchema")
 const stockTrade   = require("../Model/stockTrade")
 const Affliate = require("../Model/affiliate")
-const Chat = require('../Model/Chat');
 const jwt = require('jsonwebtoken');
-// const nodemailer = require('nodemailer');
-// const crypto = require('crypto');
+const { Resend } = require('resend');
+const resend = new Resend(process.env.RESEND_API_KEY);
+const crypto = require('crypto');
 const validator = require('validator');
 const fs = require('fs');
 const fsPromises = require('fs').promises;
 const cloudinary = require('cloudinary').v2;
-const Notification = require('../Model/Notification'); // New import
-// const PushSubscription = require('../Model/PushSubscription'); // New
-// const webpush = require('web-push'); // New
 
-
-
-// Configure Cloudinary (add your credentials in .env)
+// Configure Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
-
 
 // Generate verification URL dynamically
 const generateVerificationUrl = (userId, verificationToken) => {
@@ -46,40 +40,31 @@ const sendVerificationEmail = async (email, fullname, verificationToken, userId)
 
   try {
     const { data, error } = await resend.emails.send({
-      from: 'Support <support@digital-topfigmarkets.com>',
+      from: 'Support <support@masi-trades.org>',
       to: [email],
       subject: 'Verify Your Email - Masi-Trades',
       html: `
         <div style="background-color: #1C2526; padding: 20px; font-family: Arial, sans-serif; color: #F5F6F5; text-align: center; max-width: 600px; margin: 0 auto;">
           <!-- Header -->
           <div style="background-color: #2E3A3B; padding: 15px; border-bottom: 2px solid #F5F6F5;">
-            <img src="https://masi-trades.org/img/logo.jpeg" alt="Masi Trades Logo" style="max-width: 150px; height: auto; display: block; margin: 0 auto;">
+            <img src="https://masi-trades.org/img/logo.jpeg" alt="Masi-trades Logo" style="max-width: 150px; height: auto; display: block; margin: 0 auto;">
             <h2 style="color: #F5F6F5; margin: 10px 0 0; font-size: 24px;">Verify Your Email Account</h2>
           </div>
           <!-- Body -->
           <div style="padding: 20px; font-size: 16px; line-height: 1.5;">
             <p>Hi ${fullname},</p>
-            <p style="color: #F5F6F5;">Thanks for creating an account with us at Masi-Trades. Please click the button below to verify your account:</p>
+            <p style="color: #F5F6F5;">Thanks for creating an account with us at Masi-trades . Please click the button below to verify your account:</p>
             <a href="${verificationUrl}" style="display: inline-block; padding: 12px 24px; background-color: #3F3EED; color: white; text-decoration: none; border-radius: 4px; margin: 20px 0;">Confirm Email</a>
             <p style="color: #F5F6F5;">If the button above doesn't work, please copy and paste this link into your browser:</p>
             <p><a href="${verificationUrl}" style="color: #4A90E2; text-decoration: none;">${verificationUrl}</a></p>
-            <!-- Contact/Support Links -->
-            <div style="margin: 20px 0; display: flex; justify-content: center; gap: 20px;">
-              <a href="mailto:support@digital-topfigmarkets.com" style="color: #4A90E2; text-decoration: none; display: flex; align-items: center; gap: 5px;">
-                <img src="https://img.icons8.com/ios-filled/24/4A90E2/email.png" alt="Email Icon" style="width: 20px; height: 20px;">
-                <span>Contact Support</span>
-              </a>
-              <a href="masi-trades.org" style="color: #4A90E2; text-decoration: none; display: flex; align-items: center; gap: 5px;">
-                <img src="https://img.icons8.com/ios-filled/24/4A90E2/globe.png" alt="Website Icon" style="width: 20px; height: 20px;">
-                <span>Visit Website</span>
-              </a>
-            </div>
+           
+            
           </div>
           <!-- Footer -->
           <div style="background-color: #2E3A3B; padding: 15px; border-top: 2px solid #F5F6F5; font-size: 14px;">
-            <p style="margin: 0 0 10px; color: #F5F6F5;">© ${new Date().getFullYear()} Masi-Trades. All rights reserved.</p>
+            <p style="margin: 0 0 10px; color: #F5F6F5;">© ${new Date().getFullYear()} Masi Trades. All rights reserved.</p>
             <div style="display: flex; justify-content: center; gap: 20px;">
-              <a href="mailto:support@digital-topfigmarkets.com" style="color: #4A90E2; text-decoration: none; display: flex; align-items: center; gap: 5px;">
+              <a href="mailto:support@masi-trades.org" style="color: #4A90E2; text-decoration: none; display: flex; align-items: center; gap: 5px;">
                 <img src="https://img.icons8.com/ios-filled/24/4A90E2/email.png" alt="Email Icon" style="width: 20px; height: 20px;">
                 <span>Contact Support</span>
               </a>
@@ -111,20 +96,20 @@ const sendWelcomeEmail = async (email, fullname, username, password, createdAt) 
 
   try {
     const { data, error } = await resend.emails.send({
-      from: 'Support <support@digital-topfigmarkets.com>',
+      from: 'Support <support@masi-trades.org>',
       to: [email],
       subject: 'Welcome to Masi-Trades',
       html: `
         <div style="background-color: #1C2526; padding: 20px; font-family: Arial, sans-serif; color: #F5F6F5; text-align: center; max-width: 600px; margin: 0 auto;">
           <!-- Header -->
           <div style="background-color: #2E3A3B; padding: 15px; border-bottom: 2px solid #F5F6F5;">
-            <img src="https://ci3.googleusercontent.com/meips/ADKq_NbWvndY7ipL-Nw8Hmdp3YA_hWPJyT9lZ-TMEC-sIUnu2jcyRInbm0Y0JFSMU-KNB5MRgIwNfml_cVYKSqj0543VjAghNO6rZA=s0-d-e1-ft#https://digital-figtopmarkets.com/images/email.png" alt="Digital Figtop Logo" style="max-width: 150px; height: auto; display: block; margin: 0 auto;">
+            <img src="https://masi-trades.org/img/logo.jpeg" alt="Masi Trades Logo" style="max-width: 150px; height: auto; display: block; margin: 0 auto;">
             <h2 style="color: #F5F6F5; margin: 10px 0 0; font-size: 24px;">Welcome, ${fullname}</h2>
           </div>
           <!-- Body -->
           <div style="padding: 20px; font-size: 16px; line-height: 1.5;">
             <h3 style="color: #F5F6F5; font-size: 18px;">We are happy to have you join us</h3>
-            <p style="color: #F5F6F5;">Your account registration and email verification was successful. Welcome to Digital Figtop.</p>
+            <p style="color: #F5F6F5;">Your account registration and email verification was successful. Welcome to Masi Trades.</p>
             <p style="color: #F5F6F5; font-weight: bold;">Below is your personal details. Do not disclose to anyone.</p>
             <hr style="border: 1px solid #4A4A4A; margin: 20px 0;">
             <p style="color: #F5F6F5; text-align: left; margin: 10px 0;"><strong>Username:</strong> ${username}</p>
@@ -136,13 +121,13 @@ const sendWelcomeEmail = async (email, fullname, username, password, createdAt) 
           </div>
           <!-- Footer -->
           <div style="background-color: #2E3A3B; padding: 15px; border-top: 2px solid #F5F6F5; font-size: 14px;">
-            <p style="margin: 0 0 10px; color: #F5F6F5;">© ${new Date().getFullYear()} Digital Figtop. All rights reserved.</p>
+            <p style="margin: 0 0 10px; color: #F5F6F5;">© ${new Date().getFullYear()} Masi Trades. All rights reserved.</p>
             <div style="display: flex; justify-content: center; gap: 20px;">
-              <a href="mailto:support@digital-topfigmarkets.com" style="color: #4A90E2; text-decoration: none; display: flex; align-items: center; gap: 5px;">
+              <a href="mailto:support@masi-trades.org" style="color: #4A90E2; text-decoration: none; display: flex; align-items: center; gap: 5px;">
                 <img src="https://img.icons8.com/ios-filled/24/4A90E2/email.png" alt="Email Icon" style="width: 20px; height: 20px;">
                 <span>Contact Support</span>
               </a>
-              <a href="https://digital-topfigmarkets.com" style="color: #4A90E2; text-decoration: none; display: flex; align-items: center; gap: 5px;">
+              <a href="masi-trades.org" style="color: #4A90E2; text-decoration: none; display: flex; align-items: center; gap: 5px;">
                 <img src="https://img.icons8.com/ios-filled/24/4A90E2/globe.png" alt="Website Icon" style="width: 20px; height: 20px;">
                 <span>Visit Website</span>
               </a>
@@ -161,8 +146,7 @@ const sendWelcomeEmail = async (email, fullname, username, password, createdAt) 
 };
 
 
-
-
+// Unified handleErrors function
 const handleErrors = (err) => {
   let errors = {
     fullname: '',
@@ -261,6 +245,7 @@ module.exports.registerPage = (req, res) => {
   res.render("register");
 };
 
+// === FIXED: registerPage_post ===
 module.exports.registerPage_post = async (req, res) => {
   const {
     fullname,
@@ -277,25 +262,19 @@ module.exports.registerPage_post = async (req, res) => {
   } = req.body;
 
   try {
-    // Validation checks
-    if (
-      !fullname || !username || !email || !tel || !country || !city || !currency || !password1 || !password2
-    ) {
+    if (!fullname || !username || !email || !tel || !country || !city || !currency || !password1 || !password2) {
       throw Error('All fields are required');
     }
 
-    if (password1 !== password2) {
-      throw Error('Passwords do not match');
-    }
+    if (password1 !== password2) throw Error('Passwords do not match');
+    if (!validator.isEmail(email)) throw Error('Invalid email format');
 
-    if (!validator.isEmail(email)) {
-      throw Error('Invalid email format');
-    }
+    const verificationToken = crypto.randomBytes(32).toString('hex');
 
     const user = new User({
-      fullname,
-      username,
-      email,
+      fullname: fullname.trim().toLowerCase(),
+      username: username.trim().toLowerCase(),
+      email: email.trim().toLowerCase(),
       tel,
       country,
       zip_code: zip_code || 'None',
@@ -303,85 +282,90 @@ module.exports.registerPage_post = async (req, res) => {
       currency,
       password: password1,
       address: address || 'None',
+      isVerified: false,
+      verificationToken,
+      verificationTokenExpires: Date.now() + 15 * 60 * 1000, // 15 mins
     });
 
-
     const savedUser = await user.save();
-    console.log('User saved:', savedUser);
 
-    // Create JWT token and set cookie
     const token = createToken(savedUser._id);
     res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
 
-    req.flash('success', 'Registration successful!');
-    res.status(201).json({ redirect: '/dashboard' });
+    // Send verification email
+    await sendVerificationEmail(savedUser.email, savedUser.fullname, verificationToken, savedUser._id);
+
+    // Return success with message (AJAX will handle UI)
+    res.status(201).json({
+      success: true,
+      message: 'Registration successful! Please check your email for the verification link.'
+    });
 
   } catch (err) {
-    console.error('Registration error:', err);
     const errors = handleErrors(err);
-    console.error('Mapped errors:', errors);
     res.status(400).json({ errors });
   }
 };
 
-// module.exports.verifyEmail = async (req, res) => {
-//   const { user, ver_code } = req.query;
+// === FIXED: verifyEmail (no more false "invalid link" error) ===
+module.exports.verifyEmail = async (req, res) => {
+  const { user, ver_code } = req.query;
 
-//   try {
-//     const foundUser = await User.findById(user);
-    
-//     if (!foundUser) {
-//       req.flash('error', 'Invalid verification link. Please create a new account.');
-//       return res.redirect('/signup');
-//     }
+  if (!user || !ver_code) {
+    req.flash('error', 'Invalid verification link.');
+    return res.redirect('/register');
+  }
 
-//     if (foundUser.isVerified) {
-//       req.flash('success', 'Your account is already verified. Please login.');
-//       return res.redirect('/signin');
-//     }
+  try {
+    const foundUser = await User.findById(user);
+    if (!foundUser) {
+      req.flash('error', 'Invalid or expired link. Please register again.');
+      return res.redirect('/register');
+    }
 
-//     if (foundUser.verificationToken !== ver_code) {
-//       req.flash('error', 'Invalid verification code. Please create a new account.');
-//       return res.redirect('/signup');
-//     }
+    // Already verified
+    if (foundUser.isVerified) {
+      req.flash('success', 'Your account is already verified. You can now log in.');
+      return res.redirect('/login');
+    }
 
-//     if (foundUser.verificationTokenExpires < Date.now()) {
-//       req.flash('error', 'Verification link has expired. Please create a new account.');
-//       return res.redirect('/signup');
-//     }
+    // Check token match
+    if (foundUser.verificationToken !== ver_code) {
+      req.flash('error', 'Invalid verification code.');
+      return res.redirect('/register');
+    }
 
-//     // Verify the user
-//     foundUser.isVerified = true;
-//     foundUser.verificationToken = null;
-//     foundUser.verificationTokenExpires = null;
-//     await foundUser.save();
+    // Check expiry
+    if (foundUser.verificationTokenExpires < Date.now()) {
+      req.flash('error', 'Verification link has expired. Please register again.');
+      return res.redirect('/register');
+    }
 
-//     // Send welcome email
-//     try {
-//       await sendWelcomeEmail(
-//         foundUser.email,
-//         foundUser.fullname,
-//         foundUser.username,
-//         foundUser.password, // Note: Sending plain text password (consider security implications)
-//         foundUser.createdAt
-//       );
-//       console.log('Welcome email sent to:', foundUser.email);
-//     } catch (emailError) {
-//       console.error('Failed to send welcome email:', emailError);
-//       // Continue with verification success even if welcome email fails
-//     }
+    // Verify the user
+    foundUser.isVerified = true;
+    foundUser.verificationToken = null;
+    foundUser.verificationTokenExpires = null;
+    await foundUser.save();
 
-//     req.flash('success', 'Account successfully verified! Please login.');
-//     res.redirect('/signin');
+    // Send welcome email
+    await sendWelcomeEmail(
+      foundUser.email,
+      foundUser.fullname,
+      foundUser.username,
+      foundUser.password,
+      foundUser.createdAt
+    );
 
-//   } catch (err) {
-//     console.error('Verification error:', err);
-//     req.flash('error', 'An error occurred during verification. Please try again or create a new account.');
-//     res.redirect('/signup');
-//   }
-// };
+    req.flash('success', 'Email verified successfully! You can now log in.');
+    res.redirect('/login');
 
-// Other routes remain unchanged
+  } catch (err) {
+    console.error('Verification error:', err);
+    req.flash('error', 'An error occurred during verification. Please try again.');
+    res.redirect('/register');
+  }
+};
+
 module.exports.loginPage = (req, res) => {
   res.render("login");
 };
@@ -402,7 +386,10 @@ module.exports.loginPage_post = async(req, res) => {
             req.flash('error', 'Invalid password.');
         } else if (err.message === 'Your account is not verified. Please verify it or create another account.') {
             req.flash('error', err.message);
-        } else if (err.message === 'Your account is suspended. If you believe this is a mistake, please contact support at support@masi-trades.org.') {
+        }// Handle custom errors
+        if (err.message.includes('not verified')) {
+        errors.email = 'Your account is not verified. Please check your email for the verification link or create a new account.';
+         } else if (err.message === 'Your account is suspended. If you believe this is a mistake, please contact support at support@masi-trades.org.') {
             req.flash('error', err.message);
         } else {
             req.flash('error', 'An unexpected error occurred.');
@@ -415,103 +402,9 @@ module.exports.loginAdmin = (req, res) => {
   res.render('loginAdmin');
 };
 
-// New: Function to send push notification
-// async function sendPushNotification(userId, notification) {
-//   try {
-//     const subscriptions = await PushSubscription.find({ user: userId });
-//     if (subscriptions.length === 0) {
-//       console.log('No push subscriptions found for user:', userId);
-//       return;
-//     }
-
-//     const payload = JSON.stringify({
-//       title: notification.title,
-//       body: notification.message,
-//       icon: '/images/logo.svg', // Adjust path as needed
-//       badge: '/images/badge.png', // Adjust path as needed
-//       data: { notificationId: notification._id }
-//     });
-
-//     const promises = subscriptions.map(sub => 
-//       webpush.sendNotification(sub, payload).catch(error => {
-//         console.error('Error sending push to subscription:', error);
-//         // Optionally delete invalid subscription
-//         if (error.statusCode === 410 || error.statusCode === 404) {
-//           return PushSubscription.deleteOne({ _id: sub._id });
-//         }
-//       })
-//     );
-
-//     await Promise.all(promises);
-//     console.log('Push notifications sent for notification:', notification._id);
-//   } catch (error) {
-//     console.error('Error in sendPushNotification:', error);
-//   }
-// }
-
 module.exports.dashboardPage = (req, res) => {
-  res.render('dashboard',{ vapidPublicKey: process.env.VAPID_PUBLIC_KEY });
+  res.render('dashboard');
 };
-
-// ********************************start of chat controller *******************************************//
-
-module.exports.chatPage = async (req, res) => {
-  try {
-    const user = res.locals.user;
-    if (!user) {
-      return res.redirect('/signin');
-    }
-    const chat = await Chat.findOne({ user: user._id }).populate('user');
-    res.render('chat', { user, chat: chat || { messages: [] } });
-  } catch (err) {
-    console.error(err);
-    req.flash('error', 'Something went wrong!');
-    res.redirect('back');
-  }
-};
-
-module.exports.chatPage_post = async (req, res) => {
-  try {
-    const user = res.locals.user;
-    if (!user) {
-      return res.redirect('/signin');
-    }
-    const { content } = req.body;
-    let imageUrl = null;
-
-    if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path);
-      imageUrl = result.secure_url;
-    }
-
-    let chat = await Chat.findOne({ user: user._id });
-    if (!chat) {
-      chat = new Chat({ user: user._id, messages: [] });
-    }
-
-    const message = {
-      sender: 'user',
-      content,
-      image: imageUrl,
-      timestamp: new Date(),
-    };
-
-    chat.messages.push(message);
-    await chat.save();
-
-    // Emit message via Socket.IO
-    req.app.get('io').to(user._id.toString()).emit('newMessage', message);
-    req.app.get('io').to('admin').emit('newMessage', { userId: user._id, message });
-
-    res.redirect('/chat');
-  } catch (err) {
-    console.error(err);
-    req.flash('error', 'Something went wrong!');
-    res.redirect('back');
-  }
-};
-
-// *********************************** end of chat controller **************************************//
 
 module.exports.verifyPage = async (req, res) => {
     try {
@@ -524,6 +417,71 @@ module.exports.verifyPage = async (req, res) => {
         res.status(500).send('Server error');
     }
 };
+
+// module.exports.verifyPage_post = async (req, res) => {
+//     try {
+//         const user = await User.findById(req.params.id);
+//         if (!user) {
+//             return res.status(400).json({ error: 'User not found' });
+//         }
+
+//         if (user.kycVerified) {
+//             return res.status(400).json({ error: 'User already verified' });
+//         }
+
+//         const {
+//             email, username, fullname, city, gender, dob,
+//             marital_status, age, address
+//         } = req.body;
+
+//         // Log the received form data for debugging
+//         console.log('Received form data:', {
+//             email, username, fullname, city, gender, dob,
+//             marital_status, age, address
+//         });
+
+//         // Validate required fields (allow non-empty strings)
+//         if (!email?.trim() || !username?.trim() || !fullname?.trim() || !city?.trim() || !gender?.trim() || !dob?.trim() || !marital_status?.trim() || !age?.trim() || !address?.trim()) {
+//             return res.status(400).json({ error: 'All fields are required and must not be empty' });
+//         }
+
+//         // Handle file uploads
+//         const idcardFront = req.files['idcardFront'] ? req.files['idcardFront'][0].path : null;
+//         const idcardBack = req.files['idcardBack'] ? req.files['idcardBack'][0].path : null;
+
+//         if (!idcardFront || !idcardBack) {
+//             return res.status(400).json({ error: 'Both ID card images are required' });
+//         }
+
+//         // Create new verification document
+//         const verification = new Verify({
+//             email,
+//             username,
+//             fullname,
+//             city,
+//             gender,
+//             dateofBirth: dob,
+//             marital: marital_status,
+//             age,
+//             address,
+//             image: idcardFront,
+//             backImage: idcardBack,
+//             owner: user._id
+//         });
+
+//         await verification.save();
+
+//         // Update user's verified array and kycVerified status
+//         user.verified.push(verification._id);
+//         user.kycVerified = true;
+//         await user.save();
+
+//         res.status(200).json({ message: 'Verification submitted successfully' });
+//     } catch (error) {
+//         console.error('Error in verifyPage_post:', error);
+//         res.status(500).json({ error: 'Server error: ' + error.message });
+//     }
+// };
 
 
 module.exports.verifyPage_post = async (req, res) => {
@@ -619,30 +577,6 @@ module.exports.verifyPage_post = async (req, res) => {
         user.kycVerified = true;
         await user.save();
 
-        // New: Create verification notification for user
-        const verificationNotification = new Notification({
-          user: user._id,
-          title: 'Verification Submitted',
-          message: 'Your KYC verification has been submitted successfully.',
-          type: 'verification_created'
-        });
-        await verificationNotification.save();
-
-        // New: Send push notification
-        // await sendPushNotification(user._id, verificationNotification);
-
-        req.io.to(`notifications_${user._id}`).emit('newNotification', verificationNotification);
-
-        // New: Notify admin of new verification
-        const adminNotification = new Notification({
-          user: null, // Admin notification, user null
-          title: 'New Verification Request',
-          message: `New verification from ${user.fullname}`,
-          type: 'verification_created'
-        });
-        await adminNotification.save();
-        req.io.to('admin').emit('newNotification', adminNotification);
-
         res.status(200).json({ message: 'Verification submitted successfully' });
     } catch (error) {
         console.error('Error in verifyPage_post:', error);
@@ -656,7 +590,6 @@ module.exports.verifyPage_post = async (req, res) => {
         res.status(500).json({ error: 'Server error: ' + error.message });
     }
 };
-
 
 
 module.exports.depositPage = async (req, res) => {
@@ -751,30 +684,6 @@ module.exports.paymentPage_post = async (req, res) => {
         user.deposits.push(deposit._id);
         await user.save();
 
-        // New: Create deposit notification for user
-        const depositNotification = new Notification({
-          user: user._id,
-          title: 'Deposit Submitted',
-          message: `Your deposit of ${amount} ${type} has been submitted.`,
-          type: 'deposit_created'
-        });
-        await depositNotification.save();
-
-        // New: Send push notification
-        // await sendPushNotification(user._id, depositNotification);
-
-        req.io.to(`notifications_${user._id}`).emit('newNotification', depositNotification);
-
-        // New: Notify admin of new deposit
-        const adminNotification = new Notification({
-          user: null,
-          title: 'New Deposit Request',
-          message: `New deposit from ${user.fullname} for ${amount} ${type}`,
-          type: 'deposit_created'
-        });
-        await adminNotification.save();
-        req.io.to('admin').emit('newNotification', adminNotification);
-
         // Clear session data
         req.session.deposit = null;
 
@@ -784,7 +693,7 @@ module.exports.paymentPage_post = async (req, res) => {
         console.error(error);
         res.status(500).json({ error: 'Error submitting deposit' });
     }
-}
+};
 
 
 
@@ -842,13 +751,6 @@ module.exports.withdrawPage_post = async (req, res) => {
             return res.redirect('/withdraw');
         }
 
-        // Check verification status for withdrawal limits
-        const maxUnverifiedLimit = 300;
-        if (user.verifiedStatus === 'not Verified!' && withdrawalAmount > maxUnverifiedLimit) {
-            req.flash('error', `Unverified accounts can only withdraw up to $${maxUnverifiedLimit}. Please complete your verification to withdraw larger amounts.`);
-            return res.redirect('/withdraw');
-        }
-
         // Prepare withdrawal data
         const withdrawData = {
             amount: withdrawalAmount,
@@ -886,30 +788,6 @@ module.exports.withdrawPage_post = async (req, res) => {
         user.withdraws.push(withdrawal._id);
         await user.save();
 
-        // New: Create withdrawal notification for user
-        const withdrawalNotification = new Notification({
-          user: user._id,
-          title: 'Withdrawal Submitted',
-          message: `Your withdrawal of ${amount} ${withdrawalmethod} has been submitted.`,
-          type: 'withdrawal_created'
-        });
-        await withdrawalNotification.save();
-
-        // New: Send push notification
-        // await sendPushNotification(user._id, withdrawalNotification);
-
-        req.io.to(`notifications_${user._id}`).emit('newNotification', withdrawalNotification);
-
-        // New: Notify admin of new withdrawal
-        const adminNotification = new Notification({
-          user: null,
-          title: 'New Withdrawal Request',
-          message: `New withdrawal from ${user.fullname} for ${amount} ${withdrawalmethod}`,
-          type: 'withdrawal_created'
-        });
-        await adminNotification.save();
-        req.io.to('admin').emit('newNotification', adminNotification);
-
         // Success response
         req.flash('success', 'Withdrawal request submitted successfully');
         res.redirect(`/transactions/${id}`); // Fixed redirect URL
@@ -926,8 +804,18 @@ module.exports.withdrawPage_post = async (req, res) => {
 };
 
 
-
-
+// module.exports.transactionPage = async (req, res) => {
+   
+//    try {
+//         const user = req.user; // Set by middleware
+//         const populatedUser = await User.findById(user._id).populate(['deposits', 'widthdraws']);
+//         res.render('transaction', { user: populatedUser });
+//     } catch (error) {
+//         console.error('Transaction History Error:', error);
+//         req.flash('error', 'Server error');
+//         res.redirect('/login');
+//     }
+// };
 
 module.exports.transactionsPage = async (req, res) => {
     try {
@@ -952,6 +840,76 @@ module.exports.transactionsPage = async (req, res) => {
         req.flash('error', 'Error fetching transactions');
         res.redirect('/dashboard'); // Redirect on error
     }
+};
+
+module.exports.chatPage = async (req, res) => {
+  try {
+    const user = res.locals.user;
+    if (!user) {
+      return res.redirect('/signin');
+    }
+    const chat = await Chat.findOne({ user: user._id }).populate('user');
+    res.render('chat', { user, chat: chat || { messages: [] } });
+  } catch (err) {
+    console.error(err);
+    req.flash('error', 'Something went wrong!');
+    res.redirect('back');
+  }
+};
+
+module.exports.chatPage_post = async (req, res) => {
+  try {
+    const user = res.locals.user;
+    if (!user) {
+      return res.redirect('/signin');
+    }
+    const { content } = req.body;
+    let imageUrl = null;
+
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path);
+      imageUrl = result.secure_url;
+    }
+
+    let chat = await Chat.findOne({ user: user._id });
+    if (!chat) {
+      chat = new Chat({ user: user._id, messages: [] });
+    }
+
+    const message = {
+      sender: 'user',
+      content,
+      image: imageUrl,
+      timestamp: new Date(),
+    };
+
+    chat.messages.push(message);
+    await chat.save();
+
+    // Emit message via Socket.IO
+    req.app.get('io').to(user._id.toString()).emit('newMessage', message);
+    req.app.get('io').to('admin').emit('newMessage', { userId: user._id, message });
+
+    res.redirect('/chat');
+  } catch (err) {
+    console.error(err);
+    req.flash('error', 'Something went wrong!');
+    res.redirect('back');
+  }
+};
+
+module.exports.notificationsPage = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    const notifications = await Notification.find({ user: req.params.id }).sort({ createdAt: -1 }).populate('user');
+    res.render('notifications', { notifications, user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
 };
 
 module.exports.affiliatePage = async (req, res) => {
@@ -1073,6 +1031,64 @@ module.exports.upgradePage = async (req, res) => {
     }3
 };
 
+// module.exports.upgradePage_post = async (req, res) => {
+//     try {
+//      const id =  req.params.id
+//         const { upgraderequest, paymentmethod, amount, narration } = req.body;
+//         const user = await User.findById(id); // Use req.user._id instead of req.params.id
+
+//         if (!user) {
+//             return res.status(404).json({ error: 'User not found' });
+//         }
+
+//         // Validate amount against user.available
+//         const availableBalance = parseFloat(user.available);
+//         const requestedAmount = parseFloat(amount);
+//         if (isNaN(requestedAmount) || requestedAmount <= 0) {
+//             return res.status(400).json({ error: 'Invalid amount' });
+//         }
+//         if (requestedAmount > availableBalance) {
+//             return res.status(400).json({ error: `Insufficient balance. Available: €${availableBalance}` });
+//         }
+
+//         // Validate inputs
+//         if (!upgraderequest || !paymentmethod || !narration) {
+//             return res.status(400).json({ error: 'All fields are required' });
+//         }
+
+//         // Upload proof of payment to Cloudinary
+//         let imageUrl = '';
+//         if (req.file) {
+//             const result = await cloudinary.uploader.upload(req.file.path, {
+//                 folder: 'upgrade_proofs'
+//             });
+//             imageUrl = result.secure_url;
+//         } else {
+//             return res.status(400).json({ error: 'Proof of payment is required' });
+//         }
+
+//         // Create new upgrade request
+//         const upgrade = new Upgrade({
+//             upgraderequest,
+//             amount: requestedAmount.toString(),
+//             method: paymentmethod,
+//             status: 'pending',
+//             image: imageUrl,
+//              owner: user._id// Link to user
+//         });
+//         await upgrade.save();
+
+//         // Link upgrade to user
+//         user.upgrades.push(upgrade._id);
+//         await user.save();
+
+//         res.status(200).json({ message: 'Upgrade request submitted successfully' });
+//     } catch (error) {
+//         console.error('Error in upgradePage_post:', error);
+//         res.status(500).json({ error: 'Failed to submit upgrade request' });
+//     }
+// };
+
 module.exports.upgradePage_post = async (req, res) => {
     try {
         const id = req.params.id;
@@ -1127,30 +1143,6 @@ module.exports.upgradePage_post = async (req, res) => {
         // Link upgrade to user
         user.upgrades.push(upgrade._id);
         await user.save();
-
-        // New: Create upgrade notification for user
-        const upgradeNotification = new Notification({
-          user: user._id,
-          title: 'Upgrade Request Submitted',
-          message: `Your upgrade request for ${amount} has been submitted.`,
-          type: 'upgrade_created'
-        });
-        await upgradeNotification.save();
-
-        // New: Send push notification
-        // await sendPushNotification(user._id, upgradeNotification);
-
-        req.io.to(`notifications_${user._id}`).emit('newNotification', upgradeNotification);
-
-        // New: Notify admin of new upgrade
-        const adminNotification = new Notification({
-          user: null,
-          title: 'New Upgrade Request',
-          message: `New upgrade from ${user.fullname} for ${amount}`,
-          type: 'upgrade_created'
-        });
-        await adminNotification.save();
-        req.io.to('admin').emit('newNotification', adminNotification);
 
         res.status(200).json({ message: 'Upgrade request submitted successfully' });
     } catch (error) {
@@ -1309,7 +1301,7 @@ module.exports.ongoingsCopyTrades = async (req, res) => {
 
 module.exports.signaltPage = async (req, res) => {
     try {
-        const wallet = await Wallet.findOne();
+        const wallet = await Wallet.findOne(); // Adjust query based on your Wallet model logic
         res.render("signal", { wallet });
     } catch (error) {
         console.error('Error in signaltPage:', error);
@@ -1381,30 +1373,6 @@ module.exports.signaltPage_post = async (req, res) => {
         user.signals.push(signal._id);
         await user.save();
 
-        // New: Create signal notification for user
-        const signalNotification = new Notification({
-          user: user._id,
-          title: 'Signal Request Submitted',
-          message: `Your signal package request for ${amount} has been submitted.`,
-          type: 'signal_created'
-        });
-        await signalNotification.save();
-
-        // New: Send push notification
-        // await sendPushNotification(user._id, signalNotification);
-
-        req.io.to(`notifications_${user._id}`).emit('newNotification', signalNotification);
-
-        // New: Notify admin of new signal
-        const adminNotification = new Notification({
-          user: null,
-          title: 'New Signal Request',
-          message: `New signal from ${user.fullname} for ${amount}`,
-          type: 'signal_created'
-        });
-        await adminNotification.save();
-        req.io.to('admin').emit('newNotification', adminNotification);
-
         // Respond with success message for SweetAlert
         res.status(200).json({ message: 'Signal request submitted successfully', type: 'success' });
     } catch (error) {
@@ -1420,54 +1388,6 @@ module.exports.signaltPage_post = async (req, res) => {
         res.status(500).json({ error: 'Failed to submit signal request', type: 'error' });
     }
 };
-
-// / New: Controller for notifications page (renders modal content or API)
-module.exports.notificationsPage = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    const notifications = await Notification.find({ user: req.params.id }).sort({ createdAt: -1 }).populate('user');
-    res.render('notifications', { notifications, user });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Server error' });
-  }
-};
-
-// New: Save push subscription
-// module.exports.savePushSubscription = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const subscription = req.body.subscription;
-
-//     // Validate user
-//     const user = await User.findById(id);
-//     if (!user) {
-//       return res.status(404).json({ error: 'User not found' });
-//     }
-
-//     // Delete existing subscriptions
-//     await PushSubscription.deleteMany({ user: id });
-
-//     // Save new subscription
-//     const newSub = new PushSubscription({
-//       user: id,
-//       endpoint: subscription.endpoint,
-//       keys: {
-//         p256dh: subscription.keys.p256dh,
-//         auth: subscription.keys.auth
-//       }
-//     });
-//     await newSub.save();
-
-//     res.status(201).json({ message: 'Subscription saved successfully' });
-//   } catch (error) {
-//     console.error('Error saving push subscription:', error);
-//     res.status(500).json({ error: 'Failed to save subscription' });
-//   }
-// };
 
 module.exports.tradingPage = async (req, res) => {
   try {

@@ -124,6 +124,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  isVerified:{
+    type: Boolean,
+    default: false,
+  },
   kycVerified: {
     type: Boolean,
     default: false,
@@ -239,6 +243,9 @@ userSchema.statics.login = async function (email, password) {
   if (user.isSuspended) {
     throw Error('Your account is suspended. If you believe this is a mistake, please contact support at support@masi-trades.org.');
   }
+  if (!user.isVerified) {
+  throw Error('Your account is not verified. Please check your email and click the verification link, or create a new account.');
+}
   // Direct string comparison for passwords
   if (password !== user.password) {
     throw Error('incorrect password');
